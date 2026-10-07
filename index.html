@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>محاضرات المحاسبة المجانية لطلاب AOUKW</title><style>body{margin:0}[hidden]{display:none!important}</style></head><body>
+<title>محاضرات المحاسبة المجانية لطلاب AOUKW</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
+<style>
+/* Layout: navy hero band with the triangle mark, then a two-column body (schedule | registration) that stacks on phones */
+:root{
+  --navy:#07005E; --yellow:#F7DC6B; --turq:#7DE6D5; --pink:#E980C2;
+  --bg:#F6F5FB; --surface:#FFFFFF; --fg:#151238; --muted:#5B5878; --line:#E2E0EE;
+  --hero-bg:#07005E; --hero-fg:#FFFFFF; --field:#FFFFFF; --accent-ink:#07005E;
+  --display:"Alexandria","IBM Plex Sans Arabic",Tahoma,sans-serif;
+  --body:"IBM Plex Sans Arabic",Tahoma,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0B0930; --surface:#141142; --fg:#F1F0FA; --muted:#B4B1D3; --line:#2A2663;
+  --hero-bg:#050044; --field:#0F0C38; --accent-ink:#F7DC6B; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0B0930; --surface:#141142; --fg:#F1F0FA; --muted:#B4B1D3; --line:#2A2663;
+  --hero-bg:#050044; --field:#0F0C38; --accent-ink:#F7DC6B; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.7}
+.wrap{max-width:1040px;margin:0 auto;padding-inline:20px}
+.hero{background:var(--hero-bg);color:var(--hero-fg);position:relative;overflow:hidden}
+.hero .wrap{padding-block:28px 56px;position:relative;z-index:1}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;letter-spacing:.06em;font-size:13px}
+.brand .sym{width:34px;height:auto}
+.brand span{direction:ltr}
+.aou{direction:ltr;margin-inline-start:6px;padding:2px 9px;border:1.5px solid var(--turq);color:var(--turq);border-radius:6px;font-size:12px;letter-spacing:.08em}
+.tag{display:inline-block;margin-top:40px;background:var(--yellow);color:#07005E;font-family:var(--display);font-weight:700;font-size:14px;padding:4px 14px;border-radius:999px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(34px,6vw,60px);line-height:1.2;margin:14px 0 10px;text-wrap:balance}
+h1 em{font-style:normal;color:var(--turq)}
+.lead{max-width:56ch;color:#D9D7F3;font-size:18px;margin:0}
+.bigmark{position:absolute;inset-inline-start:-60px;bottom:-90px;width:360px;opacity:.16;z-index:0}
+.facts{display:flex;flex-wrap:wrap;gap:10px 22px;margin-top:26px;font-size:15px;color:#fff}
+.facts b{color:var(--yellow);font-weight:600}
+main .wrap{display:grid;grid-template-columns:1.05fr .95fr;gap:28px;padding-block:36px 56px}
+@media (max-width:820px){main .wrap{grid-template-columns:1fr}}
+main .wrap>*{min-width:0}
+h2{font-family:var(--display);font-weight:700;font-size:22px;margin:0 0 4px}
+.sub{color:var(--muted);margin:0 0 18px;font-size:15px}
+.sessions{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.s{display:grid;grid-template-columns:76px 1fr;gap:14px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px}
+.date{background:var(--navy);color:#fff;border-radius:10px;text-align:center;padding:8px 4px;font-family:var(--display);line-height:1.25}
+.date .d{font-size:13px;font-weight:800;color:var(--yellow);font-variant-numeric:tabular-nums}
+.date .m{font-size:12px}
+.s h3{margin:0;font-family:var(--display);font-weight:700;font-size:16px}
+.s p{margin:2px 0 0;color:var(--muted);font-size:14px}
+.code{font-family:var(--display);direction:ltr;unicode-bidi:isolate;font-weight:700;color:var(--accent-ink)}
+.s .go{justify-self:start;margin-top:8px;display:inline-block;background:var(--navy);color:#fff;text-decoration:none;font-family:var(--display);font-weight:700;font-size:14px;padding:7px 14px;border-radius:9px}
+.s .lock{display:inline-block;margin-top:6px;font-size:13px;color:var(--muted)}
+.how{margin-top:26px;display:grid;gap:10px}
+.how div{display:flex;gap:12px;align-items:flex-start}
+.how i{flex:none;width:12px;height:12px;margin-top:8px;border-radius:3px;transform:rotate(45deg)}
+.form{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:24px;box-shadow:0 18px 40px -28px rgba(7,0,94,.45);align-self:start;position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px)}
+@media (max-width:820px){.form{position:static;order:-1}}
+label{display:block;font-weight:600;font-size:14px;margin:14px 0 6px}
+label small{color:var(--muted);font-weight:400}
+input,select{width:100%;font:inherit;font-size:16px;color:var(--fg);background:var(--field);border:1.5px solid var(--line);border-radius:10px;padding:11px 12px}
+input:focus,select:focus,button:focus-visible{outline:3px solid var(--turq);outline-offset:1px;border-color:var(--navy)}
+input[dir="ltr"]{text-align:right}
+.err{color:#C0306F;font-size:13px;margin-top:4px}
+button{margin-top:20px;width:100%;font-family:var(--display);font-weight:700;font-size:17px;border:0;border-radius:12px;padding:14px;cursor:pointer;background:var(--yellow);color:#07005E;transition:transform .15s}
+button:hover{transform:translateY(-1px)}
+.note{font-size:13px;color:var(--muted);margin:12px 0 0}
+.done{text-align:center;padding-block:10px}
+.done .sym{width:64px;height:auto}
+.done h2{margin-top:10px}
+.done a{display:inline-block;margin-top:14px;background:#25D366;color:#06301A;font-weight:700;text-decoration:none;padding:12px 18px;border-radius:12px;font-family:var(--display)}
+footer{border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+footer .wrap{padding-block:18px;display:flex;flex-wrap:wrap;gap:8px 20px;justify-content:space-between}
+@media (prefers-reduced-motion:reduce){button{transition:none}}
+
+.cta{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+.btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--display);font-weight:700;font-size:16px;text-decoration:none;padding:12px 20px;border-radius:12px}
+.btn.y{background:var(--yellow);color:#07005E}
+.btn.w{background:#25D366;color:#06301A}
+.btn.o{border:1.5px solid rgba(255,255,255,.5);color:#fff}
+.btn svg{width:20px;height:20px;flex:none}
+.cols{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.sub-sec{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:24px;display:grid;gap:18px}
+.feats{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.feats li{display:flex;gap:12px;align-items:flex-start}
+.feats i{flex:none;width:12px;height:12px;margin-top:9px;border-radius:3px;transform:rotate(45deg)}
+.feats b{display:block;font-family:var(--display);font-weight:700}
+.feats span{color:var(--muted);font-size:15px}
+.contacts{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.num{direction:ltr;font-variant-numeric:tabular-nums;color:var(--muted);font-size:14px}
+main .wrap{display:grid;grid-template-columns:1fr;gap:40px;padding-block:36px 56px}
+.wafab{position:fixed;inset-inline-start:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:5;box-shadow:0 10px 24px -10px rgba(0,0,0,.4)}
+</style>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="brand"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 180" class="sym" aria-hidden="true"><defs><linearGradient id="scolory" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="140" y2="160"><stop offset="0" stop-color="#FFE98C"/><stop offset="1" stop-color="#F2C94C"/></linearGradient><linearGradient id="scolort" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="140" y2="160"><stop offset="0" stop-color="#A6F2E4"/><stop offset="1" stop-color="#4FD1C0"/></linearGradient><linearGradient id="scolorp" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="140" y2="160"><stop offset="0" stop-color="#F7B3DD"/><stop offset="1" stop-color="#D9579F"/></linearGradient></defs><g transform="translate(10.00 10.00) scale(1.0000)"><path d="M21.12 44.54A9.08 9.08 0 0 0 4.20 49.12L4.20 110.88A9.08 9.08 0 0 0 21.12 115.46L40.48 82.27A4.50 4.50 0 0 0 40.48 77.73Z" fill="url(#scolort)"/><path d="M28.42 40.39A8.99 8.99 0 0 1 40.65 28.06L98.03 60.85A8.00 8.00 0 0 1 94.06 75.80L51.66 75.80A4.50 4.50 0 0 1 47.78 73.57Z" fill="url(#scolory)"/><path d="M28.42 119.61A8.99 8.99 0 0 0 40.65 131.94L98.03 99.15A8.00 8.00 0 0 0 94.06 84.20L51.66 84.20A4.50 4.50 0 0 0 47.78 86.43Z" fill="url(#scolorp)"/></g></svg><span>THE ACADEMIC STUDENT</span><b class="aou">AOUKW</b></div>
+    <span class="tag">حصري · الفصل الأول 2026/2027</span>
+    <h1>محاضرات <em>المحاسبة</em> المجانية لطلاب AOUKW</h1>
+    <p class="lead">٩ محاضرات مسجلة حصرية لمقررات المحاسبة، مسوّينها خصيصاً للفصل الأول 2026/2027 بشرح مبسّط ومفصّل. افتح أي محاضرة وشوفها على طول، بدون تسجيل.</p>
+    <div class="cta"><a class="btn y" href="#lectures">شاهد المحاضرات</a><a class="btn o" href="#subscribe">الاشتراك في الكورسات</a></div>
+  </div>
+  <svg class="bigmark" viewBox="0 0 160 180" aria-hidden="true"><g transform="translate(10 10)"><path d="M21.12 44.54A9.08 9.08 0 0 0 4.20 49.12L4.20 110.88A9.08 9.08 0 0 0 21.12 115.46L40.48 82.27A4.50 4.50 0 0 0 40.48 77.73Z" fill="#7DE6D5"/><path d="M28.42 40.39A8.99 8.99 0 0 1 40.65 28.06L98.03 60.85A8.00 8.00 0 0 1 94.06 75.80L51.66 75.80A4.50 4.50 0 0 1 47.78 73.57Z" fill="#F7DC6B"/><path d="M28.42 119.61A8.99 8.99 0 0 0 40.65 131.94L98.03 99.15A8.00 8.00 0 0 0 94.06 84.20L51.66 84.20A4.50 4.50 0 0 0 47.78 86.43Z" fill="#E980C2"/></g></svg>
+</header>
+
+<main>
+  <div class="wrap">
+    <section id="lectures">
+      <h2>المحاضرات المجانية</h2>
+      <p class="sub">محتوى حصري ومحدّث للفصل الأول 2026/2027. اضغط على المقرر وتنفتح المحاضرة في الزوم.</p>
+      <ul class="sessions cols" id="sessions"></ul>
+    </section>
+
+    <section class="sub-sec" id="subscribe">
+      <div>
+        <span class="tag" style="margin-top:0">الاشتراك الكامل</span>
+        <h2 style="margin-top:10px">عجبك الشرح؟ كمّل معانا المقرر كامل</h2>
+        <p class="sub" style="margin:0">من 2017 ونحن مع طلاب الجامعة العربية المفتوحة، بفريق من الدكاترة والمدرسين المتخصصين.</p>
+      </div>
+      <ul class="feats">
+        <li><i style="background:var(--turq)"></i><div><b>شرح مبسّط ومفصّل</b><span>لكل مواد المقرر، خطوة بخطوة من الأساس.</span></div></li>
+        <li><i style="background:var(--yellow)"></i><div><b>قروب خاص للمشتركين</b><span>تسأل فيه أي استفسار ويوصلك الرد.</span></div></li>
+        <li><i style="background:var(--pink)"></i><div><b>ملخصات ونماذج محلولة</b><span>ملخصات ونماذج اختبارات محلولة، حصرية ومحدّثة للفصل الأول 2026/2027.</span></div></li>
+        <li><i style="background:var(--turq)"></i><div><b>مراجعة خاصة للاختبار</b><span>مراجعة نهائية مركزة قبل الاختبار.</span></div></li>
+      </ul>
+      <div>
+        <p style="margin:0 0 10px;font-weight:600">للتسجيل والاشتراك تواصل معانا واتساب مباشرة:</p>
+        <div class="contacts" id="contacts"></div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<a class="btn w wafab" id="fab" href="#subscribe" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2c0 1.3.9 2.5 1 2.700.1.2 1.8 2.800 4.400 3.900 1.600.7 2.300.8 3.100.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.4-.3Z"/></svg>واتساب</a>
+
+<footer><div class="wrap"><span>الطالب الأكاديمي · THE ACADEMIC STUDENT</span><span dir="ltr">@asc_kwt</span></div></footer>
+
+<script>
+/* ===== عدّل هني فقط ===== */
+const CONFIG = {
+  whatsapp: [ // أرقام الواتساب بالصيغة الدولية بدون +
+    {label:"واتساب ١", number:"96596050709"},
+    {label:"واتساب ٢", number:"96596050708"}
+  ],
+  lectures: [ // أضف كل محاضرة سطر
+    {code:"ACT111", title:"محاضرة مسجلة", url:"https://us06web.zoom.us/rec/share/EIpd4wL_F7bl8MEXYgvWOgISbxCD269E7INPfkV1NL5fkW92h-grNBqzGuCfboE2.2z_dBqx5G9fOVH2p"},
+    {code:"ACT112", title:"محاضرة مسجلة", url:"https://us06web.zoom.us/rec/share/3F4SGchT_Y2N1KzIAlRvNwvgg1b1M-YDnGCAYZ4taywr5KHcE7ioz0PUiBVwnKg.C3UgTCkrc2Hs8Qth"},
+    {code:"B293", title:"محاضرة مسجلة", url:"https://us06web.zoom.us/rec/share/oIRpr3VN2fpsD1qlP45QHwSnWOe67EEETQ_Xn_3303_Jn_Vi1vjOf7zCT0-pb5IR.m6STjavIDLh0KDHt"},
+    {code:"B294", title:"محاضرة مسجلة", url:"https://us06web.zoom.us/rec/share/ajoiXd_3Zvf1L3zr-lHB4Ibsjh3dZFG3op-koeVjiQlF7y2LEAf9mLWFsb0arCq9.vKtOYIoEMs1xpZNW"},
+    {code:"B391", title:"محاضرة مسجلة", url:"https://us06web.zoom.us/rec/share/nJtHDwfCQyOkKENEoqjduCBzNIieurTUhb8_0NOBL57kSEffKiYG0q87MiLsH_I.52UychVndvZOCB9T"},
+    {code:"ACC204", title:"محاضرة مسجلة", url:"https://us06web.zoom.us/rec/share/bT_dG3gNnOHx6c3cwMDCz4G2xpQ2Lpuj_qJLSN_5FHXgxGzQIEfcz-PUsGVRthLH.gOK23I8SUx5jIamv"},
+    {code:"B326", title:"محاضرة مسجلة", url:"https://us06web.zoom.us/rec/share/hygwzRJisuwFl8MlUbvNpry3l8OWY2h-dzjCYN9wIp6GBERwTD7XmAWmla3kZTiJ.f1T6uPfys4Mpxk80"},
+    {code:"ACC300", title:"محاضرة مسجلة", url:"https://us06web.zoom.us/rec/share/iWeC5yOXd5jOf1qZcLBCV-wg34ORFcQyjpMmbEpckdGhpNSR9MjmWeduQcUso5-a.V3kVheRVqcbN1Mju?startTime=1790626459000"},
+    {code:"ACC302", title:"محاضرة مسجلة", url:"https://us06web.zoom.us/rec/share/pj3CzCgeTrNyW1mUoiMJStPUSuYsIvb4sBQKk5rXMkTyeVNhnMMq6XE2RqZNukga.H2HmMvlp7l_E3dfO"}
+  ]
+};
+/* ======================== */
+const $ = id => document.getElementById(id);
+const WA = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2c0 1.3.9 2.5 1 2.700.1.2 1.8 2.800 4.400 3.900 1.600.7 2.300.8 3.100.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.4-.3Z"/></svg>`;
+$("sessions").innerHTML = CONFIG.lectures.map(l =>
+  `<li class="s"><div class="date"><div class="d code" style="color:var(--yellow)">${l.code}</div><div class="m">مسجلة</div></div>
+   <div><h3>مقرر <span class="code">${l.code}</span></h3><a class="go" href="${l.url}" target="_blank" rel="noopener">شاهد المحاضرة</a></div></li>`).join("");
+const msg = encodeURIComponent("السلام عليكم، شفت المحاضرات المجانية وأبي أسجل في الكورس. المقرر: ");
+const nums = CONFIG.whatsapp.filter(w => /^\d{8,15}$/.test(w.number));
+$("contacts").innerHTML = nums.length
+  ? nums.map(w => `<a class="btn w" href="https://wa.me/${w.number}?text=${msg}" target="_blank" rel="noopener">${WA}${w.label}</a><span class="num">+${w.number}</span>`).join("")
+  : `<span class="num" style="direction:rtl">أرقام الواتساب تنضاف هني.</span>`;
+if (nums.length) { const f = $("fab"); f.href = `https://wa.me/${nums[0].number}?text=${msg}`; f.target = "_blank"; f.rel = "noopener"; f.hidden = false; }
+</script>
+
+</body></html>
