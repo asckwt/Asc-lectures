@@ -87,6 +87,7 @@ footer .wrap{padding-block:18px;display:flex;flex-wrap:wrap;gap:8px 20px;justify
 .feats b{display:block;font-family:var(--display);font-weight:700}
 .feats span{color:var(--muted);font-size:15px}
 .chatlist{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}.chatlist a{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;text-decoration:none;color:inherit}.chatlist a svg{width:28px;height:28px;flex:none;color:#25D366}.chatlist b{display:block;font-family:var(--display);font-size:15px}.chatlist small{color:var(--muted);font-size:13px}
+.cc-h{font-family:var(--display);font-weight:700;font-size:18px;margin:26px 0 12px}.cclist{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}.cclist a{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;text-decoration:none;color:inherit;font-family:var(--display);font-weight:700;font-size:14px;direction:ltr;justify-content:flex-end}.cclist a svg{width:20px;height:20px;flex:none;color:#25D366}
 .contacts{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 .num{direction:ltr;font-variant-numeric:tabular-nums;color:var(--muted);font-size:14px}
 main .wrap{display:grid;grid-template-columns:1fr;gap:40px;padding-block:36px 56px}
@@ -116,6 +117,8 @@ main .wrap{display:grid;grid-template-columns:1fr;gap:40px;padding-block:36px 56
       <h2>قروبات الطلاب</h2>
       <p class="sub">انضم لقروبات الواتساب حق الجامعة وتخصصك، أخبار واستفسارات ومساعدة من الطلاب.</p>
       <ul class="chatlist" id="chatlist"></ul>
+      <h3 class="cc-h">قروبات المواد</h3>
+      <div id="coursechats"></div>
     </section>
 
     <section class="sub-sec" id="subscribe">
@@ -164,6 +167,77 @@ const CONFIG = {
     {title:"التسويق", note:"Marketing", url:"https://chat.whatsapp.com/HkNUahhfYoc9JDGEjMiJG8"},
     {title:"الاقتصاد", note:"Economics", url:"https://chat.whatsapp.com/EvflfsMeaR9KqnS1OJpb0A"}
   ],
+  courseChats: [ // قروبات المواد: [رمز المادة, كود رابط الواتساب بعد chat.whatsapp.com/]
+    {title:"الخطة الجديدة", items:[
+      ["BUC111", "C4ccOXu5BjyH5RdMvjI0aY"],
+      ["BUC112", "Lqq3wkgkMAh262m7Ky7ASG"],
+      ["MGT111", "GvYAoijLLdI5doUnPX8nZJ"],
+      ["MGT112", "IxEDwFuK0PGH3oFi9OuAML"],
+      ["ACT111", "EqEtgemAvXwJ0vdEm9xyqW"],
+      ["ACT112", "EPXeCk0eSPU85xliQHtSxL"],
+      ["MKT111 / MKT112", "FRmr16i4rc7IncyovPJIKl"],
+      ["ACC204", "E12Vs4ElPa0HO5J7IlhFwH"]
+    ]},
+    {title:"الإدارة العامة", items:[
+      ["BUS101", "KOUB5NKII9i2LHRfoE7R8V"],
+      ["BUS102", "JzkTNkmKKjmKYyKvXQKX9I"],
+      ["BUS110", "IIaoMtF7WjIAVS4PBZEgZh"],
+      ["LB170", "Iu2GngSNcEnFh1atdU3S8f"],
+      ["B207A", "Fwf3rG3OxUYJUqspDtpMZ0"],
+      ["B207B", "Dlnr8jcfbl9GwrED4bG396"],
+      ["BUS310", "JXfjs2OHGVE3z6a9w2626O"]
+    ]},
+    {title:"المحاسبة", items:[
+      ["B124", "DrvLIVTueoZCKjNb8aeW6N"],
+      ["B291", "LLVGpRijlloA2lAWRFg4KK"],
+      ["B292", "KBtyAo8MuPP4jZBBEWxabw"],
+      ["B392", "GebdpXHaTg8EVf71ye7Y7I"],
+      ["B326", "F9ypnEa5iyrLJlk2DBy2wC"],
+      ["ACC300", "BT02QjwynaT7pzLTDLN70F"],
+      ["ACC302", "I6GnS9Y8xbw6mxO7ElMODU"],
+      ["B391", "JsaduhinC32Kxi14pCJ1AG"],
+      ["BB293", "FTj2hdK1J8X8gxOlptby4s"],
+      ["B294", "J6N4XNEMdvLIM3bMvlIkx5"]
+    ]},
+    {title:"الإدارة", items:[
+      ["B123", "IhdU9dKlDAC4uzEe92M5dK"],
+      ["B205A", "LseApR2GV2k3o60UP4SNny"],
+      ["B205B", "JlB7mdLqiXVJxfTTUlWFow"],
+      ["B325", "EZB9pBrUyXI6SYEk5bxFL3"],
+      ["B628", "Hx0deLNHwDbBPuKll78Dle"],
+      ["B629", "BHd9ox17Pe8KUO9uJWlsIi"]
+    ]},
+    {title:"النظم و MIS", items:[
+      ["SYS111", "EA04YqJ0YqU5DtKCZsIH3f"],
+      ["MIS111", "BMspNVrD4hFAZLDVpqsfK4"],
+      ["SYS210", "BdrIQbreVDP7BpotZEvtk9"],
+      ["SYS280", "F4dhRUBkwnXCqpSU7BvvFT"],
+      ["SYS380", "FU93HLXAEaHKFktL3xs1YR"],
+      ["B327", "FCB6xITwDaFB3SQH5Yt4Xw"]
+    ]},
+    {title:"التسويق", items:[
+      ["B122", "Ku9Q0lhvxEV5ifOf0EwXvY"],
+      ["B205A", "LseApR2GV2k3o60UP4SNny"],
+      ["B205B", "JlB7mdLqiXVJxfTTUlWFow"],
+      ["B327", "FCB6xITwDaFB3SQH5Yt4Xw"],
+      ["B324", "FoHBegYuKLM5ZvzyhbnuHX"],
+      ["MKT331", "KZep32UUXy6GwBYpPEGxvz"],
+      ["MKT332", "HKplPlcxdF8JdyjehARVBG"]
+    ]},
+    {title:"الاقتصاد", items:[
+      ["ECO101", "EAonYEJswdR6oKwW2pkwc4"],
+      ["ECO102", "ImxyfXjnDOZ7neVpzcuVbt"],
+      ["DD209A", "GvqiogwpFm53HY07Bgl1AW"],
+      ["DD209B", "HZSJ7hGSgc1JKeXMHbL7SQ"],
+      ["DD309A", "LgV85JRDn86AOiAtyG8bug"],
+      ["DD309B", "CEA2KbAgxro6RIcNH3UZz9"]
+    ]},
+    {title:"اختيارية", items:[
+      ["BUS115", "FeM6bb3jdrKI8CbHMgnX31"],
+      ["ECO101", "EAonYEJswdR6oKwW2pkwc4"],
+      ["ECO102", "ImxyfXjnDOZ7neVpzcuVbt"]
+    ]}
+  ],
   groups: [ // الأقسام بالترتيب، والقسم اللي ما فيه محاضرات ما يطلع
     {id:"acc",  title:"المحاسبة", color:"var(--yellow)"},
     {id:"mgt",  title:"الإدارة", color:"var(--turq)"},
@@ -197,6 +271,10 @@ const CONFIG = {
 /* ======================== */
 const $ = id => document.getElementById(id);
 const WA = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2c0 1.3.9 2.5 1 2.700.1.2 1.8 2.800 4.400 3.900 1.600.7 2.300.8 3.100.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.4-.3Z"/></svg>`;
+const WAG = "https://chat.whatsapp.com/";
+const courseChat = {};
+CONFIG.courseChats.forEach(c => c.items.forEach(([code, k]) => code.split(" / ").forEach(x => courseChat[x] ??= WAG + k)));
+CONFIG.lectures.forEach(l => { l.chat ??= courseChat[l.code]; });
 const card = l =>
   `<li class="s"><div class="date"><div class="d code" style="color:var(--yellow)">${l.code}</div><div class="m">مسجلة</div></div>
    <div><h3>مقرر <span class="code">${l.code}</span></h3><a class="go" href="${l.url}" target="_blank" rel="noopener">شاهد المحاضرة</a>${l.chat ? ` <a class="go chat" href="${l.chat}" target="_blank" rel="noopener">قروب المادة</a>` : ""}${l.pass ? `<div class="lock">الباسكود: <b dir="ltr" style="user-select:all">${l.pass}</b></div>` : ""}</div></li>`;
@@ -204,14 +282,22 @@ const groups = CONFIG.groups.map(g => ({...g, ls: CONFIG.lectures.filter(l => l.
 $("groups").innerHTML = `<div class="tabs" role="tablist">${groups.map((g, i) =>
   `<button type="button" role="tab" class="tab" data-g="${g.id}" aria-selected="${i === 0}"><i style="background:${g.color}"></i>${g.title} <small>${g.ls.length}</small></button>`).join("")}</div>` +
   groups.map((g, i) => `<div class="grp" role="tabpanel" data-g="${g.id}"${i ? " hidden" : ""}><ul class="sessions cols">${g.ls.map(card).join("")}</ul></div>`).join("");
-document.querySelectorAll(".tab").forEach(t => t.onclick = () => {
-  document.querySelectorAll(".tab").forEach(x => x.setAttribute("aria-selected", x === t));
+document.querySelectorAll("#groups .tab").forEach(t => t.onclick = () => {
+  document.querySelectorAll("#groups .tab").forEach(x => x.setAttribute("aria-selected", x === t));
   document.querySelectorAll(".grp").forEach(p => p.hidden = p.dataset.g !== t.dataset.g);
 });
 const msg = encodeURIComponent("السلام عليكم، شفت المحاضرات المجانية وأبي أسجل في الكورس. المقرر: ");
 const nums = CONFIG.whatsapp.filter(w => /^\d{8,15}$/.test(w.number));
 $("chatlist").innerHTML = CONFIG.chats.map(c =>
   `<li><a href="${c.url}" target="_blank" rel="noopener">${WA}<span><b>${c.title}</b>${c.note ? `<small>${c.note}</small>` : ""}</span></a></li>`).join("");
+$("coursechats").innerHTML = `<div class="tabs" role="tablist">${CONFIG.courseChats.map((c, i) =>
+  `<button type="button" role="tab" class="tab cc" data-c="${i}" aria-selected="${i === 0}">${c.title}</button>`).join("")}</div>` +
+  CONFIG.courseChats.map((c, i) => `<ul class="cclist" data-c="${i}"${i ? " hidden" : ""}>${c.items.map(([code, k]) =>
+    `<li><a href="${WAG + k}" target="_blank" rel="noopener">${code}${WA}</a></li>`).join("")}</ul>`).join("");
+document.querySelectorAll(".tab.cc").forEach(t => t.onclick = () => {
+  document.querySelectorAll(".tab.cc").forEach(x => x.setAttribute("aria-selected", x === t));
+  document.querySelectorAll(".cclist").forEach(u => u.hidden = u.dataset.c !== t.dataset.c);
+});
 $("contacts").innerHTML = nums.length
   ? nums.map(w => `<a class="btn w" href="https://wa.me/${w.number}?text=${msg}" target="_blank" rel="noopener">${WA}${w.label}</a><span class="num">+${w.number}</span>`).join("")
   : `<span class="num" style="direction:rtl">أرقام الواتساب تنضاف هني.</span>`;
