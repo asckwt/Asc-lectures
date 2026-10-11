@@ -156,8 +156,9 @@ main .wrap{display:grid;grid-template-columns:1fr;gap:40px;padding-block:36px 56
     <section id="plans" class="view" hidden>
       <a class="back" href="#home">→ الرئيسية</a>
       <h2>الخطط الدراسية</h2>
-      <p class="sub">خطة كل تخصص في كلية الدراسات التجارية، مع المتطلبات السابقة لكل مادة.</p>
-      <div class="soon">قريباً</div>
+      <p class="sub">خريطة مواد كل تخصص بالتسلسل، مع المتطلبات السابقة لكل مادة.</p>
+      <link rel="stylesheet" href="plans.css">
+      <div id="plantree"></div>
     </section>
 
     <section class="sub-sec" id="subscribe">
@@ -352,5 +353,6 @@ $("contacts").innerHTML = nums.length
   : `<span class="num" style="direction:rtl">أرقام الواتساب تنضاف هني.</span>`;
 if (nums.length) { const f = $("fab"); f.href = `https://wa.me/${nums[0].number}?text=${msg}`; f.target = "_blank"; f.rel = "noopener"; f.hidden = false; }
 </script>
+<script src="plans.js"></script>
 
 </body></html>
