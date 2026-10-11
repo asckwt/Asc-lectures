@@ -1,5 +1,22 @@
 <!doctype html>
-<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>الطالب الأكاديمي · AOUKW</title><style>body{margin:0}[hidden]{display:none!important}</style></head><body>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>الطالب الأكاديمي · AOUKW</title><style>body{margin:0}[hidden]{display:none!important}.cal-next{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center;background:var(--hero-bg);color:#fff;border-radius:18px;padding:18px 20px;margin-bottom:22px}
+.cal-next .n{font-family:var(--display);font-weight:800;font-size:40px;line-height:1;color:var(--yellow);text-align:center;font-variant-numeric:tabular-nums}
+.cal-next .n small{display:block;font-size:13px;font-weight:700;color:#D9D7F3;margin-top:6px}
+.cal-next b{display:block;font-family:var(--display);font-weight:700;font-size:18px}
+.cal-next span{color:#D9D7F3;font-size:14px}
+.cal-h{font-family:var(--display);font-weight:700;font-size:18px;margin:26px 0 12px}
+.cal{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.cal li{display:grid;grid-template-columns:76px 1fr;gap:14px;align-items:center;background:var(--surface);border:1px solid var(--line);border-inline-start:5px solid var(--c);border-radius:14px;padding:12px 14px}
+.cal li.past{opacity:.55}
+.cal li.now{box-shadow:0 0 0 2px var(--c)}
+.cal h3{margin:0;font-family:var(--display);font-weight:700;font-size:16px}
+.cal p{margin:2px 0 0;color:var(--muted);font-size:14px}
+.cal .st{display:inline-block;margin-top:6px;font-size:12px;font-weight:700;font-family:var(--display);padding:2px 10px;border-radius:999px;background:var(--line);color:var(--fg)}
+.cal .now .st{background:var(--yellow);color:#07005E}
+.cal-src{margin-top:22px;font-size:13px;color:var(--muted)}
+.cal-src a{color:var(--accent-ink)}
+.cal-ics{margin-top:18px;border:1.5px solid var(--line);color:var(--fg)}
+</style></head><body>
 <title>الطالب الأكاديمي · AOUKW</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
@@ -124,6 +141,7 @@ main .wrap{display:grid;grid-template-columns:1fr;gap:40px;padding-block:36px 56
         <a class="tile" href="#lectures/acc" style="--c:var(--yellow)"><span class="ic">ACC</span><b>المحاسبة</b><small>محاضرات مجانية مسجلة</small></a>
         <a class="tile" href="#lectures/mgt" style="--c:var(--turq)"><span class="ic">MGT</span><b>الإدارة</b><small>محاضرات مجانية مسجلة</small></a>
         <a class="tile" href="#lectures/prep" style="--c:var(--pink)"><span class="ic">EL</span><b>التمهيدي</b><small>محاضرات مجانية مسجلة</small></a>
+        <a class="tile" href="#calendar" style="--c:var(--yellow)"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/><path d="M8 14h2M14 14h2M8 17h2"/></svg></span><b>تقويم الجامعة</b><small>مواعيد الميد والفاينل والسحب والإضافة</small></a>
         <a class="tile" href="#exams" style="--c:var(--yellow)"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6l4 4v14H5V3h4z"/><path d="M9 12h6M9 16h4M9 8h2"/></svg></span><b>نماذج الاختبارات</b><small>نماذج سابقة مرتبة حسب الفصل</small></a>
         <a class="tile" href="#plans" style="--c:var(--turq)"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v14H4z"/><path d="M4 9h16M9 9v10"/></svg></span><b>الخطط الدراسية</b><small>مواد كل تخصص بالترتيب</small></a>
         <a class="tile" href="#chats" style="--c:var(--pink)"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18l1.3-3.7A8 8 0 1 1 8 19z"/><path d="M9 11h.01M12 11h.01M15 11h.01"/></svg></span><b>القروبات</b><small>قروبات الجامعة والتخصصات والمواد</small></a>
@@ -158,6 +176,16 @@ main .wrap{display:grid;grid-template-columns:1fr;gap:40px;padding-block:36px 56
       <h2>الخطط الدراسية</h2>
       <p class="sub">خطة كل تخصص في كلية الدراسات التجارية، مع المتطلبات السابقة لكل مادة.</p>
       <div class="soon">قريباً</div>
+    </section>
+
+    <section id="calendar" class="view" hidden>
+      <a class="back" href="#home">→ الرئيسية</a>
+      <h2>تقويم الجامعة</h2>
+      <p class="sub">مواعيد الفصل الأول 2026/2027 في الجامعة العربية المفتوحة، فرع الكويت.</p>
+      <div id="calnext"></div>
+      <div id="callist"></div>
+      <a class="btn cal-ics" id="calics" href="#" download="AOUKW-2026-1.ics">أضف المواعيد لتقويم جوالك</a>
+      <p class="cal-src">المصدر: <a href="https://www.aou.edu.kw/students/Pages/academic-calendar.aspx" target="_blank" rel="noopener">التقويم الأكاديمي الرسمي للجامعة</a> (ملف Academic Calendar 2026-1-UPD1). الإجازات الرسمية ما تنذكر بالتقويم، تعلنها الجامعة وقتها. لو صار تعارض، المعتمد هو تقويم الجامعة.</p>
     </section>
 
     <section class="sub-sec" id="subscribe">
@@ -277,6 +305,27 @@ const CONFIG = {
       ["ECO102", "ImxyfXjnDOZ7neVpzcuVbt"]
     ]}
   ],
+  calendar: [ // تقويم الفصل: from/to بصيغة YYYY-MM-DD، و to اختياري
+    {title:"التسجيل", items:[
+      {from:"2026-09-07", to:"2026-09-08", name:"تسجيل الطلبة المستمرين", note:"كل الفئات"},
+      {from:"2026-09-09", to:"2026-09-16", name:"تسجيل طلبة الإنذارات الأكاديمية", note:"حسب التخصص"},
+      {from:"2026-09-17", to:"2026-09-20", name:"آخر موعد للتسجيل", note:"بعده ما يقدر الطالب يسجل"}
+    ]},
+    {title:"بداية الفصل", items:[
+      {from:"2026-09-26", to:"2026-10-01", name:"بداية الدراسة والسحب والإضافة", note:"تقدر تضيف أو تحذف مقررات", key:true},
+      {from:"2026-09-26", to:"2026-10-08", name:"طلب تأجيل الدراسة"},
+      {to:"2026-10-08", name:"طلبات معادلة المقررات", note:"للطلبة الجدد فقط، من بعد القبول"}
+    ]},
+    {title:"سحب المقررات", items:[
+      {from:"2026-10-03", to:"2026-10-08", name:"سحب مقرر بخصم 30%", note:"من رسوم المقرر"},
+      {from:"2026-10-10", to:"2026-10-15", name:"سحب مقرر بخصم 50%", note:"من رسوم المقرر"},
+      {from:"2026-10-17", name:"سحب مقرر بخصم 100%", note:"من هالتاريخ ما ترجع لك رسوم المقرر"}
+    ]},
+    {title:"الاختبارات", items:[
+      {from:"2026-11-14", to:"2026-11-19", name:"اختبارات منتصف الفصل (الميد)", note:"MTA", key:true},
+      {from:"2027-01-04", to:"2027-01-20", name:"الاختبارات النهائية (الفاينل)", note:"Final", key:true}
+    ]}
+  ],
   groups: [ // الأقسام بالترتيب، والقسم اللي ما فيه محاضرات ما يطلع
     {id:"acc",  title:"المحاسبة", color:"var(--yellow)"},
     {id:"mgt",  title:"الإدارة", color:"var(--turq)"},
@@ -325,6 +374,41 @@ document.querySelectorAll("#groups .tab").forEach(t => t.onclick = () => {
   document.querySelectorAll("#groups .tab").forEach(x => x.setAttribute("aria-selected", x === t));
   document.querySelectorAll(".grp").forEach(p => p.hidden = p.dataset.g !== t.dataset.g);
 });
+/* تقويم الجامعة */
+const MON = ["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
+const DAY = ["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
+const kwToday = new Intl.DateTimeFormat("en-CA", {timeZone:"Asia/Kuwait"}).format(new Date());
+const toD = s => new Date(s + "T00:00:00Z");
+const days = (a, b) => Math.round((toD(b) - toD(a)) / 864e5);
+const fmt = s => { const d = toD(s); return `${DAY[d.getUTCDay()]} ${d.getUTCDate()} ${MON[d.getUTCMonth()]} ${d.getUTCFullYear()}`; };
+const calColors = ["var(--turq)", "var(--yellow)", "var(--pink)", "var(--yellow)"];
+const calItems = CONFIG.calendar.flatMap((g, gi) => g.items.map(e => ({...e, c: calColors[gi % 4], g: g.title})));
+function calState(e) {
+  const start = e.from || e.to, end = e.to || e.from;
+  if (e.from && !e.to) return kwToday >= e.from ? ["now", "سارية الحين"] : ["", `باقي ${days(kwToday, e.from)} يوم`];
+  if (end < kwToday) return ["past", "انتهى"];
+  if (start <= kwToday) return ["now", end === kwToday ? "آخر يوم اليوم" : `الحين · ينتهي بعد ${days(kwToday, end)} يوم`];
+  return ["", days(kwToday, start) === 1 ? "باجر" : `باقي ${days(kwToday, start)} يوم`];
+}
+const calWhen = e => e.from && e.to ? `من ${fmt(e.from)} إلى ${fmt(e.to)}` : e.from ? `من ${fmt(e.from)}` : `آخر موعد ${fmt(e.to)}`;
+const calChip = e => { const d = toD(e.from || e.to); return `<div class="date"><div class="d">${d.getUTCDate()}</div><div class="m">${MON[d.getUTCMonth()]}</div></div>`; };
+$("callist").innerHTML = CONFIG.calendar.map((g, gi) =>
+  `<h3 class="cal-h">${g.title}</h3><ul class="cal">${calItems.filter(e => e.g === g.title).map(e => {
+    const [cls, label] = calState(e);
+    return `<li class="${cls}" style="--c:${e.c}">${calChip(e)}<div><h3>${e.name}</h3><p>${calWhen(e)}${e.note ? ` · ${e.note}` : ""}</p><span class="st">${label}</span></div></li>`;
+  }).join("")}</ul>`).join("");
+const next = calItems.filter(e => e.key && (e.to || e.from) >= kwToday).sort((a, b) => (a.from || a.to).localeCompare(b.from || b.to))[0];
+if (next) {
+  const n = days(kwToday, next.from), on = n <= 0;
+  $("calnext").innerHTML = `<div class="cal-next"><div class="n">${on ? "الحين" : n}<small>${on ? "" : "يوم"}</small></div><div><span>${on ? "صاير الحين" : "باقي على"}</span><b>${next.name}</b><span>${calWhen(next)}</span></div></div>`;
+}
+const icsDate = s => s.replace(/-/g, "");
+const icsNext = s => { const d = toD(s); d.setUTCDate(d.getUTCDate() + 1); return d.toISOString().slice(0, 10).replace(/-/g, ""); };
+const ics = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//asckwt.com//AOUKW calendar//AR", "CALSCALE:GREGORIAN",
+  ...calItems.map((e, i) => { const a = e.from || e.to, b = e.to || e.from;
+    return ["BEGIN:VEVENT", `UID:aoukw-2026-1-${i}@asckwt.com`, `DTSTAMP:${icsDate(kwToday)}T000000Z`, `DTSTART;VALUE=DATE:${icsDate(a)}`, `DTEND;VALUE=DATE:${icsNext(b)}`, `SUMMARY:${e.name}`, "END:VEVENT"].join("\r\n"); }),
+  "END:VCALENDAR"].join("\r\n");
+$("calics").href = "data:text/calendar;charset=utf-8," + encodeURIComponent(ics);
 const views = [...document.querySelectorAll(".view")];
 function route() {
   const [v, sub] = location.hash.slice(1).split("/");
