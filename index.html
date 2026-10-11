@@ -39,7 +39,7 @@ main .wrap{display:grid;grid-template-columns:1.05fr .95fr;gap:28px;padding-bloc
 main .wrap>*{min-width:0}
 h2{font-family:var(--display);font-weight:700;font-size:22px;margin:0 0 4px}
 .sub{color:var(--muted);margin:0 0 18px;font-size:15px}
-.grp{margin-top:22px}.grp h3.gt{font-family:var(--display);font-weight:700;font-size:18px;margin:0 0 12px;display:flex;align-items:center;gap:8px}.grp h3.gt i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.tabs{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px;margin:4px 0 18px}.tabs .tab{margin:0;width:auto;transform:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;font:inherit;font-family:var(--display);font-weight:700;font-size:14px;padding:10px 8px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:inherit;cursor:pointer}.tab i{width:10px;height:10px;border-radius:3px;display:inline-block}.tab small{font-size:12px;opacity:.7}.tabs .tab[aria-selected="true"]{background:var(--navy);color:#fff;border-color:var(--navy)}
 .sessions{list-style:none;margin:0;padding:0;display:grid;gap:12px}
 .s{display:grid;grid-template-columns:76px 1fr;gap:14px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px}
 .date{background:var(--navy);color:#fff;border-radius:10px;text-align:center;padding:8px 4px;font-family:var(--display);line-height:1.25}
@@ -145,9 +145,9 @@ const CONFIG = {
     {label:"واتساب ٢", number:"96596050708"}
   ],
   groups: [ // الأقسام بالترتيب، والقسم اللي ما فيه محاضرات ما يطلع
-    {id:"acc",  title:"مواد المحاسبة", color:"var(--yellow)"},
-    {id:"mgt",  title:"مواد الإدارة", color:"var(--turq)"},
-    {id:"prep", title:"المواد التمهيدية", color:"var(--pink)"}
+    {id:"acc",  title:"المحاسبة", color:"var(--yellow)"},
+    {id:"mgt",  title:"الإدارة", color:"var(--turq)"},
+    {id:"prep", title:"التمهيدي", color:"var(--pink)"}
   ],
   lectures: [ // أضف كل محاضرة سطر، و group = acc أو mgt أو prep
     // اختياري: pass = باسكود الزوم، chat = رابط قروب الواتساب للمادة
@@ -180,10 +180,14 @@ const WA = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor
 const card = l =>
   `<li class="s"><div class="date"><div class="d code" style="color:var(--yellow)">${l.code}</div><div class="m">مسجلة</div></div>
    <div><h3>مقرر <span class="code">${l.code}</span></h3><a class="go" href="${l.url}" target="_blank" rel="noopener">شاهد المحاضرة</a>${l.chat ? ` <a class="go chat" href="${l.chat}" target="_blank" rel="noopener">قروب المادة</a>` : ""}${l.pass ? `<div class="lock">الباسكود: <b dir="ltr" style="user-select:all">${l.pass}</b></div>` : ""}</div></li>`;
-$("groups").innerHTML = CONFIG.groups.map(g => {
-  const ls = CONFIG.lectures.filter(l => l.group === g.id);
-  return ls.length ? `<div class="grp"><h3 class="gt"><i style="background:${g.color}"></i>${g.title}</h3><ul class="sessions cols">${ls.map(card).join("")}</ul></div>` : "";
-}).join("");
+const groups = CONFIG.groups.map(g => ({...g, ls: CONFIG.lectures.filter(l => l.group === g.id)})).filter(g => g.ls.length);
+$("groups").innerHTML = `<div class="tabs" role="tablist">${groups.map((g, i) =>
+  `<button type="button" role="tab" class="tab" data-g="${g.id}" aria-selected="${i === 0}"><i style="background:${g.color}"></i>${g.title} <small>${g.ls.length}</small></button>`).join("")}</div>` +
+  groups.map((g, i) => `<div class="grp" role="tabpanel" data-g="${g.id}"${i ? " hidden" : ""}><ul class="sessions cols">${g.ls.map(card).join("")}</ul></div>`).join("");
+document.querySelectorAll(".tab").forEach(t => t.onclick = () => {
+  document.querySelectorAll(".tab").forEach(x => x.setAttribute("aria-selected", x === t));
+  document.querySelectorAll(".grp").forEach(p => p.hidden = p.dataset.g !== t.dataset.g);
+});
 const msg = encodeURIComponent("السلام عليكم، شفت المحاضرات المجانية وأبي أسجل في الكورس. المقرر: ");
 const nums = CONFIG.whatsapp.filter(w => /^\d{8,15}$/.test(w.number));
 $("contacts").innerHTML = nums.length
