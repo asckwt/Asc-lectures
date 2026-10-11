@@ -49,6 +49,7 @@ h2{font-family:var(--display);font-weight:700;font-size:22px;margin:0 0 4px}
 .s p{margin:2px 0 0;color:var(--muted);font-size:14px}
 .code{font-family:var(--display);direction:ltr;unicode-bidi:isolate;font-weight:700;color:var(--accent-ink)}
 .s .go{justify-self:start;margin-top:8px;display:inline-block;background:var(--navy);color:#fff;text-decoration:none;font-family:var(--display);font-weight:700;font-size:14px;padding:7px 14px;border-radius:9px}
+.s .go.chat{background:#25D366;margin-inline-start:6px}
 .s .lock{display:inline-block;margin-top:6px;font-size:13px;color:var(--muted)}
 .how{margin-top:26px;display:grid;gap:10px}
 .how div{display:flex;gap:12px;align-items:flex-start}
@@ -149,6 +150,7 @@ const CONFIG = {
     {id:"prep", title:"المواد التمهيدية", color:"var(--pink)"}
   ],
   lectures: [ // أضف كل محاضرة سطر، و group = acc أو mgt أو prep
+    // اختياري: pass = باسكود الزوم، chat = رابط قروب الواتساب للمادة
     {group:"acc", code:"ACT111", title:"محاضرة مسجلة", url:"https://us06web.zoom.us/rec/share/EIpd4wL_F7bl8MEXYgvWOgISbxCD269E7INPfkV1NL5fkW92h-grNBqzGuCfboE2.2z_dBqx5G9fOVH2p"},
     {group:"acc", code:"ACT112", title:"محاضرة مسجلة", url:"https://us06web.zoom.us/rec/share/3F4SGchT_Y2N1KzIAlRvNwvgg1b1M-YDnGCAYZ4taywr5KHcE7ioz0PUiBVwnKg.C3UgTCkrc2Hs8Qth"},
     {group:"acc", code:"B293", title:"محاضرة مسجلة", url:"https://us06web.zoom.us/rec/share/oIRpr3VN2fpsD1qlP45QHwSnWOe67EEETQ_Xn_3303_Jn_Vi1vjOf7zCT0-pb5IR.m6STjavIDLh0KDHt"},
@@ -164,8 +166,12 @@ const CONFIG = {
     {group:"mgt", code:"BUC111", title:"المحاضرة الأولى", url:"https://us06web.zoom.us/rec/share/U74Ep_F9zqAiQFkNE3VjV4ipbMEU6AfEvWLTm3f6H34itgpqPsZGdL9nrRYZD2Rj.ZzXQk6s5JZ5Dwk72"},
     {group:"mgt", code:"BUC112", title:"المحاضرة الأولى", url:"https://us06web.zoom.us/rec/share/gNqIZZ71lWEJl-svN1GvdDq30dzByKpjk317M7zA-rdr3Ya6oH36gODG6kmH8REi.0IwxRoVy-p9Y2M8y"},
     {group:"mgt", code:"MKT111", title:"المحاضرة الأولى", url:"https://us06web.zoom.us/rec/share/41lnlwwM8U3vDy1nHx4U_BKwRxR91r_GO4qqo4tGSUMKXQE_lDLK6a6M9TfXdtje.00NV7jQU89MwAHOA"},
-    {group:"prep", code:"EL096", title:"المحاضرة الأولى", url:"https://us06web.zoom.us/rec/share/OJA7YBJGMJRBagn_pZR_hyFuZc-PqFIvYML6FMzTbJWV2aPrZTuwKM1F3yJS8-E4.htZkh5M-TiyKeuCz"},
-    {group:"prep", code:"EL112", title:"المحاضرة الأولى", url:"https://us06web.zoom.us/rec/share/Mp0SRZPiseQMgOOkPWBmtgKICzCEdY_afLgemL3AjOjQHkygKt6k62V-7X2svrIV.Hxo0I1Kwbeh57A6t"}
+    {group:"prep", code:"EL096", title:"المحاضرة الأولى", url:"https://us06web.zoom.us/rec/share/ag0XOBCh8jEa-QYxWHbvQrTEdRC8rj6pMlkZfbTxJ8A_st1Fr7SWWJy4AKibffxo.ujWKH0Q9D5kEnwI1", chat:"https://chat.whatsapp.com/ItzlWzSW8VM8flfV8m9ngq"},
+    {group:"prep", code:"EL097", title:"المحاضرة الأولى", url:"https://us06web.zoom.us/rec/share/5LM3zYuZbqlN08yJWw_xKfHHfyUphMekSJMbjeJj0Ogj8f2c-K_1SJYQnbTKLB5N.BiO7vxCLJx9VbysP", pass:"zS01n.E+"},
+    {group:"prep", code:"EL098", title:"المحاضرة الأولى", url:"https://us06web.zoom.us/rec/share/OFD0fW8gZGEFPAYe4GPhjKkKLuxm0-iGbkaIHg4aldiTJ8IvyQRIKnRc5EdrO62M.hzte1mDDQ0DHiZkU", pass:"G7=W@+z4"},
+    {group:"prep", code:"EL099", title:"المحاضرة الأولى", url:"https://us06web.zoom.us/rec/share/X5DlC8Ge6rZ8eSnPzDQMt0IF5PbXPK37-PrBw0711GHV9yoa2D3QCvk8kN-TX1nv.kgSFO9AwaNuik2Tn"},
+    {group:"prep", code:"EL111", title:"المحاضرة الأولى", url:"https://us06web.zoom.us/rec/share/HmDNpGXxuBXGARedZFP17OAXQg_2xdfUAhrMZl1adD6-y__9QXkGosO7ynV_i5s9.IUfi5sF9S4fTy9u4"},
+    {group:"prep", code:"EL112", title:"المحاضرة الأولى", url:"https://us06web.zoom.us/rec/share/ujJUigrN0a-gl_4Kt53n5UZv0JL75Xu9S3af93VsHAokx4ECMcg418idL1gldYlQ.ltAqFFLxr6d8a_yH"}
   ]
 };
 /* ======================== */
@@ -173,7 +179,7 @@ const $ = id => document.getElementById(id);
 const WA = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2c0 1.3.9 2.5 1 2.700.1.2 1.8 2.800 4.400 3.900 1.600.7 2.300.8 3.100.6.500-.1 1.500-.6 1.700-1.200.2-.6.2-1.100.1-1.200l-.4-.3Z"/></svg>`;
 const card = l =>
   `<li class="s"><div class="date"><div class="d code" style="color:var(--yellow)">${l.code}</div><div class="m">مسجلة</div></div>
-   <div><h3>مقرر <span class="code">${l.code}</span></h3><a class="go" href="${l.url}" target="_blank" rel="noopener">شاهد المحاضرة</a></div></li>`;
+   <div><h3>مقرر <span class="code">${l.code}</span></h3><a class="go" href="${l.url}" target="_blank" rel="noopener">شاهد المحاضرة</a>${l.chat ? ` <a class="go chat" href="${l.chat}" target="_blank" rel="noopener">قروب المادة</a>` : ""}${l.pass ? `<div class="lock">الباسكود: <b dir="ltr" style="user-select:all">${l.pass}</b></div>` : ""}</div></li>`;
 $("groups").innerHTML = CONFIG.groups.map(g => {
   const ls = CONFIG.lectures.filter(l => l.group === g.id);
   return ls.length ? `<div class="grp"><h3 class="gt"><i style="background:${g.color}"></i>${g.title}</h3><ul class="sessions cols">${ls.map(card).join("")}</ul></div>` : "";
