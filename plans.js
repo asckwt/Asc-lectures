@@ -289,7 +289,7 @@ const codeTag = c => `<span class="code">${esc(c)}</span>`;
 const preNice = p => p.split("+").map(g => g.split("|").map(x => x === "EL099" ? "التمهيدي" : codeTag(x)).join(" أو ")).join(" + ");
 const YEAR = ["الأولى","الثانية","الثالثة","الرابعة"];
 const kindOf = (plan, c) => c === "UE" || c === "FE" ? "e" : plan.free.includes(c) ? "u" : (plan.map.find(r => r[0] === c) || [, , "e"])[2];
-let cur = null, view = "sem";
+let cur = null, view = "img";
 
 // بطاقة مادة وحدة (تُستخدم في كل العروض)
 function courseCard(plan, c, foot) {
@@ -405,7 +405,7 @@ function render(id) {
   document.querySelectorAll("#plantree .ptab").forEach(t => t.setAttribute("aria-selected", t.dataset.p === plan.id));
   const chip = ([c, pre, star]) => `<li><span class="pchip"><span>${codeTag(c)}${star ? "<sup>*</sup>" : ""}</span><small>${esc(C[c][1])}</small>${pre ? `<small class="pre">يحتاج: ${preNice(pre)}</small>` : ""}</span></li>`;
   const file = `الخطة-الدراسية-${esc(plan.title.replace(/ /g, "-"))}`;
-  const V = [["sem", "فصل بفصل"], ["chain", "تسلسل المواد"]];
+  const V = [["img", "الصورة"], ["sem", "فصل بفصل"], ["chain", "التسلسل"]];
   $p("pbody").innerHTML = `
     <div class="phead"><div><b>${esc(plan.title)}</b><span dir="ltr">${esc(plan.en)}</span></div>
       <div class="pstat"><b>${plan.hrs}</b><small>ساعة معتمدة</small></div></div>
@@ -414,6 +414,10 @@ function render(id) {
       <a class="btn o" href="plans/${plan.id}.pdf" download="${file}.pdf">ملف PDF</a></div>
     <div class="pview" role="tablist">${V.map(([v, t]) => `<button type="button" role="tab" data-v="${v}" aria-selected="${view === v}">${t}</button>`).join("")}</div>
     <a class="pmine" href="#myplan/${plan.id}"><b>سوّ خطتك بنفسك</b><span>أشّر على اللي خلصته، ونطلع لك باقي خطتك فصل بفصل ←</span></a>
+    <div id="vimg"${view === "img" ? "" : " hidden"}>
+      <p class="phint">هذي خطة التخصص كاملة في صورة وحدة. احفظها عندك من زر «صورة للجوال» فوق، أو اضغط على الصورة مطولاً واختر حفظ.</p>
+      <a class="pimg" href="plans/${plan.id}.png" target="_blank" rel="noopener"><img src="plans/${plan.id}.png" alt="الخطة الدراسية لتخصص ${esc(plan.title)}: شجرة المواد ومتطلباتها" loading="lazy" decoding="async"></a>
+    </div>
     <div id="vsem"${view === "sem" ? "" : " hidden"}>
       <p class="phint">طريقك للتخرج فصل بفصل: سجّل مواد كل فصل بالترتيب، وتحت كل مادة مكتوب وش تحتاج قبلها.</p>
       <ol class="psem">${semHtml(plan)}</ol>
@@ -430,7 +434,7 @@ function render(id) {
   $p("pbody").querySelectorAll(".pview button").forEach(b => b.onclick = () => {
     view = b.dataset.v;
     $p("pbody").querySelectorAll(".pview button").forEach(x => x.setAttribute("aria-selected", x === b));
-    ["sem", "chain"].forEach(v => $p("v" + v).hidden = v !== view);
+    V.forEach(([v]) => $p("v" + v).hidden = v !== view);
   });
 }
 
