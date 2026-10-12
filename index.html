@@ -101,6 +101,27 @@ footer .wrap{padding-block:18px;display:flex;flex-wrap:wrap;gap:8px 20px;justify
 .contacts{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 .num{direction:ltr;font-variant-numeric:tabular-nums;color:var(--muted);font-size:14px}
 main .wrap{display:grid;grid-template-columns:1fr;gap:40px;padding-block:36px 56px}
+.revs{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.rev{position:relative;display:flex;flex-direction:column;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:20px;overflow:hidden}
+.rev::before{content:"”";position:absolute;inset-inline-end:14px;top:-18px;font-family:var(--display);font-size:96px;line-height:1;color:var(--c,var(--turq));opacity:.35}
+.rev p{margin:0;font-size:15px}
+.rev .who{display:flex;align-items:center;gap:10px;margin-top:auto}
+.rev .av{flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:11px;background:var(--navy);color:var(--c,var(--turq));font-family:var(--display);font-weight:800}
+.rev .who b{display:block;font-family:var(--display);font-size:15px}
+.rev .who small{color:var(--muted);font-size:13px}
+.stars{color:#E8B923;letter-spacing:2px;font-size:15px}
+.rev.ph{border:1.5px dashed var(--line);background:transparent;color:var(--muted)}
+.rev.ph .av{background:var(--line);color:var(--muted)}
+.rev.ph .bar{height:10px;border-radius:5px;background:var(--line)}
+.ph-tag{align-self:flex-start;font-size:12px;font-family:var(--display);font-weight:700;border:1.5px dashed var(--muted);border-radius:999px;padding:1px 10px}
+.rv-form{margin-top:28px;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:24px;max-width:620px}
+.rv-form textarea{width:100%;font:inherit;font-size:16px;color:var(--fg);background:var(--field);border:1.5px solid var(--line);border-radius:10px;padding:11px 12px;min-height:110px;resize:vertical}
+.rv-form textarea:focus{outline:3px solid var(--turq);outline-offset:1px;border-color:var(--navy)}
+.rate{display:flex;gap:6px}
+.rate label{margin:0;cursor:pointer;font-size:28px;line-height:1;color:var(--line)}
+.rate input{position:absolute;opacity:0;width:1px;height:1px}
+.rate label.on{color:#E8B923}
+.rate input:focus-visible+span{outline:3px solid var(--turq);border-radius:4px}
 .wafab{position:fixed;inset-inline-start:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:5;box-shadow:0 10px 24px -10px rgba(0,0,0,.4)}
 </style>
 
@@ -127,6 +148,7 @@ main .wrap{display:grid;grid-template-columns:1fr;gap:40px;padding-block:36px 56
         <a class="tile" href="#exams" style="--c:var(--yellow)"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6l4 4v14H5V3h4z"/><path d="M9 12h6M9 16h4M9 8h2"/></svg></span><b>نماذج الاختبارات</b><small>نماذج سابقة مرتبة حسب الفصل</small></a>
         <a class="tile" href="#plans" style="--c:var(--turq)"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v14H4z"/><path d="M4 9h16M9 9v10"/></svg></span><b>الخطط الدراسية</b><small>مواد كل تخصص بالترتيب</small></a>
         <a class="tile" href="#chats" style="--c:var(--pink)"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18l1.3-3.7A8 8 0 1 1 8 19z"/><path d="M9 11h.01M12 11h.01M15 11h.01"/></svg></span><b>القروبات</b><small>قروبات الجامعة والتخصصات والمواد</small></a>
+        <a class="tile" href="#reviews" style="--c:var(--yellow)"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8L3.5 9.2l5.9-.8z"/></svg></span><b>آراء الطلاب</b><small>تجارب الطلاب معانا، وشاركنا رأيك</small></a>
       </div>
     </section>
 
@@ -158,6 +180,27 @@ main .wrap{display:grid;grid-template-columns:1fr;gap:40px;padding-block:36px 56
       <h2>الخطط الدراسية</h2>
       <p class="sub">خطة كل تخصص في كلية الدراسات التجارية، مع المتطلبات السابقة لكل مادة.</p>
       <div class="soon">قريباً</div>
+    </section>
+
+    <section id="reviews" class="view" hidden>
+      <a class="back" href="#home">→ الرئيسية</a>
+      <h2>آراء الطلاب</h2>
+      <p class="sub">تجارب حقيقية من طلاب درسوا معانا في الجامعة العربية المفتوحة.</p>
+      <ul class="revs" id="revs"></ul>
+      <form class="rv-form" id="rvform" novalidate>
+        <h2>شاركنا رأيك</h2>
+        <p class="sub" style="margin:0">رأيك يوصلنا على الواتساب، ونضيفه هني بعد موافقتك.</p>
+        <label for="rv-name">الاسم <small>(اختياري، تقدر تكتب الاسم الأول بس)</small></label>
+        <input id="rv-name" maxlength="40" autocomplete="given-name">
+        <label for="rv-major">التخصص أو المادة</label>
+        <input id="rv-major" maxlength="60" placeholder="مثال: محاسبة، B291">
+        <label id="rv-rate-l">تقييمك</label>
+        <div class="rate" id="rv-rate" role="radiogroup" aria-labelledby="rv-rate-l"></div>
+        <label for="rv-text">رأيك</label>
+        <textarea id="rv-text" maxlength="500" placeholder="شنو عجبك في الشرح أو القروبات أو الملخصات؟"></textarea>
+        <div class="err" id="rv-err" hidden>اكتب رأيك واختار التقييم.</div>
+        <button type="submit">أرسل رأيك على الواتساب</button>
+      </form>
     </section>
 
     <section class="sub-sec" id="subscribe">
@@ -277,6 +320,20 @@ const CONFIG = {
       ["ECO102", "ImxyfXjnDOZ7neVpzcuVbt"]
     ]}
   ],
+  reviews: [ // آراء الطلاب الحقيقية فقط (منقولة من قروبات المشتركين). كل رأي سطر:
+    // {name:"الاسم الأول", major:"المادة أو خريج/ة", text:"..."}  واختياري rating:5 لو الطالب عطى تقييم
+    {name:"عبدالله", major:"خريج", text:"الحمدلله رب العالمين تخرجت. ألف كله شكر ما توفي حقكم، شكراً لك دكتور شريف على جهدك وتعبك معانا، ومحمد ما قصرت كفيتو ووفيتو كل الكورسات اللي كنت فيها معاكم."},
+    {name:"حنان", major:"ACC300", text:"والله شكراً لكم على تعبكم وجهدكم معنا، هذا بفضل ربنا وبفضلكم، ما قصرتو والله ويعطيكم ألف ألف عافية. الطالب الأكاديمي المعهد الأول والأخير."},
+    {name:"ناصر", major:"خريج", text:"شكراً دكتور شريف، شكراً دكتور أبانوب، شكراً محمد أخونا وحبيبنا على مجهودكم معانا. الحمدلله رسمياً تخرجت بفضل الله ثم بفضل جهودكم وتعبكم معانا."},
+    {name:"أريام", major:"محاسبة · خريجة", text:"ربي لك الحمد، الفضل لله ثم لك د. شريف، نجحت بآخر مادة محاسبة وأخيراً 🎓"},
+    {name:"طالب", major:"ACC204", text:"دكتور ألف شكر، الحمدلله طلعت النتيجة وعدينا. مشكور على سعة صدرك معنا، هالكورس كان الوضع مأساوي بس اهتمامك بكل سؤال لا يقدّر، ومجهودك الحمدلله جاب نتيجة."},
+    {name:"سعدون", text:"ألف شكر لأستاذة أنفال ما قصرتي جزاج الله خير، نجحت وهذا من فضل الله ثم فضل الطالب الأكاديمي اللي يخلونك تتحدى العثرات وتصعد فوق تحدياتك."},
+    {name:"أنوار", major:"ACC204 · خريجة", text:"الله يبارك فيكم، لولا الله ثم الطالب الأكاديمي ود. شريف ما تخرجت، جد جد مشكورين، الفضل يرد لكم."},
+    {name:"أبرار", major:"خريجة", text:"الحمدلله، شكراً محمد، شكراً دكتور شريف، شكراً الطالب الأكاديمي يعطيكم العافية، الحمدلله تخرجت."},
+    {name:"هدى", major:"ACC300", text:"الحمدلله نجحت، يعطيكم العافية ما قصرتوا."},
+    {name:"أسامة", major:"ACC300", text:"الله يعطيكم ألف عافية نجحت، شكراً على مجهودكم."},
+    {name:"حليمة", major:"EL099", text:"يعطيج العافية أ. أنفال، الحمدلله نجحت 💖"}
+  ],
   groups: [ // الأقسام بالترتيب، والقسم اللي ما فيه محاضرات ما يطلع
     {id:"acc",  title:"المحاسبة", color:"var(--yellow)"},
     {id:"mgt",  title:"الإدارة", color:"var(--turq)"},
@@ -350,6 +407,26 @@ document.querySelectorAll(".tab.cc").forEach(t => t.onclick = () => {
 $("contacts").innerHTML = nums.length
   ? nums.map(w => `<a class="btn w" href="https://wa.me/${w.number}?text=${msg}" target="_blank" rel="noopener">${WA}${w.label}</a><span class="num">+${w.number}</span>`).join("")
   : `<span class="num" style="direction:rtl">أرقام الواتساب تنضاف هني.</span>`;
+const esc = t => String(t).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[c]);
+const cols = ["var(--turq)", "var(--yellow)", "var(--pink)"];
+$("revs").innerHTML = CONFIG.reviews.length
+  ? CONFIG.reviews.map((r, i) => `<li class="rev" style="--c:${cols[i % 3]}">${r.rating ? `<div class="stars" aria-label="${r.rating} من 5">${"★".repeat(r.rating)}${"☆".repeat(5 - r.rating)}</div>` : ""}<p>${esc(r.text)}</p>
+     <div class="who"><span class="av">${esc((r.name || "ط").trim()[0])}</span><span><b>${esc(r.name || "طالب من الجامعة")}</b>${r.major ? `<small>${esc(r.major)}</small>` : ""}</span></div></li>`).join("")
+  : [0, 1, 2].map(() => `<li class="rev ph" aria-hidden="true"><span class="ph-tag">مكان رأي طالب</span><div class="bar"></div><div class="bar" style="width:80%"></div><div class="bar" style="width:55%"></div>
+     <div class="who"><span class="av">؟</span><span><b>آراء الطلاب تنضاف قريب</b></span></div></li>`).join("");
+let rvRating = 0;
+const rateBox = $("rv-rate");
+rateBox.innerHTML = [1, 2, 3, 4, 5].map(n => `<label title="${n} من 5"><input type="radio" name="rv-r" value="${n}" aria-label="${n} من 5"><span>★</span></label>`).join("");
+const paint = n => rateBox.querySelectorAll("label").forEach((l, i) => l.classList.toggle("on", i < n));
+rateBox.querySelectorAll("input").forEach(i => i.onchange = () => { rvRating = +i.value; paint(rvRating); });
+$("rvform").onsubmit = e => {
+  e.preventDefault();
+  const text = $("rv-text").value.trim();
+  $("rv-err").hidden = !!(text && rvRating);
+  if (!text || !rvRating || !nums.length) return;
+  const body = `السلام عليكم، حاب أشارككم رأيي في الطالب الأكاديمي:\n\nالاسم: ${$("rv-name").value.trim() || "بدون اسم"}\nالتخصص/المادة: ${$("rv-major").value.trim() || "-"}\nالتقييم: ${"★".repeat(rvRating)} (${rvRating}/5)\n\n${text}\n\nأوافق على نشر رأيي في الموقع.`;
+  open(`https://wa.me/${nums[0].number}?text=${encodeURIComponent(body)}`, "_blank", "noopener");
+};
 if (nums.length) { const f = $("fab"); f.href = `https://wa.me/${nums[0].number}?text=${msg}`; f.target = "_blank"; f.rel = "noopener"; f.hidden = false; }
 </script>
 
