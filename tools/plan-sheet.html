@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8">
+<title>الخطة الدراسية · ملف للتحميل</title>
+<!-- صفحة تصدير فقط: export-plans.js يفتحها لكل تخصص (?p=acc) ويحفظها صورة و PDF في مجلد plans/
+     الشكل: شجرة من التمهيدي ونازل، كل خط من المادة للمادة اللي تفتحها -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
+<style>
+:root{--navy:#07005E;--deep:#050044;--yellow:#F7DC6B;--turq:#7DE6D5;--pink:#E980C2;--lav:#B9B5D6;--purple:#8C86C9;--gold:#F2D98A;
+  --display:"Alexandria","IBM Plex Sans Arabic",sans-serif;--body:"IBM Plex Sans Arabic",sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--navy)}
+body{width:1080px;color:#fff;font-family:var(--body);-webkit-print-color-adjust:exact;print-color-adjust:exact;
+  background:radial-gradient(900px 600px at 85% 0%,#1A1180 0%,transparent 60%),radial-gradient(800px 700px at 0% 100%,#140C6E 0%,transparent 60%),var(--navy)}
+.code{direction:ltr;unicode-bidi:isolate;font-family:var(--display);font-weight:700}
+header{position:relative;text-align:center;padding:44px 40px 10px}
+header .logo{height:46px;display:block;margin:0 auto}
+h1{display:inline-block;margin:26px 0 0;padding:4px 30px 10px;background:var(--deep);border-radius:14px;font-family:var(--display);font-weight:800;font-size:66px;line-height:1.25}
+.sub{display:block;width:max-content;margin:-6px auto 0;padding:6px 28px;background:var(--turq);color:var(--navy);border-radius:12px;font-family:var(--display);font-weight:800;font-size:28px;transform:rotate(-1deg)}
+.sub small{font-size:20px;font-weight:700}
+.en{margin:12px 0 0;color:#C9C6EC;font-size:18px;direction:ltr}
+.reqs{margin:26px 40px 0;display:grid;gap:14px}
+.req{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:20px;padding:14px 16px}
+.req h2{margin:0 0 10px;font-family:var(--display);font-weight:700;font-size:19px}
+.req h2 small{font-family:var(--body);font-weight:500;font-size:15px;color:#C9C6EC;margin-inline-start:6px}
+.chips{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.chip{display:inline-flex;flex-direction:column;align-items:center;min-width:86px;padding:5px 10px;border-radius:12px;background:#F1F0FA;color:var(--navy);line-height:1.2;border-bottom:4px solid var(--k,var(--lav))}
+.chip .code{font-size:16px}
+.chip small{font-size:11.5px;color:#4A4770}
+.chip.e{background:var(--gold)}
+.or{font-family:var(--display);font-weight:700;font-size:15px;color:var(--yellow)}
+.legend{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 18px;list-style:none;margin:22px 40px 0;padding:0;font-size:15px;color:#D9D7F3}
+.legend li{display:flex;align-items:center;gap:7px}
+.legend i{width:20px;height:14px;border-radius:4px;background:#F1F0FA;border-bottom:4px solid var(--k)}
+.legend i.e{background:var(--gold);border-bottom-color:var(--gold)}
+.legend i.dash{width:28px;height:0;border-radius:0;background:none;border:0;border-top:3px dashed #fff}
+.treebox{margin:16px 40px 0;padding:22px 0 26px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:26px}
+.treebox h2{margin:0 0 6px;text-align:center;font-family:var(--display);font-weight:700;font-size:21px}
+.treebox h2 small{display:block;font-family:var(--body);font-weight:500;font-size:15px;color:#C9C6EC}
+.tree{position:relative;margin:0 auto}
+.tree svg{position:absolute;inset:0;overflow:visible}
+.tree path{fill:none;stroke:rgba(255,255,255,.78);stroke-width:2.4;stroke-linejoin:round}
+.tree path.dash{stroke-dasharray:6 5}
+.tree text{font-family:var(--display);font-weight:700;font-size:13px;fill:var(--yellow)}
+.n{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+  background:#F1F0FA;color:var(--navy);border-radius:14px;border-bottom:5px solid var(--k);padding:12px 6px 7px;box-shadow:0 10px 20px -12px rgba(0,0,0,.6)}
+.n .code{font-size:var(--fs)}
+.n span{font-size:12px;line-height:1.3;color:#4A4770;margin-top:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.n em{position:absolute;top:-10px;left:8px;font-style:normal;font-family:var(--display);font-weight:700;font-size:11.5px;background:var(--yellow);color:var(--navy);border-radius:999px;padding:0 8px}
+.n.e{background:var(--gold);border-bottom-color:#C9A93B}
+.n.e span{color:#5C4A10}
+.n.root{background:var(--pink);color:var(--navy);border-bottom-color:#B0478A}
+.n.root span{color:var(--navy)}
+footer{display:flex;align-items:center;justify-content:space-between;gap:20px;margin:22px 40px 0;padding:18px 22px;background:#F1F0FA;color:var(--navy);border-radius:22px}
+footer b{font-family:var(--display);font-size:21px;display:block}
+footer span{font-size:15px;color:#4A4770}
+footer .site{direction:ltr;font-family:var(--display);font-weight:800;font-size:20px;text-align:right;color:var(--navy)}
+footer .qr{flex:none;width:118px;height:118px}
+footer .qr svg{width:100%;height:100%;display:block}
+.src{margin:12px 48px 0;padding-bottom:30px;font-size:13px;color:#B4B1D3;line-height:1.6;text-align:center}
+.mark{display:block;width:70px;margin:20px auto 0}
+</style></head><body>
+<header>
+  <img class="logo" src="logo-horizontal-color-on-navy.svg" alt="الطالب الأكاديمي">
+  <h1>الخطة الدراسية</h1>
+  <span class="sub" id="title"></span>
+  <p class="en" id="en"></p>
+</header>
+<div class="reqs" id="reqs"></div>
+<ul class="legend" id="legend"></ul>
+<div class="treebox"><h2>تسلسل المواد<small>ابدأ من فوق ونزّل: كل سهم يوصلك للمادة اللي تنفتح بعد ما تخلص اللي قبله</small></h2><div class="tree" id="tree"><svg id="lines" aria-hidden="true"></svg></div></div>
+<footer><div><b>كل اللي تحتاجه لدراستك في AOUKW</b><span>محاضرات مجانية، نماذج اختبارات، وسوّ خطتك بنفسك على الموقع</span><div class="site">asckwt.com · @asc_kwt</div></div><div class="qr" id="qr"></div></footer>
+<p class="src" id="src"></p>
+<script src="../plans.js"></script>
+<script>
+const {C, PLANS} = window.ASC_PLANS;
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
+const plan = PLANS.find(p => p.id === (new URLSearchParams(location.search).get("p") || "acc"));
+const KC = {p:"var(--pink)", u:"var(--lav)", f:"var(--pink)", c:"var(--purple)", t:"var(--turq)", e:"var(--gold)"};
+const code = c => `<span class="code">${esc(c)}</span>`;
+document.title = "الخطة الدراسية · " + plan.title;
+$("title").innerHTML = `تخصص ${esc(plan.title)} <small>(${plan.hrs} ساعة)</small>`;
+$("en").textContent = plan.en;
+
+/* ===== المتطلبات فوق: الجامعة، اختياري الجامعة، اختياري الكلية ===== */
+const uni = [...new Set([...plan.map.filter(r => r[2] === "u").map(r => r[0]), ...plan.free])];
+const chip = (c, e) => `<span class="chip${e ? " e" : ""}" style="--k:${KC.u}">${code(c.replace("*", ""))}${c.endsWith("*") ? "*" : ""}<small>${C[c.replace("*", "")][2]} س.م</small></span>`;
+const orList = (list, e) => list.map(c => chip(c, e)).join("");
+$("reqs").innerHTML = `
+  <div class="req"><h2>متطلبات الجامعة الإجبارية<small>${uni.reduce((a, c) => a + C[c][2], 0)} ساعة</small></h2><div class="chips">${uni.map(c => chip(c)).join("")}</div></div>
+  <div class="req"><h2>اختياري جامعة<small>3 ساعات · تختار مادة وحدة</small></h2><div class="chips">${orList(plan.ue.map(r => r[0]), true)}</div></div>
+  ${plan.fe.list.length ? `<div class="req"><h2>اختياري كلية<small>${plan.id === "itc" ? "6 ساعات · تختار مادتين" : plan.fe.hrs + " ساعات · تختار مادة وحدة"}</small></h2><div class="chips">${orList(plan.fe.list.map(r => r[0] + (r[2] ? "*" : "")), true)}</div>${plan.fe.note && plan.id !== "itc" ? `<p style="margin:8px 0 0;font-size:14px;color:#C9C6EC">${esc(plan.fe.note)}</p>` : ""}</div>` : ""}`;
+
+/* ===== الشجرة ===== */
+// المواد: الخطة + اختياري الكلية اللي له متطلب، بدون متطلبات الجامعة اللي ما تفتح شي
+let rows = [...plan.map, ...plan.fe.list.filter(r => r[1] && r[1].split(/[+|]/).some(x => !["EL099","EL111","EL112"].includes(x)) && !plan.map.some(m => m[0] === r[0])).map(r => [r[0], r[1], "e"])];
+const build = list => {
+  const by = Object.fromEntries(list.map(([c, pre, kind]) => [c, {c, kind, groups: pre ? pre.split("+").map(g => g.split("|")) : [], kids: []}]));
+  Object.values(by).forEach(n => { n.parents = n.groups.flat().filter(x => by[x]); n.parents.forEach(p => by[p].kids.push(n.c)); });
+  return by;
+};
+let by = build(rows);
+rows = rows.filter(([c]) => !(by[c].kind === "u" && !by[c].kids.length) && (c === "EL099" || by[c].parents.length));
+by = build(rows);
+const st = c => by[c].st ??= by[c].parents.length ? 1 + Math.max(...by[c].parents.map(st)) : 0;
+Object.keys(by).forEach(st);
+const R = [];
+const item = (id, real, row) => { const it = {id, real, row, ups: [], downs: []}; (R[row] ??= []).push(it); return it; };
+const items = {};
+Object.values(by).forEach(n => items[n.c] = item(n.c, true, n.st));
+// خانات فاضية للخطوط اللي تنط أكثر من صف، عشان ما تمر فوق المواد
+const dummy = (p, r) => items[p + "@" + r] ??= item(p + "@" + r, false, r);
+const link = (a, b) => { if (!a.downs.includes(b)) a.downs.push(b); if (!b.ups.includes(a)) b.ups.push(a); };
+const edges = [];
+Object.values(by).forEach(q => q.groups.forEach(g => g.filter(p => by[p]).forEach(p => {
+  const path = [items[p]];
+  for (let r = by[p].st + 1; r < q.st; r++) path.push(dummy(p, r));
+  path.push(items[q.c]);
+  path.slice(1).forEach((b, i) => link(path[i], b));
+  edges.push({path, or: g.length > 1});
+})));
+// ترتيب الصفوف لتقليل التقاطعات
+const pos = it => R[it.row].indexOf(it) / Math.max(1, R[it.row].length - 1);
+const sortBy = (row, key) => { const cur = new Map(row.map((x, i) => [x, i / Math.max(1, row.length - 1)])); row.sort((a, b) => key(a, cur) - key(b, cur)); };
+const mean = (list, cur, self) => list.length ? list.reduce((a, x) => a + pos(x), 0) / list.length : cur.get(self);
+for (let k = 0; k < 8; k++) {
+  for (let r = 1; r < R.length; r++) sortBy(R[r], (x, cur) => mean(x.ups, cur, x));
+  for (let r = R.length - 2; r >= 0; r--) sortBy(R[r], (x, cur) => mean(x.downs, cur, x));
+}
+// المقاسات
+const AW = 980, G = 12, D = 14, H = 86;
+const W = Math.min(150, Math.floor(Math.min(...R.map(row => {
+  const n = row.filter(x => x.real).length, d = row.length - n;
+  return (AW - d * D - (row.length - 1) * G) / n;
+}))));
+let y = 18;
+const gapH = [];
+R.forEach((row, r) => {
+  const width = row.reduce((a, x) => a + (x.real ? W : D), 0) + (row.length - 1) * G;
+  let x = (AW + width) / 2; // من اليمين لليسار
+  row.forEach(it => { const w = it.real ? W : D; x -= w; it.x = x + w / 2; it.w = w; x -= G; it.y = y; });
+  const srcs = row.filter(it => it.downs.length).sort((a, b) => a.x - b.x);
+  srcs.forEach((s, i) => s.bus = i);
+  gapH[r] = 40 + 9 * srcs.length;
+  y += H + gapH[r];
+});
+const total = y - gapH.at(-1) + 18;
+const tree = $("tree");
+tree.style.width = AW + "px"; tree.style.height = total + "px";
+tree.style.setProperty("--fs", W < 120 ? "16px" : "18px");
+tree.insertAdjacentHTML("beforeend", Object.values(items).filter(x => x.real).map(it => {
+  const n = by[it.id], cls = it.id === "EL099" ? "root" : n.kind === "e" ? "e" : "";
+  return `<div class="n ${cls}" style="left:${it.x - W / 2}px;top:${it.y}px;width:${W}px;height:${H}px;--k:${KC[n.kind]}">${C[it.id][2] ? `<em>${C[it.id][2]} س.م</em>` : ""}${code(it.id)}<span>${esc(C[it.id][1])}</span></div>`;
+}).join(""));
+// الخطوط: من تحت المادة، لخط أفقي خاص فيها، ثم نازل للمادة اللي بعدها
+const busY = it => it.y + H + 20 + it.bus * 9;
+const seg = new Set(), out = [];
+const add = (d, cls = "") => { if (!seg.has(d + cls)) { seg.add(d + cls); out.push(`<path class="${cls}" d="${d}"/>`); } };
+edges.forEach(({path, or}) => path.slice(1).forEach((b, i) => {
+  const a = path[i], top = a.real ? a.y + H : a.y, by_ = busY(a), last = i === path.length - 2;
+  add(`M${a.x},${top} V${by_} H${b.x}`);
+  if (!a.real) add(`M${a.x},${a.y} V${a.y + H}`);
+  add(`M${b.x},${by_} V${b.real ? b.y - 2 : b.y}`, last && or ? "dash" : "");
+}));
+// رؤوس الأسهم وعلامة "أو"
+Object.values(items).filter(x => x.real && x.ups.length).forEach(it => {
+  out.push(`<path d="M${it.x - 6},${it.y - 10} L${it.x},${it.y - 2} L${it.x + 6},${it.y - 10}" style="stroke-width:2.6"/>`);
+  if (by[it.id].groups.some(g => g.filter(p => by[p]).length > 1)) out.push(`<text x="${it.x - W / 2 - 5}" y="${it.y + 16}" text-anchor="end">أو</text>`);
+});
+$("lines").setAttribute("width", AW); $("lines").setAttribute("height", total);
+$("lines").innerHTML = out.join("");
+$("legend").innerHTML = [["c","أساسي مشترك"],["t","مواد التخصص"],["f","متطلب كلية"],["u","متطلب جامعة"]]
+  .filter(([k]) => Object.values(by).some(n => n.kind === k)).map(([k, t]) => `<li><i style="--k:${KC[k]}"></i>${t}</li>`).join("") +
+  `<li><i class="e"></i>اختياري</li><li><i class="dash"></i>متطلب بديل (أو)</li>`;
+$("src").textContent = `المصدر: ${plan.srcNote} من موقع الجامعة العربية المفتوحة. الأسماء العربية ترجمة تقريبية؛ تأكد من مرشدك الأكاديمي قبل التسجيل. تحديث أكتوبر 2026.`;
+if (window.QR_SVG) $("qr").innerHTML = window.QR_SVG;
+document.fonts.ready.then(() => { document.body.dataset.ready = "1"; });
+</script>
+</body></html>
