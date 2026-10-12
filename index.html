@@ -118,6 +118,58 @@ footer .wrap{padding-block:18px;display:flex;flex-wrap:wrap;gap:8px 20px;justify
 .contacts{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 .num{direction:ltr;font-variant-numeric:tabular-nums;color:var(--muted);font-size:14px}
 main .wrap{display:grid;grid-template-columns:1fr;gap:40px;padding-block:36px 56px}
+.gpa{display:grid;gap:18px}
+.gcard{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:20px}
+.gcard h3{font-family:var(--display);font-weight:700;font-size:17px;margin:0 0 4px}
+.gcard .sub{margin-bottom:12px}
+.crs{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.crs li{display:grid;grid-template-columns:1.3fr .8fr 1fr 40px;gap:8px;align-items:end}
+.crs label{margin:0 0 4px;font-size:12px;color:var(--muted);font-weight:500}
+.crs li:not(:first-child) label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.crs input,.crs select{padding:9px 10px}
+.crs .x{margin:0;width:40px;height:44px;padding:0;background:transparent;color:var(--muted);border:1.5px solid var(--line);font-size:20px;line-height:1}
+.gpa .add{margin-top:10px;width:auto;padding:9px 16px;font-size:15px;background:transparent;color:var(--accent-ink);border:1.5px dashed var(--line)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.two label{margin-top:0}
+.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.stat{background:var(--navy);color:#fff;border-radius:14px;padding:14px 16px}
+.stat small{display:block;color:#D9D7F3;font-size:13px}
+.stat b{display:block;font-family:var(--display);font-weight:800;font-size:30px;line-height:1.3;color:var(--yellow);font-variant-numeric:tabular-nums}
+.stat span{font-size:13px;color:var(--turq)}
+.stat.off b{color:#8F8CB8}
+.need{margin-top:12px;padding:14px 16px;border-radius:14px;border:1.5px solid var(--line);background:var(--field)}
+.need b{font-family:var(--display)}
+.need .mix{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;padding:0;list-style:none}
+.need .mix li{border:1px solid var(--line);border-radius:999px;padding:2px 10px;font-size:14px}
+.scale{width:100%;border-collapse:collapse;font-size:14px;text-align:center}
+.scale th,.scale td{border-bottom:1px solid var(--line);padding:7px 4px}
+.scale th{font-family:var(--display);color:var(--muted);font-weight:700}
+.scale td:first-child{font-family:var(--display);font-weight:700;direction:ltr}
+.scale td{font-variant-numeric:tabular-nums}
+.src{font-size:12px;color:var(--muted);margin:10px 0 0}
+.src a{color:inherit}
+@media (max-width:520px){.crs li{grid-template-columns:1fr .8fr 1fr 40px;gap:6px}.two{grid-template-columns:1fr}}
+.revs{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.rev{position:relative;display:flex;flex-direction:column;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:20px;overflow:hidden}
+.rev::before{content:"”";position:absolute;inset-inline-end:14px;top:-18px;font-family:var(--display);font-size:96px;line-height:1;color:var(--c,var(--turq));opacity:.35}
+.rev p{margin:0;font-size:15px}
+.rev .who{display:flex;align-items:center;gap:10px;margin-top:auto}
+.rev .av{flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:11px;background:var(--navy);color:var(--c,var(--turq));font-family:var(--display);font-weight:800}
+.rev .who b{display:block;font-family:var(--display);font-size:15px}
+.rev .who small{color:var(--muted);font-size:13px}
+.stars{color:#E8B923;letter-spacing:2px;font-size:15px}
+.rev.ph{border:1.5px dashed var(--line);background:transparent;color:var(--muted)}
+.rev.ph .av{background:var(--line);color:var(--muted)}
+.rev.ph .bar{height:10px;border-radius:5px;background:var(--line)}
+.ph-tag{align-self:flex-start;font-size:12px;font-family:var(--display);font-weight:700;border:1.5px dashed var(--muted);border-radius:999px;padding:1px 10px}
+.rv-form{margin-top:28px;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:24px;max-width:620px}
+.rv-form textarea{width:100%;font:inherit;font-size:16px;color:var(--fg);background:var(--field);border:1.5px solid var(--line);border-radius:10px;padding:11px 12px;min-height:110px;resize:vertical}
+.rv-form textarea:focus{outline:3px solid var(--turq);outline-offset:1px;border-color:var(--navy)}
+.rate{display:flex;gap:6px}
+.rate label{margin:0;cursor:pointer;font-size:28px;line-height:1;color:var(--line)}
+.rate input{position:absolute;opacity:0;width:1px;height:1px}
+.rate label.on{color:#E8B923}
+.rate input:focus-visible+span{outline:3px solid var(--turq);border-radius:4px}
 .wafab{position:fixed;inset-inline-start:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:5;box-shadow:0 10px 24px -10px rgba(0,0,0,.4)}
 </style>
 
@@ -145,6 +197,8 @@ main .wrap{display:grid;grid-template-columns:1fr;gap:40px;padding-block:36px 56
         <a class="tile" href="#exams" style="--c:var(--yellow)"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6l4 4v14H5V3h4z"/><path d="M9 12h6M9 16h4M9 8h2"/></svg></span><b>نماذج الاختبارات</b><small>نماذج سابقة مرتبة حسب الفصل</small></a>
         <a class="tile" href="#plans" style="--c:var(--turq)"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v14H4z"/><path d="M4 9h16M9 9v10"/></svg></span><b>الخطط الدراسية</b><small>مواد كل تخصص بالترتيب</small></a>
         <a class="tile" href="#chats" style="--c:var(--pink)"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18l1.3-3.7A8 8 0 1 1 8 19z"/><path d="M9 11h.01M12 11h.01M15 11h.01"/></svg></span><b>القروبات</b><small>قروبات الجامعة والتخصصات والمواد</small></a>
+        <a class="tile" href="#reviews" style="--c:var(--yellow)"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8L3.5 9.2l5.9-.8z"/></svg></span><b>آراء الطلاب</b><small>تجارب الطلاب معانا، وشاركنا رأيك</small></a>
+        <a class="tile" href="#gpa" style="--c:var(--turq)"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 11h.01M12 11h.01M16 11h.01M8 15h.01M12 15h.01M16 15h.01M8 18h.01M12 18h4"/></svg></span><b>حاسبة المعدل</b><small>معدلك الفصلي والتراكمي وشكثر تحتاج</small></a>
       </div>
     </section>
 
@@ -186,6 +240,65 @@ main .wrap{display:grid;grid-template-columns:1fr;gap:40px;padding-block:36px 56
       <div id="callist"></div>
       <a class="btn cal-ics" id="calics" href="#" download="AOUKW-2026-1.ics">أضف المواعيد لتقويم جوالك</a>
       <p class="cal-src">المصدر: <a href="https://www.aou.edu.kw/students/Pages/academic-calendar.aspx" target="_blank" rel="noopener">التقويم الأكاديمي الرسمي للجامعة</a> (ملف Academic Calendar 2026-1-UPD1). الإجازات الرسمية ما تنذكر بالتقويم، تعلنها الجامعة وقتها. لو صار تعارض، المعتمد هو تقويم الجامعة.</p>
+    </section>
+
+    <section id="gpa" class="view" hidden>
+      <a class="back" href="#home">→ الرئيسية</a>
+      <h2>حاسبة المعدل</h2>
+      <p class="sub">حط موادك وساعاتها والتقدير اللي تتوقعه، وتطلع لك النتيجة على طول. على نظام الجامعة العربية المفتوحة من 4.</p>
+      <div class="gpa">
+        <div class="gcard">
+          <h3>مواد هالفصل</h3>
+          <ul class="crs" id="crs"></ul>
+          <button type="button" class="add" id="addc">+ أضف مادة</button>
+        </div>
+        <div class="gcard">
+          <h3>معدلك الحالي <small style="color:var(--muted);font-weight:400;font-size:13px">(اختياري، عشان نحسب التراكمي)</small></h3>
+          <div class="two">
+            <div><label for="cgpa">المعدل التراكمي الحالي</label><input id="cgpa" type="number" inputmode="decimal" min="0" max="4" step="0.01" placeholder="مثلاً 2.85" dir="ltr"></div>
+            <div><label for="chrs">الساعات اللي خلصتها</label><input id="chrs" type="number" inputmode="numeric" min="0" step="1" placeholder="مثلاً 45" dir="ltr"></div>
+          </div>
+          <div class="err" id="gerr" hidden></div>
+        </div>
+        <div class="res" aria-live="polite">
+          <div class="stat" id="st-sem"><small>معدل الفصل</small><b>–</b><span></span></div>
+          <div class="stat" id="st-cum"><small>المعدل التراكمي الجديد</small><b>–</b><span></span></div>
+          <div class="stat" id="st-hrs"><small>مجموع الساعات</small><b>–</b><span></span></div>
+        </div>
+        <div class="gcard">
+          <h3>شكثر أحتاج؟</h3>
+          <p class="sub">اكتب المعدل التراكمي اللي تبي توصله، ونقولك شنو تحتاج هالفصل.</p>
+          <label for="tgpa" style="margin-top:0">المعدل اللي تبيه</label>
+          <input id="tgpa" type="number" inputmode="decimal" min="0" max="4" step="0.01" placeholder="مثلاً 3.00" dir="ltr">
+          <div class="need" id="need" aria-live="polite" hidden></div>
+        </div>
+        <div class="gcard">
+          <h3>سلم الدرجات</h3>
+          <table class="scale"><thead><tr><th>التقدير</th><th>الدرجة</th><th>النقاط</th></tr></thead><tbody id="scale"></tbody></table>
+          <p class="src">أقل تقدير للنجاح D، والـ F يدخل في المعدل. تصنيف المعدل: ممتاز 3.67 فأعلى، جيد جداً 3.00، جيد 2.33، مقبول 2.00. اكتب رمز المادة وتنعبى ساعاتها حسب خطط فرع الكويت. المواد التمهيدية (EL097 إلى EL099) والمواد المعفاة والمعادلة وأي مادة خارج خطتك ما تدخل في المعدل، فلا تحطها. المعدل يتقرّب لأقرب منزلتين. المصدر: <a href="https://www.arabou.edu.kw/university/Documents/Regulations/student/en/AOU-OU%20Grade%20Scale%20Mapping-.pdf" target="_blank" rel="noopener">سلم درجات الجامعة</a> و<a href="https://www.arabou.edu.kw/students/guide/Pages/average-rate.aspx" target="_blank" rel="noopener">طريقة حساب المعدل</a>. الحاسبة للتقدير فقط، والمعدل الرسمي من بوابة الجامعة.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="reviews" class="view" hidden>
+      <a class="back" href="#home">→ الرئيسية</a>
+      <h2>آراء الطلاب</h2>
+      <p class="sub">تجارب حقيقية من طلاب درسوا معانا في الجامعة العربية المفتوحة.</p>
+      <ul class="revs" id="revs"></ul>
+      <form class="rv-form" id="rvform" novalidate>
+        <h2>شاركنا رأيك</h2>
+        <p class="sub" style="margin:0">رأيك يوصلنا على الواتساب، ونضيفه هني بعد موافقتك.</p>
+        <label for="rv-name">الاسم <small>(اختياري، تقدر تكتب الاسم الأول بس)</small></label>
+        <input id="rv-name" maxlength="40" autocomplete="given-name">
+        <label for="rv-major">التخصص أو المادة</label>
+        <input id="rv-major" maxlength="60" placeholder="مثال: محاسبة، B291">
+        <label id="rv-rate-l">تقييمك</label>
+        <div class="rate" id="rv-rate" role="radiogroup" aria-labelledby="rv-rate-l"></div>
+        <label for="rv-text">رأيك</label>
+        <textarea id="rv-text" maxlength="500" placeholder="شنو عجبك في الشرح أو القروبات أو الملخصات؟"></textarea>
+        <div class="err" id="rv-err" hidden>اكتب رأيك واختار التقييم.</div>
+        <button type="submit">أرسل رأيك على الواتساب</button>
+      </form>
     </section>
 
     <section class="sub-sec" id="subscribe">
@@ -326,6 +439,20 @@ const CONFIG = {
       {from:"2027-01-04", to:"2027-01-20", name:"الاختبارات النهائية (الفاينل)", note:"Final", key:true}
     ]}
   ],
+  reviews: [ // آراء الطلاب الحقيقية فقط (منقولة من قروبات المشتركين). كل رأي سطر:
+    // {name:"الاسم الأول", major:"المادة أو خريج/ة", text:"..."}  واختياري rating:5 لو الطالب عطى تقييم
+    {name:"عبدالله", major:"خريج", text:"الحمدلله رب العالمين تخرجت. ألف كله شكر ما توفي حقكم، شكراً لك دكتور شريف على جهدك وتعبك معانا، ومحمد ما قصرت كفيتو ووفيتو كل الكورسات اللي كنت فيها معاكم."},
+    {name:"حنان", major:"ACC300", text:"والله شكراً لكم على تعبكم وجهدكم معنا، هذا بفضل ربنا وبفضلكم، ما قصرتو والله ويعطيكم ألف ألف عافية. الطالب الأكاديمي المعهد الأول والأخير."},
+    {name:"ناصر", major:"خريج", text:"شكراً دكتور شريف، شكراً دكتور أبانوب، شكراً محمد أخونا وحبيبنا على مجهودكم معانا. الحمدلله رسمياً تخرجت بفضل الله ثم بفضل جهودكم وتعبكم معانا."},
+    {name:"أريام", major:"محاسبة · خريجة", text:"ربي لك الحمد، الفضل لله ثم لك د. شريف، نجحت بآخر مادة محاسبة وأخيراً 🎓"},
+    {name:"طالب", major:"ACC204", text:"دكتور ألف شكر، الحمدلله طلعت النتيجة وعدينا. مشكور على سعة صدرك معنا، هالكورس كان الوضع مأساوي بس اهتمامك بكل سؤال لا يقدّر، ومجهودك الحمدلله جاب نتيجة."},
+    {name:"سعدون", text:"ألف شكر لأستاذة أنفال ما قصرتي جزاج الله خير، نجحت وهذا من فضل الله ثم فضل الطالب الأكاديمي اللي يخلونك تتحدى العثرات وتصعد فوق تحدياتك."},
+    {name:"أنوار", major:"ACC204 · خريجة", text:"الله يبارك فيكم، لولا الله ثم الطالب الأكاديمي ود. شريف ما تخرجت، جد جد مشكورين، الفضل يرد لكم."},
+    {name:"أبرار", major:"خريجة", text:"الحمدلله، شكراً محمد، شكراً دكتور شريف، شكراً الطالب الأكاديمي يعطيكم العافية، الحمدلله تخرجت."},
+    {name:"هدى", major:"ACC300", text:"الحمدلله نجحت، يعطيكم العافية ما قصرتوا."},
+    {name:"أسامة", major:"ACC300", text:"الله يعطيكم ألف عافية نجحت، شكراً على مجهودكم."},
+    {name:"حليمة", major:"EL099", text:"يعطيج العافية أ. أنفال، الحمدلله نجحت 💖"}
+  ],
   groups: [ // الأقسام بالترتيب، والقسم اللي ما فيه محاضرات ما يطلع
     {id:"acc",  title:"المحاسبة", color:"var(--yellow)"},
     {id:"mgt",  title:"الإدارة", color:"var(--turq)"},
@@ -419,6 +546,99 @@ function route() {
   if (location.hash) document.querySelector("main").scrollIntoView();
 }
 addEventListener("hashchange", route); route();
+/* ===== حاسبة المعدل ===== */
+const GRADES = [["A",4,"90 – 100"],["B+",3.5,"82 – 89"],["B",3,"74 – 81"],["C+",2.5,"66 – 73"],["C",2,"58 – 65"],["D",1.5,"50 – 57"],["F",0,"أقل من 50"]];
+const HOURS = [2,3,4,6,8];
+const f2 = n => (Math.round(n * 100 + 1e-9) / 100).toFixed(2); // الجامعة تقرّب المعدل لأقرب منزلتين
+const cls = x => { const g = Number(f2(x)); return g >= 3.67 ? "ممتاز" : g >= 3 ? "جيد جداً" : g >= 2.33 ? "جيد" : g >= 2 ? "مقبول" : "تحت 2.00"; };
+$("scale").innerHTML = GRADES.map(([l, p, r]) => `<tr><td>${l}</td><td>${r}</td><td>${p.toFixed(2)}</td></tr>`).join("");
+// ساعات المواد حسب خطط فرع الكويت (2022 و 2017)؛ المادة اللي ساعاتها مو مؤكدة ما نعبي ساعاتها
+const COURSES = [
+  ["AR113",3,"Arabic Communication Skills"],["EL111",3,"English Communication Skills I"],["EL112",3,"English Communication Skills II"],
+  ["GB102",3,"Principles of Entrepreneurship"],["GR118",3,"Life Skills and Coexistence"],["GT101",3,"Learning and Information Technology"],
+  ["BUC111",4,"Business Communication 1"],["BUC112",4,"Business Communication 2"],["ECO101",4,"Principles of Microeconomics"],["ECO102",4,"Principles of Macroeconomics"],
+  ["ACT111",4,"Financial Accounting"],["ACT112",4,"Managerial Accounting"],["BUS101",4,"Introduction to Math for Business"],["BUS102",4,"Introduction to Statistics"],
+  ["MGT111",4,"Principles of Management I"],["MGT112",4,"Principles of Management II"],["MKT111",4,"Principles of Marketing I"],["MKT112",4,"Principles of Marketing II"],
+  ["ACC204",4,"Intermediate Financial Accounting"],["ACC300",4,"Accounting Information Systems"],["ACC302",4,"Auditing Theory and Practice"],
+  ["B207A",8,"Shaping Business Opportunities I"],["B207B",8,"Shaping Business Opportunities II"],["BB293",8,"Financial Accounting in Context"],
+  ["B294",8,"Financial Analysis and Decision Making"],["BUS310",8,"Strategic Management"],["B326",8,"Advanced Financial Accounting"],["B391",8,"Management Accounting and Finance"],
+  ["B124",8,"Fundamentals of Accounting"],["B291",8,"Financial Accounting"],["B292",8,"Management Accounting"],["B392",8,"Advanced Management Accounting"],["LB170",8,"Professional Communication Skills"],
+  ["B206",8,"Understanding Customers"],["BUS208",8,"Contemporary Issues in Marketing"],["B327",8,"Sustainable Enterprise and Innovation"],["B328",8,"Marketing in Action"],
+  ["MKT331",4,"Services Marketing"],["MKT332",4,"Digital Marketing"],["BUS115",4,"Small Business Management"],
+  ["B205A",8,"Exploring Innovation and Entrepreneurship A"],["B205B",8,"Exploring Innovation and Entrepreneurship B"],["BUS628",8,"Global Human Resource Management"],["BUS629",8,"International Management"],
+  ["SYS111",4,"Principles of Technology Ventures"],["SYS210",8,"Managing Technology and Innovation"],["SYS280",8,"Systems Thinking"],["SYS380",8,"Managing Systems Complexity"],
+  ["MIS111",4,"Intro to MIS I"],["MIS112",4,"Intro to MIS II"],["MIS330",4,"Business Data Management"],["MIS331",4,"Business Intelligence"],["MIS332",8,"System Analysis and Design"],["MIS300",8,"Project Management"],
+  ["DD209A",8,"Running the Economy A"],["DD209B",8,"Running the Economy B"],["DD309A",8,"Doing Economics I"],["DD309B",8,"Doing Economics II"],["ECO342",8,"Economic Development"],
+  ["B122",8,"Retail Management and Marketing"],["B123",8,"Management Practice"],["B324",8,"Marketing and Society"],["B325",8,"Managing across Boundaries"],["B628",8,"Managing 1"],["B629",8,"Managing 2"],
+  ["TM103",4,"Computer Organization and Architecture"],["TM105",4,"Introduction to Programming"],["MT131",4,"Discrete Mathematics"],["MT132",4,"Linear Algebra"],["M110",8,"Python Programming"],["TM112",8,"Introduction to Computing and IT"],
+  ["BUS110",null,"Introduction to Business"],["B329",null,"Leadership in a Changing World"]
+];
+const courseHrs = Object.fromEntries(COURSES.map(([c, h]) => [c, h]));
+document.body.insertAdjacentHTML("beforeend", `<datalist id="codes">${COURSES.map(([c, , t]) => `<option value="${c}">${t}</option>`).join("")}</datalist>`);
+let rowN = 0;
+function addRow(hrs = 4, grade = "B") {
+  const n = ++rowN, li = document.createElement("li");
+  li.innerHTML = `<div><label for="cc${n}">المادة</label><input id="cc${n}" list="codes" placeholder="مثلاً ACT111" dir="ltr" autocomplete="off"></div>
+    <div><label for="ch${n}">الساعات</label><select id="ch${n}" class="h">${HOURS.map(h => `<option${h === hrs ? " selected" : ""}>${h}</option>`).join("")}</select></div>
+    <div><label for="cg${n}">التقدير</label><select id="cg${n}" class="g" dir="ltr">${GRADES.map(([l, p]) => `<option value="${p}"${l === grade ? " selected" : ""}>${l}</option>`).join("")}</select></div>
+    <button type="button" class="x" aria-label="احذف المادة">×</button>`;
+  li.querySelector("input").oninput = e => { const h = courseHrs[e.target.value.trim().toUpperCase()]; if (h) { li.querySelector(".h").value = h; } };
+  li.querySelector(".x").onclick = () => { if ($("crs").children.length > 1) { li.remove(); calc(); } };
+  $("crs").append(li);
+}
+const setStat = (id, val, note) => { const e = $(id); e.classList.toggle("off", val == null); e.querySelector("b").textContent = val ?? "–"; e.querySelector("span").textContent = note ?? ""; };
+const num = id => { const v = $(id).value.trim(); return v === "" ? null : Number(v); };
+function calc() {
+  const rows = [...$("crs").children].map(li => ({h: +li.querySelector(".h").value, p: +li.querySelector(".g").value, sel: li.querySelector(".g")}));
+  const h = rows.reduce((a, r) => a + r.h, 0), q = rows.reduce((a, r) => a + r.h * r.p, 0);
+  const sem = h ? q / h : null;
+  setStat("st-sem", sem == null ? null : f2(sem), sem == null ? "" : cls(sem));
+  const cg = num("cgpa"), ch = num("chrs");
+  let err = "";
+  if (cg != null && !(cg >= 0 && cg <= 4)) err = "المعدل لازم يكون بين 0 و 4.";
+  else if (ch != null && !(ch >= 0 && Number.isInteger(ch))) err = "الساعات لازم تكون رقم صحيح.";
+  else if ((cg == null) !== (ch == null)) err = "حط المعدل الحالي والساعات مع بعض عشان نحسب التراكمي.";
+  $("gerr").hidden = !err; $("gerr").textContent = err;
+  const hasCum = !err && cg != null && ch != null;
+  const H = hasCum ? ch : 0, Q = hasCum ? cg * ch : 0;
+  const cum = h + H ? (q + Q) / (h + H) : null;
+  setStat("st-cum", hasCum && cum != null ? f2(cum) : null, hasCum && cum != null ? cls(cum) : "حط معدلك الحالي فوق");
+  setStat("st-hrs", h + H, hasCum ? `${h} هالفصل + ${H} سابقة` : "هالفصل");
+  target(rows, h, H, Q);
+}
+function target(rows, h, H, Q) {
+  const t = num("tgpa"), box = $("need");
+  if (t == null) { box.hidden = true; return; }
+  box.hidden = false;
+  if (!(t >= 0 && t <= 4)) { box.innerHTML = "المعدل اللي تبيه لازم يكون بين 0 و 4."; return; }
+  const req = (t * (h + H) - Q) / h;
+  const base = H ? "التراكمي" : "الفصلي";
+  if (req > 4 + 1e-9) {
+    const best = (4 * h + Q) / (h + H);
+    box.innerHTML = `ما تقدر توصل <b>${t.toFixed(2)}</b> هالفصل بهالساعات، حتى لو جبت A في كل المواد يوصل معدلك ${base} <b>${f2(best)}</b>. زيد ساعاتك أو خلها هدف للفصل الجاي.`;
+    return;
+  }
+  if (req <= 0) { box.innerHTML = `معدلك ${base} بيظل فوق <b>${t.toFixed(2)}</b> حتى لو ما نجحت في أي مادة، بس لا تعتمد على هذا 😅`; return; }
+  // أقل تقديرات توصلك: نبدأ الكل D ونرفع المادة الأقل تقديراً (والأكثر ساعات) خطوة خطوة
+  const pts = GRADES.map(g => g[1]).reverse(), lvl = rows.map(() => 1);
+  const sum = () => rows.reduce((a, r, i) => a + r.h * pts[lvl[i]], 0);
+  if (sum() / h < req - 1e-9) {
+    while (sum() / h < req - 1e-9) {
+      let k = -1;
+      rows.forEach((r, i) => { if (lvl[i] < pts.length - 1 && (k < 0 || lvl[i] < lvl[k] || (lvl[i] === lvl[k] && r.h > rows[k].h))) k = i; });
+      if (k < 0) break; lvl[k]++;
+    }
+  }
+  const name = p => GRADES.find(g => g[1] === p)[0];
+  const mix = rows.map((r, i) => `<li><span dir="ltr">${[...$("crs").children][i].querySelector("input").value.trim() || "مادة " + (i + 1)}</span> (${r.h} س): <b dir="ltr">${name(pts[lvl[i]])}</b></li>`).join("");
+  const near = GRADES.find(g => g[1] >= req - 1e-9 && !GRADES.some(x => x[1] >= req - 1e-9 && x[1] < g[1]));
+  box.innerHTML = `تحتاج معدل فصلي <b>${(Math.ceil(req * 100 - 1e-9) / 100).toFixed(2)}</b> على الأقل. لو نفس التقدير في كل المواد تحتاج <b dir="ltr">${near[0]}</b>، أو تقدر توزعها كذا:<ul class="mix">${mix}</ul>`;
+}
+$("addc").onclick = () => { addRow(); calc(); };
+document.querySelector("#gpa .gpa").addEventListener("input", calc);
+document.querySelector("#gpa .gpa").addEventListener("change", calc);
+addRow(4); addRow(4); addRow(8); calc();
+
 const msg = encodeURIComponent("السلام عليكم، شفت المحاضرات المجانية وأبي أسجل في الكورس. المقرر: ");
 const nums = CONFIG.whatsapp.filter(w => /^\d{8,15}$/.test(w.number));
 $("chatlist").innerHTML = CONFIG.chats.map(c =>
@@ -434,6 +654,26 @@ document.querySelectorAll(".tab.cc").forEach(t => t.onclick = () => {
 $("contacts").innerHTML = nums.length
   ? nums.map(w => `<a class="btn w" href="https://wa.me/${w.number}?text=${msg}" target="_blank" rel="noopener">${WA}${w.label}</a><span class="num">+${w.number}</span>`).join("")
   : `<span class="num" style="direction:rtl">أرقام الواتساب تنضاف هني.</span>`;
+const esc = t => String(t).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[c]);
+const cols = ["var(--turq)", "var(--yellow)", "var(--pink)"];
+$("revs").innerHTML = CONFIG.reviews.length
+  ? CONFIG.reviews.map((r, i) => `<li class="rev" style="--c:${cols[i % 3]}">${r.rating ? `<div class="stars" aria-label="${r.rating} من 5">${"★".repeat(r.rating)}${"☆".repeat(5 - r.rating)}</div>` : ""}<p>${esc(r.text)}</p>
+     <div class="who"><span class="av">${esc((r.name || "ط").trim()[0])}</span><span><b>${esc(r.name || "طالب من الجامعة")}</b>${r.major ? `<small>${esc(r.major)}</small>` : ""}</span></div></li>`).join("")
+  : [0, 1, 2].map(() => `<li class="rev ph" aria-hidden="true"><span class="ph-tag">مكان رأي طالب</span><div class="bar"></div><div class="bar" style="width:80%"></div><div class="bar" style="width:55%"></div>
+     <div class="who"><span class="av">؟</span><span><b>آراء الطلاب تنضاف قريب</b></span></div></li>`).join("");
+let rvRating = 0;
+const rateBox = $("rv-rate");
+rateBox.innerHTML = [1, 2, 3, 4, 5].map(n => `<label title="${n} من 5"><input type="radio" name="rv-r" value="${n}" aria-label="${n} من 5"><span>★</span></label>`).join("");
+const paint = n => rateBox.querySelectorAll("label").forEach((l, i) => l.classList.toggle("on", i < n));
+rateBox.querySelectorAll("input").forEach(i => i.onchange = () => { rvRating = +i.value; paint(rvRating); });
+$("rvform").onsubmit = e => {
+  e.preventDefault();
+  const text = $("rv-text").value.trim();
+  $("rv-err").hidden = !!(text && rvRating);
+  if (!text || !rvRating || !nums.length) return;
+  const body = `السلام عليكم، حاب أشارككم رأيي في الطالب الأكاديمي:\n\nالاسم: ${$("rv-name").value.trim() || "بدون اسم"}\nالتخصص/المادة: ${$("rv-major").value.trim() || "-"}\nالتقييم: ${"★".repeat(rvRating)} (${rvRating}/5)\n\n${text}\n\nأوافق على نشر رأيي في الموقع.`;
+  open(`https://wa.me/${nums[0].number}?text=${encodeURIComponent(body)}`, "_blank", "noopener");
+};
 if (nums.length) { const f = $("fab"); f.href = `https://wa.me/${nums[0].number}?text=${msg}`; f.target = "_blank"; f.rel = "noopener"; f.hidden = false; }
 </script>
 
