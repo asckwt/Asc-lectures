@@ -281,8 +281,8 @@ function schedule(plan, doneKeys, {hrs = 20, summer = 0, start = {t: "2", y: 202
 window.ASC_PLANS = {C, KIND, PLANS, layout, hrsOf, preOf, lanes, schedule, planItems};
 
 /* ===== العرض ===== */
-const root = document.getElementById("plantree"), maker = document.getElementById("planmaker");
-if (!root && !maker) return;
+const root = document.getElementById("plantree"), maker = document.getElementById("planmaker"), gallery = document.getElementById("planimgs-box");
+if (!root && !maker && !gallery) return;
 const $p = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"]/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
 const codeTag = c => `<span class="code">${esc(c)}</span>`;
@@ -379,7 +379,7 @@ function mineWire(plan, box) {
     let acc = doneHrs;
     $p("m-out").innerHTML = !terms.length && !left ? `<p class="mine-sum">خلصت كل مواد الخطة، مبروك! 🎓</p>` : `
       <p class="mine-sum">خلصت <b>${doneHrs}</b> من ${plan.hrs} ساعة، وباقي لك <b>${plan.hrs - doneHrs}</b> ساعة في <b>${terms.length}</b> ${terms.length > 2 && terms.length < 11 ? "فصول" : "فصل"}. تتخرج تقريباً في <b>${terms.at(-1).name}</b>.</p>
-      <div class="mine-act"><button type="button" class="btn y" id="m-print">احفظ خطتي PDF</button></div>
+      <div class="mine-act"><button type="button" class="btn y" id="m-print">اطبع خطتي أو احفظها PDF</button></div>
       <ol class="psem">${terms.map((tm, i) => { acc += tm.hrs; return termCard(i + 1, tm.name, `${tm.hrs} ساعة · بتوصل ${acc} من ${plan.hrs}`, tm.items.map(x => courseCard(plan, x.code)).join("")); }).join("")}
       ${termCard("🎓", "التخرج", `${plan.title} · ${plan.hrs} ساعة معتمدة`, "", "ps-grad")}</ol>
       ${left ? `<p class="mine-note">فيه ${left} مواد ما قدرنا نرتبها، راجع مرشدك.</p>` : ""}`;
@@ -391,7 +391,7 @@ function mineWire(plan, box) {
         `أبي أسجل ${opts.hrs} ساعة بالفصل، وأبدأ ${$p("m-start").selectedOptions[0].text}، والصيفي: ${$p("m-sum").selectedOptions[0].text}`].join("\n");
       ask.href = `https://wa.me/${waNum()}?text=${encodeURIComponent(txt)}`;
     }
-    $p("m-print")?.addEventListener("click", () => { document.body.classList.add("print-plan"); print(); document.body.classList.remove("print-plan"); });
+    $p("m-print")?.addEventListener("click", () => print());
   };
   $p("m-name")?.addEventListener("input", update);
   box.addEventListener("change", e => { if (e.target.dataset.k && e.target.checked) tickPre(e.target.dataset.k); update(); });
@@ -416,7 +416,7 @@ function render(id) {
     <a class="pmine" href="#myplan/${plan.id}"><b>سوّ خطتك بنفسك</b><span>أشّر على اللي خلصته، ونطلع لك باقي خطتك فصل بفصل ←</span></a>
     <div id="vimg"${view === "img" ? "" : " hidden"}>
       <p class="phint">هذي خطة التخصص كاملة في صورة وحدة. احفظها عندك من زر «صورة للجوال» فوق، أو اضغط على الصورة مطولاً واختر حفظ.</p>
-      <a class="pimg" href="plans/${plan.id}.png" target="_blank" rel="noopener"><img src="plans/${plan.id}.png" alt="الخطة الدراسية لتخصص ${esc(plan.title)}: شجرة المواد ومتطلباتها" loading="lazy" decoding="async"></a>
+      <a class="pimg" href="plans/${plan.id}.png" target="_blank" rel="noopener"><img src="plans/${plan.id}.png" alt="الخطة الدراسية لتخصص ${esc(plan.title)}: شجرة المواد ومتطلباتها" decoding="async"></a>
     </div>
     <div id="vsem"${view === "sem" ? "" : " hidden"}>
       <p class="phint">طريقك للتخرج فصل بفصل: سجّل مواد كل فصل بالترتيب، وتحت كل مادة مكتوب وش تحتاج قبلها.</p>
@@ -462,8 +462,26 @@ if (maker) {
   const h = location.hash.split("/");
   renderMaker(h[0] === "#myplan" && h[1] ? h[1] : store.get("last").id);
 }
+/* صفحة صور الخطط: صورة الخطة الجاهزة لكل تخصص */
+let galleryId = null;
+function renderGallery(id) {
+  const plan = PLANS.find(p => p.id === id) || PLANS[0], file = `الخطة-الدراسية-${esc(plan.title.replace(/ /g, "-"))}`;
+  galleryId = plan.id;
+  gallery.innerHTML = `
+    <div class="tabs ptabs" role="tablist">${PLANS.map(p => `<button type="button" role="tab" class="tab gtab" data-p="${p.id}" aria-selected="${p.id === plan.id}"><i style="background:${p.color}"></i>${p.title}</button>`).join("")}</div>
+    <div class="pdl"><span>خطة ${esc(plan.title)}:</span>
+      <a class="btn y" href="plans/${plan.id}.png" download="${file}.png">حمّل الصورة</a>
+      <a class="btn o" href="plans/${plan.id}.pdf" download="${file}.pdf">ملف PDF</a>
+      <button type="button" class="btn o" id="g-print">اطبعها</button></div>
+    <p class="phint">على الجوال تقدر بعد تضغط على الصورة مطولاً وتختار حفظ.</p>
+    <a class="pimg" href="plans/${plan.id}.png" target="_blank" rel="noopener"><img src="plans/${plan.id}.png" alt="الخطة الدراسية لتخصص ${esc(plan.title)}: شجرة المواد ومتطلباتها" decoding="async"></a>`;
+  gallery.querySelectorAll(".gtab").forEach(t => t.onclick = () => { history.replaceState(null, "", "#planimgs/" + t.dataset.p); renderGallery(t.dataset.p); });
+  $p("g-print").onclick = () => print();
+}
+if (gallery) renderGallery(location.hash.startsWith("#planimgs/") ? location.hash.split("/")[1] : store.get("last").id);
 addEventListener("hashchange", () => {
   const [v, sub] = location.hash.slice(1).split("/");
+  if (gallery && v === "planimgs" && sub && sub !== galleryId) renderGallery(sub);
   if (root && v === "plans" && sub && sub !== cur?.plan.id) render(sub);
   if (maker && v === "myplan" && sub && sub !== makerId) renderMaker(sub);
 });
