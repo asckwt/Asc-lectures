@@ -161,7 +161,7 @@ const PLANS = [
      ["B207A","MIS112|SYS111","c"],["SYS210","SYS111","t"],["MIS200-IS","MIS112","t"],["MIS201-IS","MIS200-IS+BUS102","t"],
      ["MIS300","B207B","t"],["MIS330","MIS200-IS","t"],["MIS331","MIS201-IS","t"],["MIS332","MIS330","t"]],
    free:BIZ_FREE, ue:BIZ_UE, fe:{hrs:4, list:[], note:"الدليل ما يوضح قائمة الاختياري لمسار MIS، راجع مرشدك الأكاديمي."}},
-  {id:"itc", title:"تقنية المعلومات", en:"Information Technology and Computing", hrs:131, color:"var(--turq)", src:"https://www.arabou.edu.kw/admission/Documents/ITC%20Programme%20Structure.pdf", srcNote:"هيكل البرنامج 2021–2026 (المقر الرئيسي؛ خطة الكويت منشورة كصور فقط)",
+  {id:"itc", title:"تقنية المعلومات", en:"Information Technology and Computing", hrs:131, color:"var(--turq)", src:KW + "ITC-Study%20Plan.pdf", srcNote:"خطة الكويت 2021–2026",
    map:[["EL099","","p"],["EL111","EL099","u"],["EL112","EL111","u"],["MST129","EL099","f"],["TM260","TM255","f"],
      ["TM103","EL111","t"],["TM105","EL111","t"],["MT131","EL111","t"],["MT132","EL111","t"],["M110","EL111","t"],["TM112","M110","t"],
      ["M251","TM105","t"],["M269","M110+MT131","t"],["TM255","TM112","t"],["T215B","TM255","t"],["TM351","M269|M251","t"],["TM354","M251","t"],
@@ -335,6 +335,7 @@ const store = {
   get: id => { try { return JSON.parse(localStorage.getItem("asc-plan-" + id)) || {}; } catch { return {}; } },
   set: (id, v) => { try { localStorage.setItem("asc-plan-" + id, JSON.stringify(v)); } catch {} }
 };
+const waNum = () => (typeof CONFIG !== "undefined" && CONFIG.whatsapp?.[0]?.number) || "";
 function mineHtml(plan) {
   const items = planItems(plan), st = store.get(plan.id), done = new Set(st.done || []);
   const opt = (v, cur, label) => `<option value="${v}"${String(v) === String(cur) ? " selected" : ""}>${label}</option>`;
@@ -353,7 +354,11 @@ function mineHtml(plan) {
       </div>
       <p class="mine-note">الحد الأعلى للتسجيل يعتمد على أنظمة الجامعة ومعدلك، تأكد منه من مرشدك.</p>
     </div>
-    <div class="mine-step" id="m-plan"><h3><span>4</span>خطتك في تخصص ${esc(plan.title)}</h3><div id="m-out"></div></div>`;
+    <div class="mine-step" id="m-plan"><h3><span>4</span>خطتك في تخصص ${esc(plan.title)}</h3><div id="m-out"></div></div>
+    ${waNum() ? `<div class="mine-step mine-ask"><h3><span>5</span>تبينا نرتبها لك؟</h3>
+      <p>ترسل لنا تخصصك والمواد اللي أشّرت عليها على الواتساب، ونراجع خطتك ونرد عليك.</p>
+      <label>اسمك (اختياري)<input type="text" id="m-name" autocomplete="name" value="${esc(st.name || "")}"></label>
+      <a class="btn w" id="m-ask" target="_blank" rel="noopener">أرسل طلبي على الواتساب</a></div>` : ""}`;
 }
 function mineWire(plan, box) {
   const items = planItems(plan), byKey = Object.fromEntries(items.map(x => [x.key, x]));
@@ -368,7 +373,7 @@ function mineWire(plan, box) {
     const done = new Set(boxes().filter(b => b.checked).map(b => b.dataset.k));
     const [t, y] = $p("m-start").value.split("-");
     const opts = {hrs: +$p("m-hrs").value, summer: +$p("m-sum").value, start: {t, y: +y}};
-    store.set(plan.id, {done: [...done], hrs: opts.hrs, summer: opts.summer, start: $p("m-start").value});
+    store.set(plan.id, {done: [...done], hrs: opts.hrs, summer: opts.summer, start: $p("m-start").value, name: $p("m-name")?.value || ""});
     const doneHrs = items.filter(x => done.has(x.key)).reduce((a, x) => a + x.hrs, 0);
     const {terms, left} = schedule(plan, done, opts);
     let acc = doneHrs;
@@ -378,8 +383,17 @@ function mineWire(plan, box) {
       <ol class="psem">${terms.map((tm, i) => { acc += tm.hrs; return termCard(i + 1, tm.name, `${tm.hrs} ساعة · بتوصل ${acc} من ${plan.hrs}`, tm.items.map(x => courseCard(plan, x.code)).join("")); }).join("")}
       ${termCard("🎓", "التخرج", `${plan.title} · ${plan.hrs} ساعة معتمدة`, "", "ps-grad")}</ol>
       ${left ? `<p class="mine-note">فيه ${left} مواد ما قدرنا نرتبها، راجع مرشدك.</p>` : ""}`;
+    const ask = $p("m-ask");
+    if (ask) {
+      const name = $p("m-name").value.trim(), code = k => byKey[k].code === "UE" ? "اختياري جامعة" : byKey[k].code === "FE" ? "اختياري كلية" : byKey[k].code;
+      const txt = [`السلام عليكم، أبي تسوون لي خطة دراسية${name ? `\nالاسم: ${name}` : ""}`, `التخصص: ${plan.title}`,
+        `المواد اللي خلصتها (${doneHrs} ساعة): ${done.size ? [...done].map(code).join("، ") : "ولا مادة"}`,
+        `أبي أسجل ${opts.hrs} ساعة بالفصل، وأبدأ ${$p("m-start").selectedOptions[0].text}، والصيفي: ${$p("m-sum").selectedOptions[0].text}`].join("\n");
+      ask.href = `https://wa.me/${waNum()}?text=${encodeURIComponent(txt)}`;
+    }
     $p("m-print")?.addEventListener("click", () => { document.body.classList.add("print-plan"); print(); document.body.classList.remove("print-plan"); });
   };
+  $p("m-name")?.addEventListener("input", update);
   box.addEventListener("change", e => { if (e.target.dataset.k && e.target.checked) tickPre(e.target.dataset.k); update(); });
   box.querySelector("[data-all]").onclick = () => { boxes().forEach(b => b.checked = false); update(); };
   update();
