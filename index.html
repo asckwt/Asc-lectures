@@ -225,7 +225,7 @@ main .wrap{display:grid;grid-template-columns:1fr;gap:40px;padding-block:36px 56
         <div class="gcard">
           <h3>سلم الدرجات</h3>
           <table class="scale"><thead><tr><th>التقدير</th><th>الدرجة</th><th>النقاط</th></tr></thead><tbody id="scale"></tbody></table>
-          <p class="src">أقل تقدير للنجاح D، والـ F يدخل في المعدل. تصنيف المعدل: ممتاز 3.67 فأعلى، جيد جداً 3.00، جيد 2.33، مقبول 2.00. المصدر: <a href="https://www.arabou.edu.kw/university/Documents/Regulations/student/en/AOU-OU%20Grade%20Scale%20Mapping-.pdf" target="_blank" rel="noopener">سلم درجات الجامعة العربية المفتوحة</a>. الحاسبة للتقدير فقط، والمعدل الرسمي من بوابة الجامعة.</p>
+          <p class="src">أقل تقدير للنجاح D، والـ F يدخل في المعدل. تصنيف المعدل: ممتاز 3.67 فأعلى، جيد جداً 3.00، جيد 2.33، مقبول 2.00. اكتب رمز المادة وتنعبى ساعاتها حسب خطط فرع الكويت. المواد التمهيدية (EL097 إلى EL099) والمواد المعفاة والمعادلة وأي مادة خارج خطتك ما تدخل في المعدل، فلا تحطها. المعدل يتقرّب لأقرب منزلتين. المصدر: <a href="https://www.arabou.edu.kw/university/Documents/Regulations/student/en/AOU-OU%20Grade%20Scale%20Mapping-.pdf" target="_blank" rel="noopener">سلم درجات الجامعة</a> و<a href="https://www.arabou.edu.kw/students/guide/Pages/average-rate.aspx" target="_blank" rel="noopener">طريقة حساب المعدل</a>. الحاسبة للتقدير فقط، والمعدل الرسمي من بوابة الجامعة.</p>
         </div>
       </div>
     </section>
@@ -407,19 +407,41 @@ function route() {
 addEventListener("hashchange", route); route();
 /* ===== حاسبة المعدل ===== */
 const GRADES = [["A",4,"90 – 100"],["B+",3.5,"82 – 89"],["B",3,"74 – 81"],["C+",2.5,"66 – 73"],["C",2,"58 – 65"],["D",1.5,"50 – 57"],["F",0,"أقل من 50"]];
-const HOURS = [1,2,3,4,6,8];
-const f2 = n => (Math.floor(n * 100 + 1e-9) / 100).toFixed(2);
+const HOURS = [2,3,4,6,8];
+const f2 = n => (Math.round(n * 100 + 1e-9) / 100).toFixed(2); // الجامعة تقرّب المعدل لأقرب منزلتين
 const cls = x => { const g = Number(f2(x)); return g >= 3.67 ? "ممتاز" : g >= 3 ? "جيد جداً" : g >= 2.33 ? "جيد" : g >= 2 ? "مقبول" : "تحت 2.00"; };
 $("scale").innerHTML = GRADES.map(([l, p, r]) => `<tr><td>${l}</td><td>${r}</td><td>${p.toFixed(2)}</td></tr>`).join("");
-const codes = [...new Set([...CONFIG.lectures.map(l => l.code), ...Object.keys(courseChat)])].sort();
-document.body.insertAdjacentHTML("beforeend", `<datalist id="codes">${codes.map(c => `<option value="${c}">`).join("")}</datalist>`);
+// ساعات المواد حسب خطط فرع الكويت (2022 و 2017)؛ المادة اللي ساعاتها مو مؤكدة ما نعبي ساعاتها
+const COURSES = [
+  ["AR113",3,"Arabic Communication Skills"],["EL111",3,"English Communication Skills I"],["EL112",3,"English Communication Skills II"],
+  ["GB102",3,"Principles of Entrepreneurship"],["GR118",3,"Life Skills and Coexistence"],["GT101",3,"Learning and Information Technology"],
+  ["BUC111",4,"Business Communication 1"],["BUC112",4,"Business Communication 2"],["ECO101",4,"Principles of Microeconomics"],["ECO102",4,"Principles of Macroeconomics"],
+  ["ACT111",4,"Financial Accounting"],["ACT112",4,"Managerial Accounting"],["BUS101",4,"Introduction to Math for Business"],["BUS102",4,"Introduction to Statistics"],
+  ["MGT111",4,"Principles of Management I"],["MGT112",4,"Principles of Management II"],["MKT111",4,"Principles of Marketing I"],["MKT112",4,"Principles of Marketing II"],
+  ["ACC204",4,"Intermediate Financial Accounting"],["ACC300",4,"Accounting Information Systems"],["ACC302",4,"Auditing Theory and Practice"],
+  ["B207A",8,"Shaping Business Opportunities I"],["B207B",8,"Shaping Business Opportunities II"],["BB293",8,"Financial Accounting in Context"],
+  ["B294",8,"Financial Analysis and Decision Making"],["BUS310",8,"Strategic Management"],["B326",8,"Advanced Financial Accounting"],["B391",8,"Management Accounting and Finance"],
+  ["B124",8,"Fundamentals of Accounting"],["B291",8,"Financial Accounting"],["B292",8,"Management Accounting"],["B392",8,"Advanced Management Accounting"],["LB170",8,"Professional Communication Skills"],
+  ["B206",8,"Understanding Customers"],["BUS208",8,"Contemporary Issues in Marketing"],["B327",8,"Sustainable Enterprise and Innovation"],["B328",8,"Marketing in Action"],
+  ["MKT331",4,"Services Marketing"],["MKT332",4,"Digital Marketing"],["BUS115",4,"Small Business Management"],
+  ["B205A",8,"Exploring Innovation and Entrepreneurship A"],["B205B",8,"Exploring Innovation and Entrepreneurship B"],["BUS628",8,"Global Human Resource Management"],["BUS629",8,"International Management"],
+  ["SYS111",4,"Principles of Technology Ventures"],["SYS210",8,"Managing Technology and Innovation"],["SYS280",8,"Systems Thinking"],["SYS380",8,"Managing Systems Complexity"],
+  ["MIS111",4,"Intro to MIS I"],["MIS112",4,"Intro to MIS II"],["MIS330",4,"Business Data Management"],["MIS331",4,"Business Intelligence"],["MIS332",8,"System Analysis and Design"],["MIS300",8,"Project Management"],
+  ["DD209A",8,"Running the Economy A"],["DD209B",8,"Running the Economy B"],["DD309A",8,"Doing Economics I"],["DD309B",8,"Doing Economics II"],["ECO342",8,"Economic Development"],
+  ["B122",8,"Retail Management and Marketing"],["B123",8,"Management Practice"],["B324",8,"Marketing and Society"],["B325",8,"Managing across Boundaries"],["B628",8,"Managing 1"],["B629",8,"Managing 2"],
+  ["TM103",4,"Computer Organization and Architecture"],["TM105",4,"Introduction to Programming"],["MT131",4,"Discrete Mathematics"],["MT132",4,"Linear Algebra"],["M110",8,"Python Programming"],["TM112",8,"Introduction to Computing and IT"],
+  ["BUS110",null,"Introduction to Business"],["B329",null,"Leadership in a Changing World"]
+];
+const courseHrs = Object.fromEntries(COURSES.map(([c, h]) => [c, h]));
+document.body.insertAdjacentHTML("beforeend", `<datalist id="codes">${COURSES.map(([c, , t]) => `<option value="${c}">${t}</option>`).join("")}</datalist>`);
 let rowN = 0;
 function addRow(hrs = 4, grade = "B") {
   const n = ++rowN, li = document.createElement("li");
-  li.innerHTML = `<div><label for="cc${n}">المادة</label><input id="cc${n}" list="codes" placeholder="اختياري" dir="ltr" autocomplete="off"></div>
+  li.innerHTML = `<div><label for="cc${n}">المادة</label><input id="cc${n}" list="codes" placeholder="مثلاً ACT111" dir="ltr" autocomplete="off"></div>
     <div><label for="ch${n}">الساعات</label><select id="ch${n}" class="h">${HOURS.map(h => `<option${h === hrs ? " selected" : ""}>${h}</option>`).join("")}</select></div>
     <div><label for="cg${n}">التقدير</label><select id="cg${n}" class="g" dir="ltr">${GRADES.map(([l, p]) => `<option value="${p}"${l === grade ? " selected" : ""}>${l}</option>`).join("")}</select></div>
     <button type="button" class="x" aria-label="احذف المادة">×</button>`;
+  li.querySelector("input").oninput = e => { const h = courseHrs[e.target.value.trim().toUpperCase()]; if (h) { li.querySelector(".h").value = h; } };
   li.querySelector(".x").onclick = () => { if ($("crs").children.length > 1) { li.remove(); calc(); } };
   $("crs").append(li);
 }
