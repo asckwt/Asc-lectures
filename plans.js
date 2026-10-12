@@ -179,14 +179,7 @@ const PLANS = [
    fe:{hrs:4, list:[["TR102","E121"],["EL123","EL112","*"],["EL230","E121"],["EL240","EL112","*"],["EL350","EL112","*"],["EL330","EL112"]], note:"المواد المعلّمة بـ * ما تنطرح في فرع الكويت للحين."}}
 ];
 
-/* ===== العرض ===== */
-const root = document.getElementById("plantree");
-if (!root) return;
-const esc = s => String(s).replace(/[&<>"]/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
-const preText = p => p ? p.split("+").map(g => g.split("|").join(" أو ")).join(" + ") : "بدون متطلب";
-const codeTag = c => `<span class="code">${esc(c)}</span>`;
-let cur = null, sel = null, links = {};
-
+/* ===== ترتيب الخريطة: كل مادة في المرحلة اللي بعد آخر متطلب لها ===== */
 function layout(plan) {
   const nodes = plan.map.map(([code, pre, kind]) => ({code, kind, groups: pre ? pre.split("+").map(g => g.split("|")) : []}));
   const by = Object.fromEntries(nodes.map(n => [n.code, n]));
@@ -198,14 +191,24 @@ function layout(plan) {
   nodes.forEach(n => (cols[n.st] ??= []).push(n));
   // ترتيب كل عمود حسب موقع المتطلبات عشان تقل تقاطعات الخطوط
   for (let pass = 0; pass < 3; pass++) cols.forEach((col, i) => {
-    col.forEach((n, j) => n.row = j);
+    col.forEach((n, j) => n.pos = (j + .5) / col.length);
     if (!i) return;
-    col.forEach(n => n.bc = n.parents.length ? n.parents.reduce((s, p) => s + by[p].row, 0) / n.parents.length : n.row);
+    col.forEach(n => n.bc = n.parents.length ? n.parents.reduce((s, p) => s + by[p].pos, 0) / n.parents.length : n.pos);
     col.sort((a, b) => a.bc - b.bc);
   });
   cols.forEach(col => col.forEach((n, j) => n.row = j));
   return {nodes, by, cols};
 }
+
+window.ASC_PLANS = {C, KIND, PLANS, layout};
+
+/* ===== العرض ===== */
+const root = document.getElementById("plantree");
+if (!root) return;
+const esc = s => String(s).replace(/[&<>"]/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
+const preText = p => p ? p.split("+").map(g => g.split("|").join(" أو ")).join(" + ") : "بدون متطلب";
+const codeTag = c => `<span class="code">${esc(c)}</span>`;
+let cur = null, sel = null, links = {};
 
 function render(id) {
   const plan = PLANS.find(p => p.id === id) || PLANS[0];
@@ -216,6 +219,9 @@ function render(id) {
   $p("pbody").innerHTML = `
     <div class="phead"><div><b>${esc(plan.title)}</b><span dir="ltr">${esc(plan.en)}</span></div>
       <div class="pstat"><b>${plan.hrs}</b><small>ساعة معتمدة</small></div></div>
+    <div class="pdl"><span>حمّل الخطة:</span>
+      <a class="btn y" href="plans/${plan.id}.png" download="الخطة-الدراسية-${esc(plan.title.replace(/ /g, "-"))}.png">صورة للجوال</a>
+      <a class="btn o" href="plans/${plan.id}.pdf" download="الخطة-الدراسية-${esc(plan.title.replace(/ /g, "-"))}.pdf">ملف PDF</a></div>
     <p class="phint">كل عمود مرحلة: ما تقدر تاخذ المادة إلا بعد ما تخلص المواد اللي قبلها في الخط. اضغط على أي مادة يبين لك وش تحتاج قبلها ووش تفتح لك بعدها.</p>
     <ul class="plegend">${["p","u","f","c","t","e"].filter(k => cur.nodes.some(n => n.kind === k)).map(k => `<li><i class="k-${k}"></i>${KIND[k]}</li>`).join("")}<li><i class="or"></i>متطلب بديل (أو)</li></ul>
     <div class="pscroll" tabindex="0" aria-label="خريطة المواد، اسحب يمين ويسار">

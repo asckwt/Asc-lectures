@@ -8,6 +8,10 @@
 .pstat{text-align:center;line-height:1.2}
 .pstat b{color:var(--yellow);font-size:28px}
 .pstat small{font-size:12px;color:#D9D7F3}
+.pdl{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 12px}
+.pdl span{font-weight:600;font-size:14px}
+.pdl .btn{font-size:14px;padding:8px 16px;border-radius:10px}
+.pdl .btn.o{border:1.5px solid var(--line);color:var(--fg)}
 .phint{color:var(--muted);font-size:14px;margin:0 0 10px}
 .plegend{list-style:none;margin:0 0 12px;padding:0;display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--muted)}
 .plegend li{display:flex;align-items:center;gap:6px}
