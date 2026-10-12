@@ -113,3 +113,5 @@
 .mine-ask label{display:block;margin:0 0 10px;font-size:13px;max-width:320px}
 .mine-ask input{margin-top:6px}
 .mine-ask .btn{display:inline-flex;font-size:14px;padding:9px 16px;border-radius:10px;width:auto}
+.pimg{display:block;max-width:560px;margin:0 auto 4px;border-radius:16px;overflow:hidden;border:1px solid var(--line);background:#07005E}
+.pimg img{display:block;width:100%;height:auto}
