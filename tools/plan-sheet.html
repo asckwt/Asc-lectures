@@ -32,19 +32,22 @@ h1{display:inline-block;margin:26px 0 0;padding:4px 30px 10px;background:var(--d
 .legend li{display:flex;align-items:center;gap:7px}
 .legend i{width:20px;height:14px;border-radius:4px;background:#F1F0FA;border-bottom:4px solid var(--k)}
 .legend i.e{background:var(--gold);border-bottom-color:var(--gold)}
+.howto{margin:10px 40px 0;text-align:center;font-size:15px;color:var(--yellow)}
 .legend i.dash{width:28px;height:0;border-radius:0;background:none;border:0;border-top:3px dashed #fff}
 .treebox{margin:16px 40px 0;padding:22px 0 26px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:26px}
 .treebox h2{margin:0 0 6px;text-align:center;font-family:var(--display);font-weight:700;font-size:21px}
 .treebox h2 small{display:block;font-family:var(--body);font-weight:500;font-size:15px;color:#C9C6EC}
 .tree{position:relative;margin:0 auto}
 .tree svg{position:absolute;inset:0;overflow:visible}
-.tree path{fill:none;stroke:rgba(255,255,255,.78);stroke-width:2.4;stroke-linejoin:round}
+.tree path{fill:none;stroke:var(--c,rgba(255,255,255,.8));stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round}
 .tree path.dash{stroke-dasharray:6 5}
 .tree text{font-family:var(--display);font-weight:700;font-size:13px;fill:var(--yellow)}
 .n{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
   background:#F1F0FA;color:var(--navy);border-radius:14px;border-bottom:5px solid var(--k);padding:12px 6px 7px;box-shadow:0 10px 20px -12px rgba(0,0,0,.6)}
 .n .code{font-size:var(--fs)}
-.n span{font-size:12px;line-height:1.3;color:#4A4770;margin-top:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.n>span{font-size:12px;line-height:1.3;color:#4A4770;margin-top:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.n .need{display:block;margin-top:5px;padding-top:4px;border-top:1px dashed rgba(7,0,94,.25);font-size:11.5px;font-weight:600;color:var(--navy);direction:rtl;-webkit-line-clamp:unset}
+.n .need .code{display:inline;font-size:11.5px}
 .n em{position:absolute;top:-10px;left:8px;font-style:normal;font-family:var(--display);font-weight:700;font-size:11.5px;background:var(--yellow);color:var(--navy);border-radius:999px;padding:0 8px}
 .n.e{background:var(--gold);border-bottom-color:#C9A93B}
 .n.e span{color:#5C4A10}
@@ -67,7 +70,7 @@ footer .qr svg{width:100%;height:100%;display:block}
 </header>
 <div class="reqs" id="reqs"></div>
 <ul class="legend" id="legend"></ul>
-<div class="treebox"><h2>تسلسل المواد<small>ابدأ من فوق ونزّل: كل سهم يوصلك للمادة اللي تنفتح بعد ما تخلص اللي قبله</small></h2><div class="tree" id="tree"><svg id="lines" aria-hidden="true"></svg></div></div>
+<div class="treebox"><h2>تسلسل المواد<small>ابدأ من فوق ونزّل: كل سهم يوصلك للمادة اللي تنفتح بعد ما تخلص اللي قبلها</small></h2><div class="tree" id="tree"><svg id="lines" aria-hidden="true"></svg></div></div>
 <footer><div><b>كل اللي تحتاجه لدراستك في AOUKW</b><span>محاضرات مجانية، نماذج اختبارات، وسوّ خطتك بنفسك على الموقع</span><div class="site">asckwt.com · @asc_kwt</div></div><div class="qr" id="qr"></div></footer>
 <p class="src" id="src"></p>
 <script src="../plans.js"></script>
@@ -94,8 +97,9 @@ $("reqs").innerHTML = `
 /* ===== الشجرة ===== */
 // المواد: الخطة + اختياري الكلية اللي له متطلب، بدون متطلبات الجامعة اللي ما تفتح شي
 let rows = [...plan.map, ...plan.fe.list.filter(r => r[1] && r[1].split(/[+|]/).some(x => !["EL099","EL111","EL112"].includes(x)) && !plan.map.some(m => m[0] === r[0])).map(r => [r[0], r[1], "e"])];
+const needTxt = pre => pre.split("+").map(g => g.split("|").map(x => x === "EL099" ? "التمهيدي" : code(x)).join(" أو ")).join(" + ");
 const build = list => {
-  const by = Object.fromEntries(list.map(([c, pre, kind]) => [c, {c, kind, groups: pre ? pre.split("+").map(g => g.split("|")) : [], kids: []}]));
+  const by = Object.fromEntries(list.map(([c, pre, kind]) => [c, {c, kind, pre, groups: pre ? pre.split("+").map(g => g.split("|")) : [], kids: []}]));
   Object.values(by).forEach(n => { n.parents = n.groups.flat().filter(x => by[x]); n.parents.forEach(p => by[p].kids.push(n.c)); });
   return by;
 };
@@ -128,7 +132,7 @@ for (let k = 0; k < 8; k++) {
   for (let r = R.length - 2; r >= 0; r--) sortBy(R[r], (x, cur) => mean(x.downs, cur, x));
 }
 // المقاسات
-const AW = 980, G = 12, D = 14, H = 86;
+const AW = 980, G = 12, D = 14, H = 112, BUS = 13;
 const W = Math.min(150, Math.floor(Math.min(...R.map(row => {
   const n = row.filter(x => x.real).length, d = row.length - n;
   return (AW - d * D - (row.length - 1) * G) / n;
@@ -141,7 +145,7 @@ R.forEach((row, r) => {
   row.forEach(it => { const w = it.real ? W : D; x -= w; it.x = x + w / 2; it.w = w; x -= G; it.y = y; });
   const srcs = row.filter(it => it.downs.length).sort((a, b) => a.x - b.x);
   srcs.forEach((s, i) => s.bus = i);
-  gapH[r] = 40 + 9 * srcs.length;
+  gapH[r] = 44 + BUS * srcs.length;
   y += H + gapH[r];
 });
 const total = y - gapH.at(-1) + 18;
@@ -150,28 +154,43 @@ tree.style.width = AW + "px"; tree.style.height = total + "px";
 tree.style.setProperty("--fs", W < 120 ? "16px" : "18px");
 tree.insertAdjacentHTML("beforeend", Object.values(items).filter(x => x.real).map(it => {
   const n = by[it.id], cls = it.id === "EL099" ? "root" : n.kind === "e" ? "e" : "";
-  return `<div class="n ${cls}" style="left:${it.x - W / 2}px;top:${it.y}px;width:${W}px;height:${H}px;--k:${KC[n.kind]}">${C[it.id][2] ? `<em>${C[it.id][2]} س.م</em>` : ""}${code(it.id)}<span>${esc(C[it.id][1])}</span></div>`;
+  return `<div class="n ${cls}" style="left:${it.x - W / 2}px;top:${it.y}px;width:${W}px;height:${H}px;--k:${KC[n.kind]}">${C[it.id][2] ? `<em>${C[it.id][2]} س.م</em>` : ""}${code(it.id)}<span>${esc(C[it.id][1])}</span>${n.pre ? `<b class="need">بعد ${needTxt(n.pre)}</b>` : ""}</div>`;
 }).join(""));
-// الخطوط: من تحت المادة، لخط أفقي خاص فيها، ثم نازل للمادة اللي بعدها
-const busY = it => it.y + H + 20 + it.bus * 9;
-const seg = new Set(), out = [];
-const add = (d, cls = "") => { if (!seg.has(d + cls)) { seg.add(d + cls); out.push(`<path class="${cls}" d="${d}"/>`); } };
-edges.forEach(({path, or}) => path.slice(1).forEach((b, i) => {
-  const a = path[i], top = a.real ? a.y + H : a.y, by_ = busY(a), last = i === path.length - 2;
-  add(`M${a.x},${top} V${by_} H${b.x}`);
-  if (!a.real) add(`M${a.x},${a.y} V${a.y + H}`);
-  add(`M${b.x},${by_} V${b.real ? b.y - 2 : b.y}`, last && or ? "dash" : "");
-}));
-// رؤوس الأسهم وعلامة "أو"
-Object.values(items).filter(x => x.real && x.ups.length).forEach(it => {
-  out.push(`<path d="M${it.x - 6},${it.y - 10} L${it.x},${it.y - 2} L${it.x + 6},${it.y - 10}" style="stroke-width:2.6"/>`);
-  if (by[it.id].groups.some(g => g.filter(p => by[p]).length > 1)) out.push(`<text x="${it.x - W / 2 - 5}" y="${it.y + 16}" text-anchor="end">أو</text>`);
+// الخطوط: كل مادة لها لون، ينزل من تحتها لخط أفقي خاص فيها، ثم لكل مادة تفتحها.
+// كل سهم داخل للمادة له مكانه فوقها عشان ما تركب الخطوط على بعض.
+const PAL = ["#7DE6D5","#F7DC6B","#FF9BD2","#9DB7FF","#FFB27A","#B9F27C","#D9B3FF","#FF8F8F","#7FD8FF","#F2F2F2"];
+const color = {};
+Object.values(items).filter(x => x.real && x.downs.length).sort((a, b) => a.row - b.row || b.x - a.x).forEach((it, i) => color[it.id] = PAL[i % PAL.length]);
+const busY = it => it.y + H + 22 + it.bus * BUS;
+const inc = {};
+edges.forEach(e => { const t = e.path.at(-1).id; (inc[t] ??= []).push(e); });
+Object.values(inc).forEach(list => {
+  list.sort((a, b) => b.path.at(-2).x - a.path.at(-2).x);
+  const step = Math.min(16, (W - 30) / Math.max(1, list.length - 1));
+  list.forEach((e, k) => e.dx = (k - (list.length - 1) / 2) * step);
 });
+const out = [], heads = [];
+edges.forEach(e => {
+  const c = color[e.path[0].id], st = `style="--c:${c}"`;
+  let d = "";
+  e.path.slice(1).forEach((b, i) => {
+    const a = e.path[i], last = i === e.path.length - 2, bx = b.x + (last ? e.dx : 0);
+    d += `M${a.x},${a.real ? a.y + H : a.y} V${busY(a)} H${bx} V${b.real ? b.y - 3 : b.y} `;
+    if (!b.real) d += `M${b.x},${b.y} V${b.y + H} `;
+  });
+  out.push(`<path ${st} class="${e.or ? "dash" : ""}" d="${d}"/>`);
+  const t = e.path.at(-1), x = t.x + e.dx;
+  heads.push(`<path ${st} d="M${x - 5.5},${t.y - 11} L${x},${t.y - 3} L${x + 5.5},${t.y - 11}" style="--c:${c};stroke-width:2.8"/>`);
+});
+// المصدر: نقطة بلونه تحت المادة
+Object.values(items).filter(x => x.real && x.downs.length).forEach(it => out.push(`<circle cx="${it.x}" cy="${it.y + H + 1}" r="4.5" fill="${color[it.id]}"/>`));
+out.push(...heads);
 $("lines").setAttribute("width", AW); $("lines").setAttribute("height", total);
 $("lines").innerHTML = out.join("");
 $("legend").innerHTML = [["c","أساسي مشترك"],["t","مواد التخصص"],["f","متطلب كلية"],["u","متطلب جامعة"]]
   .filter(([k]) => Object.values(by).some(n => n.kind === k)).map(([k, t]) => `<li><i style="--k:${KC[k]}"></i>${t}</li>`).join("") +
   `<li><i class="e"></i>اختياري</li><li><i class="dash"></i>متطلب بديل (أو)</li>`;
+$("legend").insertAdjacentHTML("afterend", `<p class="howto">كل مادة خطوطها بلون واحد، تنزل منها للمواد اللي تفتحها. وتحت اسم كل مادة مكتوب وش تحتاج قبلها.</p>`);
 $("src").textContent = `المصدر: ${plan.srcNote} من موقع الجامعة العربية المفتوحة. الأسماء العربية ترجمة تقريبية؛ تأكد من مرشدك الأكاديمي قبل التسجيل. تحديث أكتوبر 2026.`;
 if (window.QR_SVG) $("qr").innerHTML = window.QR_SVG;
 document.fonts.ready.then(() => { document.body.dataset.ready = "1"; });
