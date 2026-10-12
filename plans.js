@@ -179,6 +179,26 @@ const PLANS = [
    fe:{hrs:4, list:[["TR102","E121"],["EL123","EL112","*"],["EL230","E121"],["EL240","EL112","*"],["EL350","EL112","*"],["EL330","EL112"]], note:"المواد المعلّمة بـ * ما تنطرح في فرع الكويت للحين."}}
 ];
 
+/* ===== الخطة فصل بفصل: UE = اختياري جامعة، FE = اختياري كلية =====
+   تخصصات الأعمال مبنية على الخطة المقترحة في دليل طالب الكلية 2022، مع تقديم MGT112 و BUC112 فصل
+   عشان B207A يتوافق مع متطلباته. تقنية المعلومات والأدب الإنجليزي: ترتيب مقترح حسب المتطلبات. */
+const Y1 = [["EL111","AR113","GR118","GT101","BUS101","ECO101"], ["EL112","BUC111","ACT111","MGT111","MKT111"]];
+const Y2A = ["BUS102","ACT112","MGT112","MKT112","BUC112"];
+const SEM = {
+  acc:[...Y1, Y2A, ["B207A","BB293","GB102"], ["B207B","B294","UE"], ["BUS310","B326","FE"], ["B391","ACC300","ACC302"]],
+  mkt:[...Y1, Y2A, ["B207A","B206","GB102"], ["B207B","BUS208","UE"], ["BUS310","MKT331","MKT332","FE"], ["B327","B328"]],
+  mgt:[...Y1, Y2A, ["B207A","B205A","GB102"], ["B207B","B205B","UE"], ["BUS310","B329","FE"], ["BUS628","BUS629"]],
+  eco:[...Y1, ["BUS102","ECO102","MGT112","MKT112","BUC112"], ["B207A","DD209A","GB102"], ["B207B","DD209B","UE"], ["BUS310","DD309A","ACT112"], ["DD309B","ECO342"]],
+  sys:[...Y1, Y2A, ["B207A","SYS210","GB102"], ["B207B","SYS280","UE"], ["BUS310","SYS380","FE"], ["B327","B329"]],
+  mis:[Y1[0], ["EL112","BUC111","MIS111","MGT111","MKT111"], ["ACT111","BUC112","MIS112","BUS102","SYS111"], ["SYS210","MIS200-IS","GB102","FE"], ["B207A","MIS201-IS","MIS330"], ["B207B","MIS331","MIS332"], ["BUS310","MIS300","UE"]],
+  itc:[["EL111","AR113","GR118","GT101","MST129","GB102"], ["EL112","TM105","MT131","M110"], ["TM112","M251","TM103"], ["M269","TM255","UE"], ["T215B","TM354","MT132"], ["TM260","TM351","FE","FE"], ["TM355","TM471"]],
+  ell:[["EL111","AR113","GR118","GT101","GB102","UE"], ["EL112","EL117","EL119","E120","EL118"], ["E121","EL122","A112A"], ["A112B","L201A","FE"], ["A230A","L201B"], ["A230B","E304A"], ["EA300A","E304B"], ["EA300B"]]
+};
+PLANS.forEach(p => { p.sem = SEM[p.id]; p.semNote = ["itc","ell"].includes(p.id) ? "ترتيب مقترح حسب المتطلبات" : "مبنية على الخطة المقترحة في دليل الطالب"; });
+const feHrs = p => p.id === "itc" ? 3 : p.fe.hrs;
+const hrsOf = (p, c) => c === "UE" ? 3 : c === "FE" ? feHrs(p) : C[c][2];
+const preOf = (p, c) => ([...p.map, ...p.fe.list, ...p.ue].find(r => r[0] === c) || [, ""])[1];
+
 /* ===== ترتيب الخريطة: كل مادة في المرحلة اللي بعد آخر متطلب لها ===== */
 function layout(plan) {
   const nodes = plan.map.map(([code, pre, kind]) => ({code, kind, groups: pre ? pre.split("+").map(g => g.split("|")) : []}));
@@ -200,7 +220,7 @@ function layout(plan) {
   return {nodes, by, cols};
 }
 
-window.ASC_PLANS = {C, KIND, PLANS, layout};
+window.ASC_PLANS = {C, KIND, PLANS, layout, hrsOf, preOf};
 
 /* ===== العرض ===== */
 const root = document.getElementById("plantree");
@@ -208,7 +228,21 @@ if (!root) return;
 const esc = s => String(s).replace(/[&<>"]/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
 const preText = p => p ? p.split("+").map(g => g.split("|").join(" أو ")).join(" + ") : "بدون متطلب";
 const codeTag = c => `<span class="code">${esc(c)}</span>`;
-let cur = null, sel = null, links = {};
+let cur = null, sel = null, links = {}, view = "sem";
+const YEAR = ["الأولى","الثانية","الثالثة","الرابعة"];
+const preNice = p => p.split("+").map(g => g.split("|").map(x => x === "EL099" ? "التمهيدي" : codeTag(x)).join(" أو ")).join(" + ");
+function semHtml(plan) {
+  let done = 0;
+  return plan.sem.map((s, i) => {
+    const h = s.reduce((a, c) => a + hrsOf(plan, c), 0); done += h;
+    return `<li class="ps"><div class="ps-h"><span class="ps-n">${i + 1}</span><b>السنة ${YEAR[i >> 1]} · الفصل ${i % 2 ? "الثاني" : "الأول"}</b><small>${h} ساعة · أنجزت ${done} من ${plan.hrs}</small></div>
+      <ul class="ps-c">${s.map(c => {
+        if (c === "UE" || c === "FE") return `<li class="pc k-e"><div><b>${c === "UE" ? "اختياري جامعة" : "اختياري كلية"}</b><em>${hrsOf(plan, c)} س.م</em></div><span>تختار من القائمة تحت</span></li>`;
+        const pre = preOf(plan, c), kind = plan.free.includes(c) ? "u" : (plan.map.find(r => r[0] === c) || [, , "e"])[2];
+        return `<li class="pc k-${kind}"><div>${codeTag(c)}<em>${C[c][2]} س.م</em></div><span>${esc(C[c][1])}</span><small>${pre ? "يحتاج: " + preNice(pre) : "بدون متطلب"}</small></li>`;
+      }).join("")}</ul></li>`;
+  }).join("") + `<li class="ps ps-grad"><div class="ps-h"><span class="ps-n">🎓</span><b>مبروك التخرج!</b><small>${plan.hrs} ساعة معتمدة</small></div></li>`;
+}
 
 function render(id) {
   const plan = PLANS.find(p => p.id === id) || PLANS[0];
@@ -222,6 +256,12 @@ function render(id) {
     <div class="pdl"><span>حمّل الخطة:</span>
       <a class="btn y" href="plans/${plan.id}.png" download="الخطة-الدراسية-${esc(plan.title.replace(/ /g, "-"))}.png">صورة للجوال</a>
       <a class="btn o" href="plans/${plan.id}.pdf" download="الخطة-الدراسية-${esc(plan.title.replace(/ /g, "-"))}.pdf">ملف PDF</a></div>
+    <div class="pview" role="tablist"><button type="button" role="tab" data-v="sem" aria-selected="${view === "sem"}">فصل بفصل</button><button type="button" role="tab" data-v="map" aria-selected="${view === "map"}">خريطة المتطلبات</button></div>
+    <div id="vsem"${view === "sem" ? "" : " hidden"}>
+      <p class="phint">طريقك للتخرج فصل بفصل: سجّل مواد كل فصل بالترتيب، وتحت كل مادة مكتوب وش تحتاج قبلها.</p>
+      <ol class="psem">${semHtml(plan)}</ol>
+    </div>
+    <div id="vmap"${view === "map" ? "" : " hidden"}>
     <p class="phint">كل عمود مرحلة: ما تقدر تاخذ المادة إلا بعد ما تخلص المواد اللي قبلها في الخط. اضغط على أي مادة يبين لك وش تحتاج قبلها ووش تفتح لك بعدها.</p>
     <ul class="plegend">${["p","u","f","c","t","e"].filter(k => cur.nodes.some(n => n.kind === k)).map(k => `<li><i class="k-${k}"></i>${KIND[k]}</li>`).join("")}<li><i class="or"></i>متطلب بديل (أو)</li></ul>
     <div class="pscroll" tabindex="0" aria-label="خريطة المواد، اسحب يمين ويسار">
@@ -233,12 +273,19 @@ function render(id) {
     </div>
     <p class="pmore" hidden>اسحب الخريطة لليسار عشان تشوف باقي المراحل ←</p>
     <div class="pinfo" id="pinfo" aria-live="polite"><p class="pempty">اختار مادة من الخريطة عشان تشوف تفاصيلها.</p></div>
+    </div>
     <div class="pextra">
       <section><h3>تقدر تاخذها من أول فصل</h3><p>متطلبات جامعة إجبارية بدون متطلب سابق.</p><ul class="pchips">${plan.free.map(c => chip([c, ""])).join("")}</ul></section>
       <section><h3>اختياري جامعة <small>3 ساعات</small></h3><p>تختار مادة وحدة من هذي.</p><ul class="pchips">${plan.ue.map(chip).join("")}</ul></section>
       <section><h3>اختياري كلية <small>${plan.fe.hrs} ساعات</small></h3>${plan.fe.note ? `<p>${esc(plan.fe.note)}</p>` : ""}<ul class="pchips">${plan.fe.list.map(chip).join("")}</ul></section>
     </div>
-    <p class="psrc">المصدر: <a href="${esc(plan.src)}" target="_blank" rel="noopener">${esc(plan.srcNote)}</a> من موقع الجامعة العربية المفتوحة. الأسماء العربية ترجمة تقريبية، والمراحل ترتيب حسب المتطلبات مو جدول فصول رسمي. تأكد من مرشدك الأكاديمي قبل التسجيل.</p>`;
+    <p class="psrc">المصدر: <a href="${esc(plan.src)}" target="_blank" rel="noopener">${esc(plan.srcNote)}</a> من موقع الجامعة العربية المفتوحة، وتوزيع الفصول ${esc(plan.semNote)}. تقدر تغيّر الترتيب حسب المطروح كل فصل، بس لازم تخلص المتطلب قبل المادة. الأسماء العربية ترجمة تقريبية؛ تأكد من مرشدك الأكاديمي قبل التسجيل.</p>`;
+  $p("pbody").querySelectorAll(".pview button").forEach(b => b.onclick = () => {
+    view = b.dataset.v;
+    $p("pbody").querySelectorAll(".pview button").forEach(x => x.setAttribute("aria-selected", x === b));
+    $p("vsem").hidden = view !== "sem"; $p("vmap").hidden = view !== "map";
+    requestAnimationFrame(draw);
+  });
   $p("pbody").querySelectorAll(".pn").forEach(b => b.onclick = () => pick(b.dataset.c === sel ? null : b.dataset.c));
   $p("pbody").querySelectorAll(".pchip").forEach(b => b.onclick = () => info(b.dataset.info));
   requestAnimationFrame(draw);
