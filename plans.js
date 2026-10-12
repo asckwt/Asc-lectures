@@ -281,8 +281,8 @@ function schedule(plan, doneKeys, {hrs = 20, summer = 0, start = {t: "2", y: 202
 window.ASC_PLANS = {C, KIND, PLANS, layout, hrsOf, preOf, lanes, schedule, planItems};
 
 /* ===== العرض ===== */
-const root = document.getElementById("plantree"), maker = document.getElementById("planmaker"), gallery = document.getElementById("planimgs-box");
-if (!root && !maker && !gallery) return;
+const root = document.getElementById("plantree");
+if (!root) return;
 const $p = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"]/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
 const codeTag = c => `<span class="code">${esc(c)}</span>`;
@@ -290,6 +290,7 @@ const preNice = p => p.split("+").map(g => g.split("|").map(x => x === "EL099" ?
 const YEAR = ["الأولى","الثانية","الثالثة","الرابعة"];
 const kindOf = (plan, c) => c === "UE" || c === "FE" ? "e" : plan.free.includes(c) ? "u" : (plan.map.find(r => r[0] === c) || [, , "e"])[2];
 let cur = null, view = "img";
+const VIEWS = [["img", "الصورة"], ["mine", "سوّ خطتك"], ["sem", "فصل بفصل"], ["chain", "التسلسل"]];
 
 // بطاقة مادة وحدة (تُستخدم في كل العروض)
 function courseCard(plan, c, foot) {
@@ -340,13 +341,13 @@ function mineHtml(plan) {
   const items = planItems(plan), st = store.get(plan.id), done = new Set(st.done || []);
   const opt = (v, cur, label) => `<option value="${v}"${String(v) === String(cur) ? " selected" : ""}>${label}</option>`;
   return `
-    <div class="mine-step"><h3><span>2</span>أشّر على المواد اللي خلصتها</h3>
+    <div class="mine-step"><h3><span>1</span>أشّر على المواد اللي خلصتها</h3>
       <p>لما تأشّر مادة نأشّر متطلباتها معاها. اللي ما أشّرت عليه نعتبره باقي عليك.</p>
       ${plan.sem.map((s, i) => `<fieldset><legend>مواد الفصل ${i + 1} في الخطة</legend>${items.filter(x => x.rank === i).map(x =>
         `<label class="tick"><input type="checkbox" data-k="${esc(x.key)}"${done.has(x.key) ? " checked" : ""}><span>${x.code === "UE" ? "اختياري جامعة" : x.code === "FE" ? "اختياري كلية" : codeTag(x.code)}<small>${x.code === "UE" || x.code === "FE" ? x.hrs + " س.م" : esc(C[x.code][1])}</small></span></label>`).join("")}</fieldset>`).join("")}
       <p class="mine-all"><button type="button" class="linkbtn" data-all="0">مسح الكل</button></p>
     </div>
-    <div class="mine-step"><h3><span>3</span>جدولك</h3>
+    <div class="mine-step"><h3><span>2</span>جدولك</h3>
       <div class="mine-opts">
         <label>كم ساعة تبي تسجل كل فصل؟<select id="m-hrs">${[12, 16, 20].map(h => opt(h, st.hrs || 20, h + " ساعة" + (h === 20 ? " (عبء كامل)" : ""))).join("")}</select></label>
         <label>أول فصل بتسجل فيه<select id="m-start">${opt("2-2026", st.start || "2-2026", "الفصل الثاني 2026/2027")}${opt("S-2026", st.start, "الفصل الصيفي 2027")}${opt("1-2027", st.start, "الفصل الأول 2027/2028")}</select></label>
@@ -354,8 +355,8 @@ function mineHtml(plan) {
       </div>
       <p class="mine-note">الحد الأعلى للتسجيل يعتمد على أنظمة الجامعة ومعدلك، تأكد منه من مرشدك.</p>
     </div>
-    <div class="mine-step" id="m-plan"><h3><span>4</span>خطتك في تخصص ${esc(plan.title)}</h3><div id="m-out"></div></div>
-    ${waNum() ? `<div class="mine-step mine-ask"><h3><span>5</span>تبينا نرتبها لك؟</h3>
+    <div class="mine-step" id="m-plan"><h3><span>3</span>خطتك في تخصص ${esc(plan.title)}</h3><div id="m-out"></div></div>
+    ${waNum() ? `<div class="mine-step mine-ask"><h3><span>4</span>تبينا نرتبها لك؟</h3>
       <p>ترسل لنا تخصصك والمواد اللي أشّرت عليها على الواتساب، ونراجع خطتك ونرد عليك.</p>
       <label>اسمك (اختياري)<input type="text" id="m-name" autocomplete="name" value="${esc(st.name || "")}"></label>
       <a class="btn w" id="m-ask" target="_blank" rel="noopener">أرسل طلبي على الواتساب</a></div>` : ""}`;
@@ -399,24 +400,29 @@ function mineWire(plan, box) {
   update();
 }
 
-function render(id) {
+function render(id, v) {
   const plan = PLANS.find(p => p.id === id) || PLANS[0];
+  if (VIEWS.some(([x]) => x === v)) view = v;
   cur = {plan};
+  store.set("last", {id: plan.id});
   document.querySelectorAll("#plantree .ptab").forEach(t => t.setAttribute("aria-selected", t.dataset.p === plan.id));
   const chip = ([c, pre, star]) => `<li><span class="pchip"><span>${codeTag(c)}${star ? "<sup>*</sup>" : ""}</span><small>${esc(C[c][1])}</small>${pre ? `<small class="pre">يحتاج: ${preNice(pre)}</small>` : ""}</span></li>`;
   const file = `الخطة-الدراسية-${esc(plan.title.replace(/ /g, "-"))}`;
-  const V = [["img", "الصورة"], ["sem", "فصل بفصل"], ["chain", "التسلسل"]];
   $p("pbody").innerHTML = `
     <div class="phead"><div><b>${esc(plan.title)}</b><span dir="ltr">${esc(plan.en)}</span></div>
       <div class="pstat"><b>${plan.hrs}</b><small>ساعة معتمدة</small></div></div>
     <div class="pdl"><span>حمّل الخطة:</span>
       <a class="btn y" href="plans/${plan.id}.png" download="${file}.png">صورة للجوال</a>
-      <a class="btn o" href="plans/${plan.id}.pdf" download="${file}.pdf">ملف PDF</a></div>
-    <div class="pview" role="tablist">${V.map(([v, t]) => `<button type="button" role="tab" data-v="${v}" aria-selected="${view === v}">${t}</button>`).join("")}</div>
-    <a class="pmine" href="#myplan/${plan.id}"><b>سوّ خطتك بنفسك</b><span>أشّر على اللي خلصته، ونطلع لك باقي خطتك فصل بفصل ←</span></a>
+      <a class="btn o" href="plans/${plan.id}.pdf" download="${file}.pdf">ملف PDF</a>
+      <button type="button" class="btn o" id="p-print">اطبع</button></div>
+    <div class="pview" role="tablist">${VIEWS.map(([v, t]) => `<button type="button" role="tab" data-v="${v}" aria-selected="${view === v}">${t}</button>`).join("")}</div>
     <div id="vimg"${view === "img" ? "" : " hidden"}>
       <p class="phint">هذي خطة التخصص كاملة في صورة وحدة. احفظها عندك من زر «صورة للجوال» فوق، أو اضغط على الصورة مطولاً واختر حفظ.</p>
       <a class="pimg" href="plans/${plan.id}.png" target="_blank" rel="noopener"><img src="plans/${plan.id}.png" alt="الخطة الدراسية لتخصص ${esc(plan.title)}: شجرة المواد ومتطلباتها" decoding="async"></a>
+    </div>
+    <div id="vmine"${view === "mine" ? "" : " hidden"}>
+      <p class="phint">أشّر على المواد اللي خلصتها، ونرتب لك باقي موادك فصل بفصل لين التخرج.</p>
+      <div id="m-body">${mineHtml(plan)}</div>
     </div>
     <div id="vsem"${view === "sem" ? "" : " hidden"}>
       <p class="phint">طريقك للتخرج فصل بفصل: سجّل مواد كل فصل بالترتيب، وتحت كل مادة مكتوب وش تحتاج قبلها.</p>
@@ -433,56 +439,28 @@ function render(id) {
     <p class="psrc">المصدر: <a href="${esc(plan.src)}" target="_blank" rel="noopener">${esc(plan.srcNote)}</a> من موقع الجامعة العربية المفتوحة، وتوزيع الفصول ${esc(plan.semNote)}. تقدر تغيّر الترتيب حسب المطروح كل فصل، بس لازم تخلص المتطلب قبل المادة. الأسماء العربية ترجمة تقريبية؛ تأكد من مرشدك الأكاديمي قبل التسجيل.</p>`;
   $p("pbody").querySelectorAll(".pview button").forEach(b => b.onclick = () => {
     view = b.dataset.v;
+    history.replaceState(null, "", `#plans/${plan.id}/${view}`);
     $p("pbody").querySelectorAll(".pview button").forEach(x => x.setAttribute("aria-selected", x === b));
-    V.forEach(([v]) => $p("v" + v).hidden = v !== view);
+    VIEWS.forEach(([v]) => $p("v" + v).hidden = v !== view);
   });
+  $p("p-print").onclick = () => print();
+  mineWire(plan, $p("m-body"));
 }
 
 if (root) {
   root.innerHTML = `<div class="tabs ptabs" role="tablist">${PLANS.map((p, i) =>
     `<button type="button" role="tab" class="tab ptab" data-p="${p.id}" aria-selected="${!i}"><i style="background:${p.color}"></i>${p.title}</button>`).join("")}</div><div id="pbody"></div>`;
-  root.querySelectorAll(".ptab").forEach(t => t.onclick = () => { history.replaceState(null, "", "#plans/" + t.dataset.p); render(t.dataset.p); });
-  render(location.hash.startsWith("#plans/") ? location.hash.split("/")[1] : PLANS[0].id);
+  root.querySelectorAll(".ptab").forEach(t => t.onclick = () => { history.replaceState(null, "", `#plans/${t.dataset.p}/${view}`); render(t.dataset.p); });
+  // الروابط القديمة: سوّ خطتك وصور الخطط صاروا داخل صفحة الخطط
+  const [h, sub] = location.hash.slice(1).split("/");
+  const old = {myplan: "mine", planimgs: "img"}[h];
+  if (old) location.replace(`#plans/${sub || store.get("last").id || PLANS[0].id}/${old}`);
+  else { const [, id, v] = location.hash.slice(1).split("/"); render(h === "plans" && id ? id : store.get("last").id, v); }
 }
-
-/* صفحة سوّ خطتك: تخصص واحد، تأشير المواد، والخطة الناتجة */
-let makerId = null;
-function renderMaker(id) {
-  const plan = PLANS.find(p => p.id === id);
-  makerId = plan?.id || null;
-  store.set("last", plan ? {id: plan.id} : {});
-  maker.innerHTML = `
-    <div class="mine-step"><h3><span>1</span>اختار تخصصك</h3>
-      <div class="tabs ptabs" role="tablist">${PLANS.map(p => `<button type="button" role="tab" class="tab mtab" data-p="${p.id}" aria-selected="${p.id === makerId}"><i style="background:${p.color}"></i>${p.title}</button>`).join("")}</div></div>
-    ${plan ? `<div id="m-body">${mineHtml(plan)}</div>` : `<p class="phint">اختار تخصصك عشان نطلع لك موادك.</p>`}`;
-  maker.querySelectorAll(".mtab").forEach(t => t.onclick = () => { history.replaceState(null, "", "#myplan/" + t.dataset.p); renderMaker(t.dataset.p); });
-  if (plan) mineWire(plan, $p("m-body"));
-}
-if (maker) {
-  const h = location.hash.split("/");
-  renderMaker(h[0] === "#myplan" && h[1] ? h[1] : store.get("last").id);
-}
-/* صفحة صور الخطط: صورة الخطة الجاهزة لكل تخصص */
-let galleryId = null;
-function renderGallery(id) {
-  const plan = PLANS.find(p => p.id === id) || PLANS[0], file = `الخطة-الدراسية-${esc(plan.title.replace(/ /g, "-"))}`;
-  galleryId = plan.id;
-  gallery.innerHTML = `
-    <div class="tabs ptabs" role="tablist">${PLANS.map(p => `<button type="button" role="tab" class="tab gtab" data-p="${p.id}" aria-selected="${p.id === plan.id}"><i style="background:${p.color}"></i>${p.title}</button>`).join("")}</div>
-    <div class="pdl"><span>خطة ${esc(plan.title)}:</span>
-      <a class="btn y" href="plans/${plan.id}.png" download="${file}.png">حمّل الصورة</a>
-      <a class="btn o" href="plans/${plan.id}.pdf" download="${file}.pdf">ملف PDF</a>
-      <button type="button" class="btn o" id="g-print">اطبعها</button></div>
-    <p class="phint">على الجوال تقدر بعد تضغط على الصورة مطولاً وتختار حفظ.</p>
-    <a class="pimg" href="plans/${plan.id}.png" target="_blank" rel="noopener"><img src="plans/${plan.id}.png" alt="الخطة الدراسية لتخصص ${esc(plan.title)}: شجرة المواد ومتطلباتها" decoding="async"></a>`;
-  gallery.querySelectorAll(".gtab").forEach(t => t.onclick = () => { history.replaceState(null, "", "#planimgs/" + t.dataset.p); renderGallery(t.dataset.p); });
-  $p("g-print").onclick = () => print();
-}
-if (gallery) renderGallery(location.hash.startsWith("#planimgs/") ? location.hash.split("/")[1] : store.get("last").id);
 addEventListener("hashchange", () => {
-  const [v, sub] = location.hash.slice(1).split("/");
-  if (gallery && v === "planimgs" && sub && sub !== galleryId) renderGallery(sub);
-  if (root && v === "plans" && sub && sub !== cur?.plan.id) render(sub);
-  if (maker && v === "myplan" && sub && sub !== makerId) renderMaker(sub);
+  const [v, sub, mode] = location.hash.slice(1).split("/");
+  const old = {myplan: "mine", planimgs: "img"}[v];
+  if (old) return location.replace(`#plans/${sub || cur?.plan.id || PLANS[0].id}/${old}`);
+  if (v === "plans" && sub && (sub !== cur?.plan.id || (mode && mode !== view))) render(sub, mode);
 });
 })();
