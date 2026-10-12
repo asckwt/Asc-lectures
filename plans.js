@@ -220,157 +220,214 @@ function layout(plan) {
   return {nodes, by, cols};
 }
 
-window.ASC_PLANS = {C, KIND, PLANS, layout, hrsOf, preOf};
+/* ===== تسلسل المواد: كل سلسلة مادة تفتح اللي بعدها =====
+   EL099 و EL111 و EL112 بوابة البداية، والمواد اللي ما تفتح شي وتحتاج بس EL111 تطلع بقائمة لحالها. */
+const GATE = ["EL099", "EL111", "EL112"];
+function lanes(plan) {
+  const {nodes, by} = layout(plan);
+  const dset = c => by[c].ds ??= new Set(by[c].kids.flatMap(k => [k, ...dset(k)]));
+  const desc = c => dset(c).size;
+  const order = nodes.filter(n => !GATE.includes(n.code)).sort((a, b) => a.st - b.st || desc(b.code) - desc(a.code));
+  const prefix = c => c.replace(/\d.*/, "");
+  const list = [], laneOf = {}, solo = [];
+  for (const n of order) {
+    const real = n.parents.filter(p => !GATE.includes(p));
+    if (!n.kids.length && !real.length) { solo.push(n.code); continue; }
+    const tails = real.filter(p => laneOf[p] && laneOf[p].at(-1) === p)
+      .sort((a, b) => (prefix(b) === prefix(n.code)) - (prefix(a) === prefix(n.code)) || laneOf[b].length - laneOf[a].length);
+    if (tails.length) { laneOf[tails[0]].push(n.code); laneOf[n.code] = laneOf[tails[0]]; }
+    else { const l = [n.code]; list.push(l); laneOf[n.code] = l; }
+  }
+  list.sort((a, b) => b.length - a.length);
+  return {lanes: list, solo, by, gate: GATE.filter(c => by[c])};
+}
+
+/* ===== صانع الخطة: يوزع المواد الباقية على الفصول حسب المتطلبات ===== */
+const TERM = {"1": "الفصل الأول", "2": "الفصل الثاني", "S": "الفصل الصيفي"};
+const termName = t => t.t === "S" ? `${TERM.S} ${t.y + 1}` : `${TERM[t.t]} ${t.y}/${t.y + 1}`;
+function nextTerm(t, summer) {
+  if (t.t === "1") return {t: "2", y: t.y};
+  if (t.t === "2") return summer ? {t: "S", y: t.y} : {t: "1", y: t.y + 1};
+  return {t: "1", y: t.y + 1};
+}
+// مفاتيح عناصر الخطة: رمز المادة، أو UE1 / FE1 / FE2 للاختياري
+function planItems(plan) {
+  const n = {};
+  return plan.sem.flatMap((s, i) => s.map(c => {
+    const key = c === "UE" || c === "FE" ? c + (n[c] = (n[c] || 0) + 1) : c;
+    return {key, code: c, rank: i, hrs: hrsOf(plan, c), pre: c === "UE" || c === "FE" ? "" : preOf(plan, c)};
+  }));
+}
+function schedule(plan, doneKeys, {hrs = 20, summer = 0, start = {t: "2", y: 2026}} = {}) {
+  const items = planItems(plan), known = new Set(items.map(x => x.code));
+  const {by} = layout(plan);
+  const dset = c => by[c] ? (by[c].ds ??= new Set(by[c].kids.flatMap(k => [k, ...dset(k)]))) : new Set();
+  const desc = c => dset(c).size;
+  const done = new Set(items.filter(x => doneKeys.has(x.key)).map(x => x.code));
+  let left = items.filter(x => !doneKeys.has(x.key)), t = start;
+  const terms = [];
+  const ok = x => !x.pre || x.pre.split("+").every(g => g.split("|").some(c => c === "EL099" || !known.has(c) || done.has(c)));
+  for (let guard = 0; left.length && guard < 40; guard++, t = nextTerm(t, summer)) {
+    const cap = t.t === "S" ? summer : hrs;
+    const pick = [];
+    let sum = 0;
+    left.filter(ok).sort((a, b) => a.rank - b.rank || desc(b.code) - desc(a.code)).forEach(x => { if (sum + x.hrs <= cap) { pick.push(x); sum += x.hrs; } });
+    if (pick.length) { terms.push({name: termName(t), items: pick, hrs: sum}); pick.forEach(x => done.add(x.code)); left = left.filter(x => !pick.includes(x)); }
+    else if (t.t !== "S" && !left.some(ok)) break;
+  }
+  return {terms, left: left.length};
+}
+
+window.ASC_PLANS = {C, KIND, PLANS, layout, hrsOf, preOf, lanes, schedule, planItems};
 
 /* ===== العرض ===== */
 const root = document.getElementById("plantree");
 if (!root) return;
+const $p = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"]/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
-const preText = p => p ? p.split("+").map(g => g.split("|").join(" أو ")).join(" + ") : "بدون متطلب";
 const codeTag = c => `<span class="code">${esc(c)}</span>`;
-let cur = null, sel = null, links = {}, view = "sem";
-const YEAR = ["الأولى","الثانية","الثالثة","الرابعة"];
 const preNice = p => p.split("+").map(g => g.split("|").map(x => x === "EL099" ? "التمهيدي" : codeTag(x)).join(" أو ")).join(" + ");
+const YEAR = ["الأولى","الثانية","الثالثة","الرابعة"];
+const kindOf = (plan, c) => c === "UE" || c === "FE" ? "e" : plan.free.includes(c) ? "u" : (plan.map.find(r => r[0] === c) || [, , "e"])[2];
+let cur = null, view = "sem";
+
+// بطاقة مادة وحدة (تُستخدم في كل العروض)
+function courseCard(plan, c, foot) {
+  if (c === "UE" || c === "FE") return `<li class="pc k-e"><div><b>${c === "UE" ? "اختياري جامعة" : "اختياري كلية"}</b><em>${hrsOf(plan, c)} س.م</em></div><span>تختار من القائمة تحت</span></li>`;
+  const pre = preOf(plan, c);
+  return `<li class="pc k-${kindOf(plan, c)}"><div>${codeTag(c)}<em>${C[c][2]} س.م</em></div><span>${esc(C[c][1])}</span>${foot ?? `<small>${pre ? "يحتاج: " + preNice(pre) : "بدون متطلب"}</small>`}${links(c)}</li>`;
+}
+function links(c) {
+  const lect = typeof CONFIG !== "undefined" ? CONFIG.lectures.find(l => l.code === c || (c === "BB293" && l.code === "B293")) : null;
+  const chat = typeof courseChat !== "undefined" ? courseChat[c] : null;
+  return lect || chat ? `<p class="pl">${lect ? `<a href="${esc(lect.url)}" target="_blank" rel="noopener">محاضرة مجانية</a>` : ""}${chat ? `<a class="wa" href="${esc(chat)}" target="_blank" rel="noopener">قروب المادة</a>` : ""}</p>` : "";
+}
+function termCard(n, title, sub, cards, extraCls = "") {
+  return `<li class="ps ${extraCls}"><div class="ps-h"><span class="ps-n">${n}</span><b>${title}</b><small>${sub}</small></div>${cards ? `<ul class="ps-c">${cards}</ul>` : ""}</li>`;
+}
+
 function semHtml(plan) {
   let done = 0;
   return plan.sem.map((s, i) => {
     const h = s.reduce((a, c) => a + hrsOf(plan, c), 0); done += h;
-    return `<li class="ps"><div class="ps-h"><span class="ps-n">${i + 1}</span><b>السنة ${YEAR[i >> 1]} · الفصل ${i % 2 ? "الثاني" : "الأول"}</b><small>${h} ساعة · أنجزت ${done} من ${plan.hrs}</small></div>
-      <ul class="ps-c">${s.map(c => {
-        if (c === "UE" || c === "FE") return `<li class="pc k-e"><div><b>${c === "UE" ? "اختياري جامعة" : "اختياري كلية"}</b><em>${hrsOf(plan, c)} س.م</em></div><span>تختار من القائمة تحت</span></li>`;
-        const pre = preOf(plan, c), kind = plan.free.includes(c) ? "u" : (plan.map.find(r => r[0] === c) || [, , "e"])[2];
-        return `<li class="pc k-${kind}"><div>${codeTag(c)}<em>${C[c][2]} س.م</em></div><span>${esc(C[c][1])}</span><small>${pre ? "يحتاج: " + preNice(pre) : "بدون متطلب"}</small></li>`;
-      }).join("")}</ul></li>`;
-  }).join("") + `<li class="ps ps-grad"><div class="ps-h"><span class="ps-n">🎓</span><b>مبروك التخرج!</b><small>${plan.hrs} ساعة معتمدة</small></div></li>`;
+    return termCard(i + 1, `السنة ${YEAR[i >> 1]} · الفصل ${i % 2 ? "الثاني" : "الأول"}`, `${h} ساعة · أنجزت ${done} من ${plan.hrs}`, s.map(c => courseCard(plan, c)).join(""));
+  }).join("") + termCard("🎓", "مبروك التخرج!", `${plan.hrs} ساعة معتمدة`, "", "ps-grad");
+}
+
+function chainHtml(plan) {
+  const {lanes: ls, solo, by, gate} = lanes(plan);
+  const node = (c, i, lane) => {
+    const n = by[c], prev = lane[i - 1];
+    const extra = i ? n.groups.filter(g => !g.includes(prev)) : [];
+    const more = n.kids.filter(k => k !== lane[i + 1]);
+    return `<div class="ch-n k-${n.kind}"><b class="code">${esc(c)}</b><span>${esc(C[c][1])}</span>${extra.length ? `<small>+ يحتاج ${extra.map(g => g.map(codeTag).join(" أو ")).join(" + ")}</small>` : ""}${more.length ? `<small class="opens">ويفتح: ${more.map(codeTag).join("، ")}</small>` : ""}</div>`;
+  };
+  const startOf = c => { const g = by[c].groups; return g.length ? preNice(g.map(x => x.join("|")).join("+")) : "البداية"; };
+  return `
+    <div class="ch-gate"><b>ابدأ من هني</b><ol class="ch-row">${gate.map((c, i) => `<li class="ch-step">${i ? '<span class="ch-ar" aria-hidden="true">←</span>' : ""}<div class="ch-n k-${by[c].kind}"><b class="code">${esc(c)}</b><span>${esc(C[c][1])}</span></div></li>`).join("")}</ol>
+      <p>بعد ما تخلص <span class="code">EL111</span> تنفتح لك بدايات كل السلاسل اللي تحت.</p></div>
+    <ol class="ch-list">${ls.map(l => `<li class="ch-lane"><span class="ch-start">بعد ${startOf(l[0])}</span><ol class="ch-row">${l.map((c, i) => `<li class="ch-step">${i ? '<span class="ch-ar" aria-hidden="true">←</span>' : ""}${node(c, i, l)}</li>`).join("")}</ol></li>`).join("")}</ol>
+    ${solo.length ? `<div class="ch-solo"><b>مواد ما تفتح غيرها</b><span>تاخذها في أي فصل بعد التمهيدي أو EL111:</span> ${solo.map(codeTag).join("، ")}</div>` : ""}`;
+}
+
+/* ===== سوّ خطتك ===== */
+const store = {
+  get: id => { try { return JSON.parse(localStorage.getItem("asc-plan-" + id)) || {}; } catch { return {}; } },
+  set: (id, v) => { try { localStorage.setItem("asc-plan-" + id, JSON.stringify(v)); } catch {} }
+};
+function mineHtml(plan) {
+  const items = planItems(plan), st = store.get(plan.id), done = new Set(st.done || []);
+  const opt = (v, cur, label) => `<option value="${v}"${String(v) === String(cur) ? " selected" : ""}>${label}</option>`;
+  return `
+    <div class="mine-step"><h3><span>1</span>أشّر على المواد اللي خلصتها</h3>
+      <p>لما تأشّر مادة نأشّر متطلباتها معاها. اللي ما أشّرت عليه نعتبره باقي عليك.</p>
+      ${plan.sem.map((s, i) => `<fieldset><legend>مواد الفصل ${i + 1} في الخطة</legend>${items.filter(x => x.rank === i).map(x =>
+        `<label class="tick"><input type="checkbox" data-k="${esc(x.key)}"${done.has(x.key) ? " checked" : ""}><span>${x.code === "UE" ? "اختياري جامعة" : x.code === "FE" ? "اختياري كلية" : codeTag(x.code)}<small>${x.code === "UE" || x.code === "FE" ? x.hrs + " س.م" : esc(C[x.code][1])}</small></span></label>`).join("")}</fieldset>`).join("")}
+      <p class="mine-all"><button type="button" class="linkbtn" data-all="0">مسح الكل</button></p>
+    </div>
+    <div class="mine-step"><h3><span>2</span>جدولك</h3>
+      <div class="mine-opts">
+        <label>كم ساعة تبي تسجل كل فصل؟<select id="m-hrs">${[12, 16, 20].map(h => opt(h, st.hrs || 20, h + " ساعة" + (h === 20 ? " (عبء كامل)" : ""))).join("")}</select></label>
+        <label>أول فصل بتسجل فيه<select id="m-start">${opt("2-2026", st.start || "2-2026", "الفصل الثاني 2026/2027")}${opt("S-2026", st.start, "الفصل الصيفي 2027")}${opt("1-2027", st.start, "الفصل الأول 2027/2028")}</select></label>
+        <label>الفصل الصيفي<select id="m-sum">${opt(0, st.summer || 0, "ما بدرس صيفي")}${opt(4, st.summer, "4 ساعات")}${opt(8, st.summer, "8 ساعات")}</select></label>
+      </div>
+      <p class="mine-note">الحد الأعلى للتسجيل يعتمد على أنظمة الجامعة ومعدلك، تأكد منه من مرشدك.</p>
+    </div>
+    <div class="mine-step" id="myplan"><h3><span>3</span>خطتك في تخصص ${esc(plan.title)}</h3><div id="m-out"></div></div>`;
+}
+function mineWire(plan) {
+  const box = $p("vmine"), items = planItems(plan), byKey = Object.fromEntries(items.map(x => [x.key, x]));
+  const keyOf = Object.fromEntries(items.filter(x => !/^(UE|FE)\d/.test(x.key)).map(x => [x.code, x.key]));
+  const boxes = () => [...box.querySelectorAll("input[data-k]")];
+  // تأشير المتطلبات تلقائياً (المتطلب الإجباري بس، مو "أو")
+  const tickPre = k => (byKey[k].pre || "").split("+").filter(g => g && !g.includes("|")).forEach(c => {
+    const pk = keyOf[c], el = pk && box.querySelector(`input[data-k="${CSS.escape(pk)}"]`);
+    if (el && !el.checked) { el.checked = true; tickPre(pk); }
+  });
+  const update = () => {
+    const done = new Set(boxes().filter(b => b.checked).map(b => b.dataset.k));
+    const [t, y] = $p("m-start").value.split("-");
+    const opts = {hrs: +$p("m-hrs").value, summer: +$p("m-sum").value, start: {t, y: +y}};
+    store.set(plan.id, {done: [...done], hrs: opts.hrs, summer: opts.summer, start: $p("m-start").value});
+    const doneHrs = items.filter(x => done.has(x.key)).reduce((a, x) => a + x.hrs, 0);
+    const {terms, left} = schedule(plan, done, opts);
+    let acc = doneHrs;
+    $p("m-out").innerHTML = !terms.length && !left ? `<p class="mine-sum">خلصت كل مواد الخطة، مبروك! 🎓</p>` : `
+      <p class="mine-sum">خلصت <b>${doneHrs}</b> من ${plan.hrs} ساعة، وباقي لك <b>${plan.hrs - doneHrs}</b> ساعة في <b>${terms.length}</b> ${terms.length > 2 && terms.length < 11 ? "فصول" : "فصل"}. تتخرج تقريباً في <b>${terms.at(-1).name}</b>.</p>
+      <div class="mine-act"><button type="button" class="btn y" id="m-print">احفظ خطتي PDF</button></div>
+      <ol class="psem">${terms.map((tm, i) => { acc += tm.hrs; return termCard(i + 1, tm.name, `${tm.hrs} ساعة · بتوصل ${acc} من ${plan.hrs}`, tm.items.map(x => courseCard(plan, x.code)).join("")); }).join("")}
+      ${termCard("🎓", "التخرج", `${plan.title} · ${plan.hrs} ساعة معتمدة`, "", "ps-grad")}</ol>
+      ${left ? `<p class="mine-note">فيه ${left} مواد ما قدرنا نرتبها، راجع مرشدك.</p>` : ""}`;
+    $p("m-print")?.addEventListener("click", () => { document.body.classList.add("print-plan"); print(); document.body.classList.remove("print-plan"); });
+  };
+  box.addEventListener("change", e => { if (e.target.dataset.k && e.target.checked) tickPre(e.target.dataset.k); update(); });
+  box.querySelector("[data-all]").onclick = () => { boxes().forEach(b => b.checked = false); update(); };
+  update();
 }
 
 function render(id) {
   const plan = PLANS.find(p => p.id === id) || PLANS[0];
-  cur = {plan, ...layout(plan)};
-  sel = null;
+  cur = {plan};
   document.querySelectorAll("#plantree .ptab").forEach(t => t.setAttribute("aria-selected", t.dataset.p === plan.id));
-  const chip = ([c, pre, star]) => `<li><button type="button" class="pchip" data-info="${esc(c)}"><span>${codeTag(c)}${star ? "<sup>*</sup>" : ""}</span><small>${esc(C[c][1])}</small>${pre ? `<small class="pre">متطلب: ${codeTag(preText(pre))}</small>` : ""}</button></li>`;
+  const chip = ([c, pre, star]) => `<li><span class="pchip"><span>${codeTag(c)}${star ? "<sup>*</sup>" : ""}</span><small>${esc(C[c][1])}</small>${pre ? `<small class="pre">يحتاج: ${preNice(pre)}</small>` : ""}</span></li>`;
+  const file = `الخطة-الدراسية-${esc(plan.title.replace(/ /g, "-"))}`;
+  const V = [["sem", "فصل بفصل"], ["chain", "تسلسل المواد"], ["mine", "سوّ خطتك"]];
   $p("pbody").innerHTML = `
     <div class="phead"><div><b>${esc(plan.title)}</b><span dir="ltr">${esc(plan.en)}</span></div>
       <div class="pstat"><b>${plan.hrs}</b><small>ساعة معتمدة</small></div></div>
     <div class="pdl"><span>حمّل الخطة:</span>
-      <a class="btn y" href="plans/${plan.id}.png" download="الخطة-الدراسية-${esc(plan.title.replace(/ /g, "-"))}.png">صورة للجوال</a>
-      <a class="btn o" href="plans/${plan.id}.pdf" download="الخطة-الدراسية-${esc(plan.title.replace(/ /g, "-"))}.pdf">ملف PDF</a></div>
-    <div class="pview" role="tablist"><button type="button" role="tab" data-v="sem" aria-selected="${view === "sem"}">فصل بفصل</button><button type="button" role="tab" data-v="map" aria-selected="${view === "map"}">خريطة المتطلبات</button></div>
+      <a class="btn y" href="plans/${plan.id}.png" download="${file}.png">صورة للجوال</a>
+      <a class="btn o" href="plans/${plan.id}.pdf" download="${file}.pdf">ملف PDF</a></div>
+    <div class="pview" role="tablist">${V.map(([v, t]) => `<button type="button" role="tab" data-v="${v}" aria-selected="${view === v}">${t}</button>`).join("")}</div>
     <div id="vsem"${view === "sem" ? "" : " hidden"}>
       <p class="phint">طريقك للتخرج فصل بفصل: سجّل مواد كل فصل بالترتيب، وتحت كل مادة مكتوب وش تحتاج قبلها.</p>
       <ol class="psem">${semHtml(plan)}</ol>
     </div>
-    <div id="vmap"${view === "map" ? "" : " hidden"}>
-    <p class="phint">كل عمود مرحلة: ما تقدر تاخذ المادة إلا بعد ما تخلص المواد اللي قبلها في الخط. اضغط على أي مادة يبين لك وش تحتاج قبلها ووش تفتح لك بعدها.</p>
-    <ul class="plegend">${["p","u","f","c","t","e"].filter(k => cur.nodes.some(n => n.kind === k)).map(k => `<li><i class="k-${k}"></i>${KIND[k]}</li>`).join("")}<li><i class="or"></i>متطلب بديل (أو)</li></ul>
-    <div class="pscroll" tabindex="0" aria-label="خريطة المواد، اسحب يمين ويسار">
-      <div class="pmap" style="--n:${cur.cols.length}">
-        <svg class="plines" aria-hidden="true"></svg>
-        ${cur.cols.map((col, i) => `<div class="pcol"><div class="pst">${i ? "المرحلة " + i : "البداية"}</div><div class="pnodes">${col.map(n =>
-          `<button type="button" class="pn k-${n.kind}" data-c="${esc(n.code)}" aria-label="${esc(n.code + " " + C[n.code][0])}"><b dir="ltr">${esc(n.code)}</b><small>${C[n.code][2] ? C[n.code][2] + " س.م" : "تمهيدي"}</small></button>`).join("")}</div></div>`).join("")}
-      </div>
+    <div id="vchain"${view === "chain" ? "" : " hidden"}>
+      <p class="phint">كل سطر سلسلة: تبدأ من اليمين، وكل مادة تفتح اللي بعدها. إذا مادة تحتاج شي من سلسلة ثانية مكتوب تحتها.</p>
+      ${chainHtml(plan)}
     </div>
-    <p class="pmore" hidden>اسحب الخريطة لليسار عشان تشوف باقي المراحل ←</p>
-    <div class="pinfo" id="pinfo" aria-live="polite"><p class="pempty">اختار مادة من الخريطة عشان تشوف تفاصيلها.</p></div>
-    </div>
-    <div class="pextra">
-      <section><h3>تقدر تاخذها من أول فصل</h3><p>متطلبات جامعة إجبارية بدون متطلب سابق.</p><ul class="pchips">${plan.free.map(c => chip([c, ""])).join("")}</ul></section>
+    <div id="vmine"${view === "mine" ? "" : " hidden"}>${mineHtml(plan)}</div>
+    <div class="pextra" id="pextra"${view === "mine" ? " hidden" : ""}>
       <section><h3>اختياري جامعة <small>3 ساعات</small></h3><p>تختار مادة وحدة من هذي.</p><ul class="pchips">${plan.ue.map(chip).join("")}</ul></section>
-      <section><h3>اختياري كلية <small>${plan.fe.hrs} ساعات</small></h3>${plan.fe.note ? `<p>${esc(plan.fe.note)}</p>` : ""}<ul class="pchips">${plan.fe.list.map(chip).join("")}</ul></section>
+      <section><h3>اختياري كلية <small>${plan.id === "itc" ? "6 ساعات (مادتين)" : plan.fe.hrs + " ساعات"}</small></h3>${plan.fe.note && plan.id !== "itc" ? `<p>${esc(plan.fe.note)}</p>` : ""}<ul class="pchips">${plan.fe.list.map(chip).join("")}</ul></section>
     </div>
     <p class="psrc">المصدر: <a href="${esc(plan.src)}" target="_blank" rel="noopener">${esc(plan.srcNote)}</a> من موقع الجامعة العربية المفتوحة، وتوزيع الفصول ${esc(plan.semNote)}. تقدر تغيّر الترتيب حسب المطروح كل فصل، بس لازم تخلص المتطلب قبل المادة. الأسماء العربية ترجمة تقريبية؛ تأكد من مرشدك الأكاديمي قبل التسجيل.</p>`;
   $p("pbody").querySelectorAll(".pview button").forEach(b => b.onclick = () => {
     view = b.dataset.v;
     $p("pbody").querySelectorAll(".pview button").forEach(x => x.setAttribute("aria-selected", x === b));
-    $p("vsem").hidden = view !== "sem"; $p("vmap").hidden = view !== "map";
-    requestAnimationFrame(draw);
+    ["sem", "chain", "mine"].forEach(v => $p("v" + v).hidden = v !== view);
+    $p("pextra").hidden = view === "mine";
   });
-  $p("pbody").querySelectorAll(".pn").forEach(b => b.onclick = () => pick(b.dataset.c === sel ? null : b.dataset.c));
-  $p("pbody").querySelectorAll(".pchip").forEach(b => b.onclick = () => info(b.dataset.info));
-  requestAnimationFrame(draw);
-}
-
-const $p = id => document.getElementById(id);
-
-function draw() {
-  if (!cur) return;
-  const map = root.querySelector(".pmap"), svg = root.querySelector(".plines");
-  if (!map || !map.offsetParent) return;
-  const box = map.getBoundingClientRect();
-  svg.setAttribute("viewBox", `0 0 ${box.width} ${box.height}`);
-  svg.setAttribute("width", box.width); svg.setAttribute("height", box.height);
-  const el = c => map.querySelector(`.pn[data-c="${CSS.escape(c)}"]`).getBoundingClientRect();
-  links = {};
-  svg.innerHTML = cur.nodes.flatMap(n => n.groups.flatMap(g => g.filter(p => cur.by[p]).map(p => {
-    const a = el(p), b = el(n.code), rtl = b.left < a.left;
-    const x1 = (rtl ? a.left : a.right) - box.left, y1 = a.top + a.height / 2 - box.top;
-    const x2 = (rtl ? b.right : b.left) - box.left, y2 = b.top + b.height / 2 - box.top;
-    const mx = (x1 + x2) / 2;
-    return `<path data-from="${esc(p)}" data-to="${esc(n.code)}" class="${g.length > 1 ? "or" : ""}" d="M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}"/>`;
-  }))).join("");
-  const sc = root.querySelector(".pscroll");
-  root.querySelector(".pmore").hidden = sc.scrollWidth <= sc.clientWidth + 1;
-  if (sel) pick(sel, true);
-}
-
-function walk(code, dir, out = new Set()) {
-  cur.by[code][dir].forEach(c => { if (!out.has(c)) { out.add(c); walk(c, dir, out); } });
-  return out;
-}
-
-function pick(code, keep) {
-  sel = code;
-  const map = root.querySelector(".pmap");
-  map.classList.toggle("focus", !!code);
-  const up = code ? walk(code, "parents") : new Set(), down = code ? walk(code, "kids") : new Set();
-  map.querySelectorAll(".pn").forEach(b => {
-    const c = b.dataset.c;
-    b.classList.toggle("on", c === code); b.classList.toggle("up", up.has(c)); b.classList.toggle("down", down.has(c));
-    b.setAttribute("aria-pressed", c === code);
-  });
-  map.querySelectorAll(".plines path").forEach(l => {
-    const f = l.dataset.from, t = l.dataset.to;
-    l.classList.toggle("up", (t === code || up.has(t)) && up.has(f));
-    l.classList.toggle("down", (f === code || down.has(f)) && down.has(t));
-  });
-  if (keep) return;
-  if (code) info(code); else $p("pinfo").innerHTML = `<p class="pempty">اختار مادة من الخريطة عشان تشوف تفاصيلها.</p>`;
-}
-
-function info(code) {
-  const [en, ar, hrs, eq] = C[code];
-  const node = cur.by[code];
-  const row = node ? cur.plan.map.find(r => r[0] === code) : [cur.plan.fe.list, cur.plan.ue].flat().find(r => r[0] === code);
-  const pre = row ? row[1] : "";
-  const jump = c => cur.by[c] ? `<button type="button" class="pjump" data-c="${esc(c)}">${esc(c)}</button>` : codeTag(c);
-  const preHtml = pre ? pre.split("+").map(g => g.split("|").map(jump).join(" أو ")).join(" + ") : "بدون متطلب سابق";
-  const kids = node ? node.kids : [];
-  const lect = typeof CONFIG !== "undefined" ? CONFIG.lectures.find(l => l.code === code || (code === "BB293" && l.code === "B293")) : null;
-  const chat = typeof courseChat !== "undefined" ? courseChat[code] : null;
-  $p("pinfo").innerHTML = `
-    <div class="pi-h"><b class="code">${esc(code)}</b><span>${hrs ? hrs + " ساعات معتمدة" : "مستوى تمهيدي"}</span>${node ? `<span class="pk k-${node.kind}">${KIND[node.kind]}</span>` : ""}</div>
-    <h3 dir="ltr">${esc(en)}</h3><p class="pi-ar">${esc(ar)}</p>
-    <dl><div><dt>المتطلب السابق</dt><dd>${preHtml}</dd></div>
-    ${node ? `<div><dt>تفتح لك</dt><dd>${kids.length ? kids.map(jump).join(" ") : "ما تفتح مواد ثانية في هذي الخطة"}</dd></div>` : ""}
-    ${eq ? `<div><dt>يعادل في الخطة القديمة</dt><dd>${codeTag(eq)}</dd></div>` : ""}</dl>
-    ${lect || chat ? `<div class="pi-go">${lect ? `<a class="go" href="${esc(lect.url)}" target="_blank" rel="noopener">محاضرة مجانية</a>` : ""}${chat ? `<a class="go chat" href="${esc(chat)}" target="_blank" rel="noopener">قروب المادة</a>` : ""}</div>` : ""}`;
-  $p("pinfo").querySelectorAll(".pjump").forEach(b => b.onclick = () => {
-    pick(b.dataset.c);
-    root.querySelector(`.pn[data-c="${CSS.escape(b.dataset.c)}"]`).scrollIntoView({block:"nearest", inline:"center", behavior:"smooth"});
-  });
+  mineWire(plan);
 }
 
 root.innerHTML = `<div class="tabs ptabs" role="tablist">${PLANS.map((p, i) =>
   `<button type="button" role="tab" class="tab ptab" data-p="${p.id}" aria-selected="${!i}"><i style="background:${p.color}"></i>${p.title}</button>`).join("")}</div><div id="pbody"></div>`;
 root.querySelectorAll(".ptab").forEach(t => t.onclick = () => { history.replaceState(null, "", "#plans/" + t.dataset.p); render(t.dataset.p); });
-function fromHash() {
+addEventListener("hashchange", () => {
   const [v, sub] = location.hash.slice(1).split("/");
-  if (v !== "plans") return;
-  if (!cur || (sub && sub !== cur.plan.id)) render(sub); else requestAnimationFrame(draw);
-}
-addEventListener("hashchange", fromHash);
-addEventListener("resize", () => requestAnimationFrame(draw));
-document.fonts?.ready.then(() => requestAnimationFrame(draw));
+  if (v === "plans" && sub && sub !== cur?.plan.id) render(sub);
+});
 render(location.hash.startsWith("#plans/") ? location.hash.split("/")[1] : PLANS[0].id);
 })();

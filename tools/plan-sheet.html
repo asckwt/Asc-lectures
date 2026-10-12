@@ -66,6 +66,22 @@ header h1{position:relative;font-family:var(--display);font-weight:800;font-size
 .box li small{display:block;font-size:12.5px;color:var(--muted)}
 .box li small .code{font-size:12.5px;color:var(--muted)}
 .box li sup{color:var(--pink);font-weight:700}
+.chains{margin:26px 40px 0;background:#fff;border:1px solid var(--line);border-radius:24px;padding:20px 22px}
+.chains h2{margin:0 0 14px;font-family:var(--display);font-size:24px;color:var(--navy)}
+.chains h2 small{font-family:var(--body);font-weight:500;font-size:16px;color:var(--muted);margin-inline-start:8px}
+.lane{display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding:12px 0;border-top:1px dashed #E6E3F2}
+.lane:first-of-type{border-top:0;padding-top:0}
+.after{flex:none;font-size:14px;color:var(--muted);background:var(--bg);border:1px dashed var(--line);border-radius:999px;padding:3px 12px}
+.after .code{font-size:14px;color:var(--navy)}
+.step{display:flex;align-items:center;gap:8px}
+.arr{font-size:22px;font-weight:700;color:#9C96CC}
+.cn{min-width:128px;border:2px solid var(--line);border-top:6px solid var(--k);border-radius:14px;padding:6px 12px;background:#FBFAFE;line-height:1.3}
+.cn .code{display:block;font-size:18px;color:var(--navy)}
+.cn span{display:block;font-size:13.5px}
+.cn small{display:block;font-size:12.5px;color:var(--muted)}
+.cn small .code{display:inline;font-size:12.5px}
+.solo{margin:12px 0 0;font-size:15px;color:var(--muted)}
+.solo .code{color:var(--navy)}
 footer{display:flex;align-items:center;justify-content:space-between;gap:20px;margin:22px 40px 0;padding:22px 26px;background:var(--navy);color:#fff;border-radius:24px}
 footer b{font-family:var(--display);font-size:22px;display:block}
 footer .site{direction:ltr;font-family:var(--display);font-weight:700;font-size:20px;color:var(--yellow);text-align:right}
@@ -83,12 +99,13 @@ footer .qr svg{width:100%;height:100%;display:block}
 <div class="intro"><p>طريقك للتخرج <b>فصل بفصل</b>: سجّل مواد كل فصل بالترتيب، وتحت كل مادة مكتوب وش تحتاج قبلها.</p></div>
 <ul class="legend" id="legend"></ul>
 <div class="road" id="road"></div>
+<section class="chains"><h2>تسلسل المواد <small>كل مادة وش تفتح بعدها</small></h2><div id="chains"></div></section>
 <div class="extra" id="extra"></div>
 <footer><div><b>كل اللي تحتاجه لدراستك في AOUKW</b><span>محاضرات مجانية، نماذج اختبارات وقروبات المواد</span><div class="site">asckwt.com · @asc_kwt</div></div><div class="qr" id="qr"></div></footer>
 <p class="src" id="src"></p>
 <script src="../plans.js"></script>
 <script>
-const {C, KIND, PLANS, hrsOf, preOf} = window.ASC_PLANS;
+const {C, KIND, PLANS, hrsOf, preOf, lanes} = window.ASC_PLANS;
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"]/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
 const plan = PLANS.find(p => p.id === (new URLSearchParams(location.search).get("p") || "acc"));
@@ -113,6 +130,18 @@ $("road").innerHTML = plan.sem.map((s, i) => {
       return `<div class="c" style="--k:${KC[kindOf(c)]}"><div class="top">${code(c)}<em>${C[c][2]} س.م</em></div><span class="nm">${esc(C[c][1])}</span><small>${pre ? "يحتاج: " + preText(pre) : "بدون متطلب"}</small></div>`;
     }).join("")}</div></section>`;
 }).join("") + `<div class="grad"><div class="num"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2 9 2 12 0v-5"/><path d="M22 9v6"/></svg></div><div><b>مبروك التخرج!</b><span>${plan.hrs} ساعة معتمدة · ${esc(plan.en)}</span></div></div>`;
+{
+  const {lanes: ls, solo, by, gate} = lanes(plan);
+  const KCm = {...KC, p:"var(--pink)"};
+  const node = (c, i, l) => {
+    const n = by[c], extra = i ? n.groups.filter(g => !g.includes(l[i - 1])) : [], more = n.kids.filter(k => k !== l[i + 1]);
+    return `<div class="step">${i ? '<span class="arr">←</span>' : ""}<div class="cn" style="--k:${KCm[n.kind]}">${code(c)}<span>${esc(C[c][1])}</span>${extra.length ? `<small>+ يحتاج ${extra.map(g => g.map(code).join(" أو ")).join(" + ")}</small>` : ""}${more.length ? `<small>ويفتح: ${more.map(code).join("، ")}</small>` : ""}</div></div>`;
+  };
+  const startOf = c => by[c].groups.length ? preText(by[c].groups.map(g => g.join("|")).join("+")) : "البداية";
+  $("chains").innerHTML = `<div class="lane"><span class="after">ابدأ من هني</span>${gate.map((c, i) => node(c, i, gate)).join("")}</div>` +
+    ls.map(l => `<div class="lane"><span class="after">بعد ${startOf(l[0])}</span>${l.map((c, i) => node(c, i, l)).join("")}</div>`).join("") +
+    (solo.length ? `<p class="solo">مواد ما تفتح غيرها، تاخذها أي وقت: ${solo.map(code).join("، ")}</p>` : "");
+}
 const item = ([c, pre, star]) => `<li>${code(c)}${star ? "<sup>*</sup>" : ""}<small>${esc(C[c][1])}${pre ? " · يحتاج " + preText(pre) : ""}</small></li>`;
 $("extra").innerHTML = `
   <div class="box"><h3>اختياري جامعة <small>· تختار مادة وحدة (3 ساعات)</small></h3><ul>${plan.ue.map(item).join("")}</ul></div>
