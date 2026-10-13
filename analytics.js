@@ -1,11 +1,14 @@
-/* إحصائيات الموقع: يرسل الزيارات والنقرات لجدول Google Sheet عن طريق Apps Script.
+/* إحصائيات الموقع: يرسل الزيارات والنقرات لـ GoatCounter و/أو لجدول Google Sheet عن طريق Apps Script.
    ما يجمع أي بيانات شخصية: رقم عشوائي للزائر، ونوع الجهاز، ومصدر الزيارة فقط.
-   ضع رابط الـ Web App بعد ما تنشر tools/analytics-collector.gs، ولين ما تحطه ما يرسل شي. */
+   ASC_GOATCOUNTER: الكود اللي اخترته في goatcounter.com (مثلاً "asckwt").
+   ASC_ANALYTICS_URL: رابط الـ Web App بعد ما تنشر tools/analytics-collector.gs.
+   لين ما تحط واحد منهم ما يرسل شي. */
+window.ASC_GOATCOUNTER = "";
 window.ASC_ANALYTICS_URL = "";
 
 (() => {
-  const URL = window.ASC_ANALYTICS_URL;
-  if (!URL || /\/stats(\.html)?$/.test(location.pathname)) return;
+  const ENDPOINT = window.ASC_ANALYTICS_URL, GC = window.ASC_GOATCOUNTER;
+  if ((!ENDPOINT && !GC) || /\/stats(\.html)?$/.test(location.pathname)) return;
 
   const store = (k, make) => {
     try { let v = localStorage.getItem(k); if (!v) { v = make(); localStorage.setItem(k, v); } return v; }
@@ -31,9 +34,32 @@ window.ASC_ANALYTICS_URL = "";
   })();
   const section = () => location.hash.slice(1).split("/")[0] || "home";
 
+  // GoatCounter: الأقسام تنحسب كصفحات، والنقرات كأحداث (events)
+  const GC_NAMES = {lecture: "محاضرة", group: "قروب", contact: "واتساب", platform: "المنصة", plan_download: "تحميل خطة",
+    calendar_add: "إضافة للتقويم", gpa_use: "حاسبة المعدل", form: "نموذج", outbound: "رابط خارجي"};
+  let gcReady = false;
+  const gcQueue = [];
+  const gcCount = o => { if (gcReady && window.goatcounter?.count) window.goatcounter.count(o); else gcQueue.push(o); };
+  if (GC) {
+    window.goatcounter = {no_onload: true};
+    const s = document.createElement("script");
+    s.async = true;
+    s.src = "https://gc.zgo.at/count.js";
+    s.dataset.goatcounter = `https://${GC}.goatcounter.com/count`;
+    s.onload = () => { gcReady = true; gcQueue.splice(0).forEach(o => window.goatcounter.count(o)); };
+    document.head.appendChild(s);
+  }
+
   const send = (type, label = "") => {
-    const body = JSON.stringify({type, label: String(label).trim().slice(0, 80), section: section(), visitor, session, device, source});
-    try { fetch(URL, {method: "POST", mode: "no-cors", keepalive: true, headers: {"Content-Type": "text/plain"}, body}); } catch {}
+    label = String(label).trim().slice(0, 80);
+    if (ENDPOINT) {
+      const body = JSON.stringify({type, label, section: section(), visitor, session, device, source});
+      try { fetch(ENDPOINT, {method: "POST", mode: "no-cors", keepalive: true, headers: {"Content-Type": "text/plain"}, body}); } catch {}
+    }
+    if (GC && type !== "visit") {
+      if (type === "view") gcCount({path: "/" + (label === "home" ? "" : label), title: label});
+      else gcCount({path: `${GC_NAMES[type] || type}: ${label}`, title: label, event: true});
+    }
   };
   window.ascTrack = send;
 
