@@ -221,8 +221,8 @@ main .wrap{display:grid;grid-template-columns:1fr;gap:40px;padding-block:36px 56
     <section id="exams" class="view" hidden>
       <a class="back" href="#home">→ الرئيسية</a>
       <h2>نماذج الاختبارات</h2>
-      <p class="sub">نماذج اختبارات سابقة لكل مادة، مرتبة حسب السنة والفصل (الأول، الثاني، الصيفي).</p>
-      <div class="soon">قريباً</div>
+      <p class="sub">نماذج اختبارات سابقة لكل مادة، مرتبة حسب السنة والفصل (الأول، الثاني، الصيفي). اضغط على النموذج ويفتح لك PDF تقدر تحفظه.</p>
+      <div id="examlist"></div>
     </section>
 
     <section id="plans" class="view pp" hidden>
@@ -454,6 +454,24 @@ const CONFIG = {
     {name:"أسامة", major:"ACC300", text:"الله يعطيكم ألف عافية نجحت، شكراً على مجهودكم."},
     {name:"حليمة", major:"EL099", text:"يعطيج العافية أ. أنفال، الحمدلله نجحت 💖"}
   ],
+  exams: [ // نماذج الاختبارات: ملفاتها في exams/رمز المادة/، type = final أو mta أو makeup، sem = 1 أو 2 أو summer
+    {code:"ACC204", name:"Intermediate Financial Accounting", items:[
+      {year:"2025/2026", sem:"2", type:"final", ver:"B", pages:3, file:"ACC204-Final-Second-2025-2026-B"},
+      {year:"2025/2026", sem:"1", type:"final", ver:"B", pages:3, file:"ACC204-Final-First-2025-2026-B"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"C", pages:3, file:"ACC204-MTA-Makeup-First-2025-2026-C"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"B", pages:2, file:"ACC204-MTA-First-2025-2026-B"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"A", pages:3, file:"ACC204-Final-Second-2024-2025-A"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"A", pages:3, file:"ACC204-MTA-Makeup-Second-2024-2025-A"}
+    ]},
+    {code:"ACC300", name:"Accounting Information Systems", items:[
+      {year:"2025/2026", sem:"2", type:"mta", ver:"B", pages:2, file:"ACC300-MTA-Second-2025-2026-B"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"B", pages:2, file:"ACC300-MTA-First-2025-2026-B"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"C", pages:2, file:"ACC300-MTA-Second-2024-2025-C"},
+      {year:"2022/2023", sem:"1", type:"final", ver:"A", pages:2, file:"ACC300-Final-First-2022-2023-A"},
+      {year:"2020/2021", sem:"summer", type:"final", ver:"B", pages:4, file:"ACC300-Final-Summer-2020-2021-B"},
+      {year:"2019/2020", sem:"1", type:"final", ver:"A", pages:6, file:"ACC300-Final-First-2019-2020-A"}
+    ]}
+  ],
   groups: [ // الأقسام بالترتيب، والقسم اللي ما فيه محاضرات ما يطلع
     {id:"acc",  title:"المحاسبة", color:"var(--yellow)"},
     {id:"mgt",  title:"الإدارة", color:"var(--turq)"},
@@ -502,6 +520,20 @@ document.querySelectorAll("#groups .tab").forEach(t => t.onclick = () => {
   document.querySelectorAll("#groups .tab").forEach(x => x.setAttribute("aria-selected", x === t));
   document.querySelectorAll(".grp").forEach(p => p.hidden = p.dataset.g !== t.dataset.g);
 });
+/* نماذج الاختبارات */
+const EXT = {final:["فاينل","الاختبار النهائي"], mta:["ميد","اختبار منتصف الفصل"], makeup:["تعويضي","اختبار الميد التعويضي"]};
+const SEM = {"1":"الفصل الأول", "2":"الفصل الثاني", summer:"الفصل الصيفي"};
+const examCard = (c, e) =>
+  `<li class="s"><div class="date"><div class="d">${EXT[e.type][0]}</div><div class="m">${SEM[e.sem].replace("الفصل ", "")}</div></div>
+   <div><h3>${EXT[e.type][1]}</h3><p>${SEM[e.sem]} ${e.year} · نسخة <bdi>${e.ver}</bdi> · ${e.pages} صفحات</p><a class="go" href="exams/${c.code}/${e.file}.pdf" target="_blank" rel="noopener">افتح النموذج</a></div></li>`;
+$("examlist").innerHTML = `<div class="tabs" role="tablist">${CONFIG.exams.map((c, i) =>
+  `<button type="button" role="tab" class="tab ex" data-x="${c.code}" aria-selected="${i === 0}"><span dir="ltr">${c.code}</span> <small>${c.items.length}</small></button>`).join("")}</div>` +
+  CONFIG.exams.map((c, i) => `<div class="exgrp" role="tabpanel" data-x="${c.code}"${i ? " hidden" : ""}><p class="sub" dir="ltr" style="text-align:right">${c.name}</p>${
+    [...new Set(c.items.map(e => e.year))].map(y => `<h3 class="cc-h">${y}</h3><ul class="sessions cols">${c.items.filter(e => e.year === y).map(e => examCard(c, e)).join("")}</ul>`).join("")}</div>`).join("");
+document.querySelectorAll(".tab.ex").forEach(t => t.onclick = () => {
+  document.querySelectorAll(".tab.ex").forEach(x => x.setAttribute("aria-selected", x === t));
+  document.querySelectorAll(".exgrp").forEach(p => p.hidden = p.dataset.x !== t.dataset.x);
+});
 /* تقويم الجامعة */
 const MON = ["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
 const DAY = ["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
@@ -544,6 +576,7 @@ function route() {
   const id = views.some(x => x.id === v) ? v : "home";
   views.forEach(x => x.hidden = x.id !== id);
   if (id === "lectures" && sub) document.querySelector(`#groups .tab[data-g="${sub}"]`)?.click();
+  if (id === "exams" && sub) document.querySelector(`.tab.ex[data-x="${sub.toUpperCase()}"]`)?.click();
   if (location.hash) document.querySelector("main").scrollIntoView();
 }
 addEventListener("hashchange", route); route();
