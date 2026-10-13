@@ -2,11 +2,12 @@
  * مستقبِل إحصائيات موقع الطالب الأكاديمي (Google Apps Script).
  *
  * طريقة التركيب (مرة وحدة):
- * 1. افتح Google Sheet جديد، ومن القائمة: Extensions ← Apps Script.
+ * 1. افتح script.google.com/create (أو من Google Sheet: Extensions ← Apps Script).
  * 2. امسح الموجود، والصق هذا الملف كامل، وغيّر KEY تحت لكلمة سر من عندك.
- * 3. Deploy ← New deployment ← النوع Web app.
+ * 3. فوق المحرر اختار الدالة setup واضغط Run مرة وحدة: يسوي الجدول ويطلب الصلاحيات.
+ * 4. Deploy ← New deployment ← النوع Web app.
  *    Execute as: Me   ·   Who has access: Anyone
- * 4. انسخ رابط الـ Web app وحطه في analytics.js (ASC_ANALYTICS_URL) وفي stats.html (ENDPOINT).
+ * 5. انسخ رابط الـ Web app وحطه في analytics.js (ASC_ANALYTICS_URL) وفي stats.html (ENDPOINT).
  *
  * كل زيارة أو نقرة تنضاف سطر في ورقة "events". صفحة stats.html تطلب الملخص بكلمة السر.
  */
@@ -16,7 +17,15 @@ const TZ = "Asia/Kuwait";
 const TYPES = ["visit", "view", "lecture", "group", "contact", "platform", "plan_download", "calendar_add", "gpa_use", "form", "outbound"];
 
 function sheet_() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  // يشتغل من داخل جدول (Extensions ← Apps Script) أو كمشروع مستقل من script.google.com:
+  // في الحالة الثانية يسوي جدول "إحصائيات الطالب الأكاديمي" في Google Drive أول مرة.
+  let ss = SpreadsheetApp.getActiveSpreadsheet();
+  if (!ss) {
+    const props = PropertiesService.getScriptProperties();
+    const id = props.getProperty("SHEET_ID");
+    if (id) ss = SpreadsheetApp.openById(id);
+    else { ss = SpreadsheetApp.create("إحصائيات الطالب الأكاديمي"); props.setProperty("SHEET_ID", ss.getId()); }
+  }
   let sh = ss.getSheetByName(SHEET);
   if (!sh) {
     sh = ss.insertSheet(SHEET);
@@ -25,6 +34,8 @@ function sheet_() {
   }
   return sh;
 }
+
+function setup() { Logger.log(sheet_().getParent().getUrl()); }
 
 const clip_ = (v, n) => String(v == null ? "" : v).replace(/[\r\n\t]/g, " ").slice(0, n);
 
