@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>MGT111 · بنك أسئلة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Poppins:wght@500;600;700&display=swap">
+<style>
+:root{--navy:#07005E;--yellow:#F7DC6B;--turq:#7DE6D5;--pink:#E980C2;
+ --bg:#F6F5FB;--surface:#fff;--fg:#151238;--muted:#5B5878;--line:#E2E0EE;--opt:#F3F2FA;
+ --ok:#1E9E6A;--okbg:#E2F7EE;--bad:#D2405F;--badbg:#FCE6EB;
+ --display:"Alexandria","IBM Plex Sans Arabic",Tahoma,sans-serif;--body:"IBM Plex Sans Arabic",Tahoma,sans-serif;--en:"Poppins","Segoe UI",sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0B0930;--surface:#141142;--fg:#F1F0FA;--muted:#B4B1D3;--line:#2A2663;--opt:#1B1752;--okbg:#0F3B33;--badbg:#45122A;--ok:#5FE0AE;--bad:#FF8FA6;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0B0930;--surface:#141142;--fg:#F1F0FA;--muted:#B4B1D3;--line:#2A2663;--opt:#1B1752;--okbg:#0F3B33;--badbg:#45122A;--ok:#5FE0AE;--bad:#FF8FA6;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:820px;margin:0 auto;padding-inline:16px}
+header{background:var(--navy);color:#fff;padding:22px 0 30px}
+header img{height:40px;display:block}
+.pill{display:inline-block;margin-top:26px;background:var(--yellow);color:var(--navy);font-family:var(--display);font-weight:700;font-size:15px;padding:4px 16px;border-radius:99px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,7vw,42px);line-height:1.25;margin:12px 0 6px}
+h1 span{color:var(--yellow)}
+.lead{color:#D9D7F3;margin:0}
+.by{display:inline-flex;gap:8px;align-items:center;margin-top:16px;background:rgba(255,255,255,.1);border-radius:12px;padding:6px 14px;font-family:var(--display);font-weight:600}
+.by b{color:var(--yellow)}
+.bar{position:sticky;top:0;z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+.bar .wrap{display:flex;gap:8px;align-items:center;padding-block:10px;flex-wrap:wrap}
+.tab{border:1.5px solid var(--line);background:none;color:var(--fg);font-family:var(--display);font-weight:600;font-size:14px;border-radius:99px;padding:6px 14px;cursor:pointer}
+.tab[aria-pressed=true]{background:var(--navy);border-color:var(--navy);color:#fff}
+.score{margin-inline-start:auto;font-family:var(--display);font-weight:700;font-size:15px;white-space:nowrap}
+.score b{color:var(--ok)}
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0 4px}
+.btn{border:none;background:var(--opt);color:var(--fg);font-family:var(--display);font-weight:600;font-size:14px;border-radius:12px;padding:8px 14px;cursor:pointer}
+.ch{font-family:var(--display);font-weight:700;font-size:20px;margin:26px 0 12px;display:flex;gap:10px;align-items:center}
+.ch i{font-style:normal;font-family:var(--en);font-size:13px;background:var(--turq);color:var(--navy);border-radius:99px;padding:2px 12px}
+.q{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:14px}
+.qe{direction:ltr;text-align:left;display:flex;gap:10px;font-family:var(--en);font-weight:600;font-size:16px;line-height:1.45}
+.qe .n{flex:none;background:var(--yellow);color:var(--navy);border-radius:8px;padding:0 8px;font-weight:700;font-size:13px;height:24px;line-height:24px;margin-top:1px}
+.qa{color:var(--muted);font-size:14.5px;margin:6px 0 10px}
+.os{direction:ltr;display:grid;gap:8px}
+@media (min-width:620px){.os{grid-template-columns:1fr 1fr}}
+.o{display:flex;gap:10px;align-items:center;text-align:left;width:100%;border:1.5px solid transparent;background:var(--opt);color:var(--fg);font-family:var(--en);font-size:14.5px;border-radius:12px;padding:9px 12px;cursor:pointer;min-height:44px}
+.o .l{flex:none;width:26px;height:26px;border-radius:8px;background:var(--line);display:grid;place-items:center;font-weight:700;font-size:13px}
+.o:disabled{cursor:default}
+.o.ok{background:var(--okbg);border-color:var(--ok);font-weight:600}.o.ok .l{background:var(--ok);color:#fff}
+.o.bad{background:var(--badbg);border-color:var(--bad)}.o.bad .l{background:var(--bad);color:#fff}
+.res{display:none;margin-top:10px;font-family:var(--display);font-weight:600;font-size:14.5px}
+.q.done .res{display:block}
+.res .y{color:var(--ok)}.res .x{color:var(--bad)}
+footer{text-align:center;color:var(--muted);font-size:13px;padding:30px 0 40px}
+footer a{color:inherit}
+.sub{font-family:var(--display);font-weight:600;font-size:15px;color:var(--muted);margin:18px 0 10px}
+.m .sel{width:100%;margin-top:8px;font-family:var(--en);font-size:14.5px;color:var(--fg);background:var(--opt);border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;min-height:44px;direction:ltr}
+.m.ok .sel{border-color:var(--ok);background:var(--okbg)}.m.bad .sel{border-color:var(--bad);background:var(--badbg)}
+</style></head><body>
+<header><div class="wrap">
+ <img src="../../tools/logo-horizontal-color-on-navy.svg" alt="الطالب الأكاديمي">
+ <div class="pill">MGT111 · مبادئ الإدارة 1</div>
+ <h1>اختبر نفسك <span>٤٢ سؤال</span> مع الحل</h1>
+ <p class="lead">اختر إجابتك وتشوف الصح مباشرة. الأسئلة على الفصلين ١ و ٢.</p>
+ <div class="by">إعداد <b>أ. أنفال السهو</b></div>
+</div></header>
+<div class="bar"><div class="wrap">
+ <button class="tab" data-c="all" aria-pressed="true">الكل</button>
+ <button class="tab" data-c="0" aria-pressed="false">Chapter 1</button>
+ <button class="tab" data-c="1" aria-pressed="false">Chapter 2</button>
+ <div class="score" id="score"></div>
+</div></div>
+<main class="wrap">
+ <div class="tools"><button class="btn" id="show">اعرض كل الإجابات</button><button class="btn" id="reset">ابدأ من جديد</button></div>
+ <div id="list"></div>
+</main>
+<footer>الطالب الأكاديمي · صفحة خاصة لطلاب MGT111</footer>
+<script>
+const DATA=[{"tag": "Chapter 1", "title": "أساسيات الإدارة", "defs": [], "qs": [{"t": "q", "s": "اختيار من متعدد", "en": "What is the final step in the decision-making process?", "ar": "ما هي الخطوة الأخيرة في عملية اتخاذ القرار؟", "o": ["Implement the decision", "Evaluate decision effectiveness", "Select an alternative", "Develop alternatives"], "k": 1, "ans": "تقييم فعالية القرار"}, {"t": "q", "s": "اختيار من متعدد", "en": "The main characteristic of programmed decisions is:", "ar": "الخاصية الرئيسية للقرارات المبرمجة:", "o": ["Unique and nonrecurring", "Repetitive and routine", "Require creative solutions", "Involve high uncertainty"], "k": 1, "ans": "متكررة وروتينية"}, {"t": "q", "s": "اختيار من متعدد", "en": "Decision-making conditions include:", "ar": "ظروف اتخاذ القرار تشمل:", "o": ["Certainty, Risk, Uncertainty", "Planning, Organizing, Leading", "Efficiency, Effectiveness, Productivity", "Innovation, Sustainability, Customers"], "k": 0, "ans": "التأكد، المخاطرة، عدم التأكد"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which bias means relying too much on first information?", "ar": "أي تحيز يعني الاعتماد الزائد على أول معلومة؟", "o": ["Anchoring", "Availability", "Confirmation", "Hindsight"], "k": 0, "ans": "تحيز الارتساء (Anchoring)"}, {"t": "q", "s": "اختيار من متعدد", "en": "A manager who directs teachers and sets school policies is:", "ar": "المدير اللي يوجّه المعلمين ويضع سياسات المدرسة هو:", "o": ["Top manager", "Middle manager", "First-line manager", "Team leader"], "k": 0, "ans": "مدير في الإدارة العليا"}, {"t": "q", "s": "اختيار من متعدد", "en": "Efficiency means:", "ar": "الكفاءة تعني:", "o": ["Doing things right", "Doing the right things", "Achieving long-term goals", "Motivating employees"], "k": 0, "ans": "عمل الأشياء بالطريقة الصحيحة"}, {"t": "q", "s": "اختيار من متعدد", "en": "Effectiveness means:", "ar": "الفعالية تعني:", "o": ["Doing things right", "Doing the right things", "Saving time and cost", "Supervising employees"], "k": 1, "ans": "عمل الأشياء الصحيحة"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which decision-making approach is most realistic?", "ar": "أي أسلوب لاتخاذ القرار هو الأكثر واقعية؟", "o": ["Rational", "Bounded rationality", "Intuitive", "Random"], "k": 1, "ans": "الرشد المحدود"}, {"t": "q", "s": "اختيار من متعدد", "en": "Structured problems are:", "ar": "المشكلات المهيكلة هي:", "o": ["New and unusual", "Clear and familiar", "Ambiguous", "Risky"], "k": 1, "ans": "واضحة ومألوفة"}, {"t": "q", "s": "اختيار من متعدد", "en": "Nonprogrammed decisions are:", "ar": "القرارات غير المبرمجة هي:", "o": ["Routine", "Unique", "Repetitive", "Simple"], "k": 1, "ans": "فريدة"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which factor reshapes management today?", "ar": "أي عامل يعيد تشكيل الإدارة اليوم؟", "o": ["Customers", "Innovation", "Social media", "Sustainability", "All of the above"], "k": 4, "ans": "كل ما سبق"}, {"t": "q", "s": "اختيار من متعدد", "en": "Group decision-making advantage is:", "ar": "من مزايا اتخاذ القرار الجماعي:", "o": ["Faster decisions", "More complete information", "Less time", "Clear responsibility"], "k": 1, "ans": "معلومات أكثر اكتمالًا"}, {"t": "q", "s": "اختيار من متعدد", "en": "Groupthink occurs when:", "ar": "التفكير الجماعي (Groupthink) يحدث عندما:", "o": ["Members avoid expressing different opinions", "Leader is impartial", "Brainstorming is used", "Open discussion is encouraged"], "k": 0, "ans": "يتجنب الأعضاء التعبير عن آراء مختلفة"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which skill helps managers analyze complex situations?", "ar": "أي مهارة تساعد المدراء على تحليل المواقف المعقدة؟", "o": ["Technical", "Interpersonal", "Conceptual", "Political"], "k": 2, "ans": "المهارة المفاهيمية"}, {"t": "q", "s": "اختيار من متعدد", "en": "Sustainability means:", "ar": "الاستدامة تعني:", "o": ["Short-term profit", "Long-term value integration", "Avoiding innovation", "Ignoring customers"], "k": 1, "ans": "دمج القيمة على المدى الطويل"}, {"t": "q", "s": "صح أو خطأ", "en": "Managers only work in profit organizations.", "ar": "المدراء يشتغلون بس في المنظمات الربحية.", "o": ["True", "False"], "k": 1, "ans": "خطأ"}, {"t": "q", "s": "صح أو خطأ", "en": "Rational decision-making is always realistic.", "ar": "اتخاذ القرار الرشيد واقعي دائمًا.", "o": ["True", "False"], "k": 1, "ans": "خطأ"}, {"t": "q", "s": "صح أو خطأ", "en": "Efficiency means doing things right with minimum cost and time.", "ar": "الكفاءة تعني عمل الأشياء صح بأقل تكلفة ووقت.", "o": ["True", "False"], "k": 0, "ans": "صح"}, {"t": "q", "s": "صح أو خطأ", "en": "Effectiveness means completing the right tasks that achieve goals.", "ar": "الفعالية تعني إنجاز المهام الصحيحة اللي تحقق الأهداف.", "o": ["True", "False"], "k": 0, "ans": "صح"}, {"t": "q", "s": "صح أو خطأ", "en": "Group decision-making always saves time.", "ar": "القرار الجماعي يوفر الوقت دائمًا.", "o": ["True", "False"], "k": 1, "ans": "خطأ"}, {"t": "q", "s": "صح أو خطأ", "en": "National culture influences how decisions are made.", "ar": "الثقافة الوطنية تأثر على طريقة اتخاذ القرارات.", "o": ["True", "False"], "k": 0, "ans": "صح"}]}, {"tag": "Chapter 2", "title": "اتخاذ القرار", "defs": [], "qs": [{"t": "q", "s": "اختيار من متعدد", "en": "What is the first step in the decision-making process?", "ar": "ما هي الخطوة الأولى في عملية اتخاذ القرار؟", "o": ["Identifying decision criteria", "Problem identification", "Developing alternatives", "Implementing the decision"], "k": 1, "ans": "تحديد المشكلة"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which step involves ranking criteria by importance?", "ar": "أي خطوة فيها ترتيب المعايير حسب أهميتها؟", "o": ["Developing alternatives", "Weighting criteria", "Selecting the best alternative", "Evaluating the decision"], "k": 1, "ans": "إعطاء أوزان للمعايير"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which bias means choosing quick rewards over long-term benefits?", "ar": "أي تحيز يعني اختيار المكافآت السريعة بدل الفوائد طويلة المدى؟", "o": ["Overconfidence", "Immediate gratification", "Availability", "Anchoring"], "k": 1, "ans": "الإشباع الفوري"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which bias occurs when managers fail to update decisions with new information?", "ar": "أي تحيز يصير لما المدراء ما يحدّثون قراراتهم بناءً على معلومات جديدة؟", "o": ["Revision", "Confirmation", "Framing", "Representation"], "k": 0, "ans": "تحيز المراجعة (Revision)"}, {"t": "q", "s": "اختيار من متعدد", "en": "Rational decision-making assumes:", "ar": "اتخاذ القرار الرشيد يفترض:", "o": ["Complete objectivity and logic", "Limited information processing", "Decisions based on intuition", "Decisions based on culture"], "k": 0, "ans": "موضوعية ومنطق كاملين"}, {"t": "q", "s": "اختيار من متعدد", "en": "Bounded rationality means:", "ar": "الرشد المحدود يعني:", "o": ["Managers are fully logical", "Managers are limited in processing information", "Managers rely only on emotions", "Managers ignore alternatives"], "k": 1, "ans": "المدراء محدودين في معالجة المعلومات"}, {"t": "q", "s": "اختيار من متعدد", "en": "Intuitive decision-making is based on:", "ar": "اتخاذ القرار الحدسي يعتمد على:", "o": ["Past experience and feelings", "Only data analysis", "Strict rules and policies", "Randomness"], "k": 0, "ans": "الخبرة السابقة والمشاعر"}, {"t": "q", "s": "اختيار من متعدد", "en": "Structured problems are:", "ar": "المشكلات المهيكلة هي:", "o": ["New and unusual", "Clear and familiar", "Ambiguous", "Risky"], "k": 1, "ans": "واضحة ومألوفة"}, {"t": "q", "s": "اختيار من متعدد", "en": "Nonprogrammed decisions are:", "ar": "القرارات غير المبرمجة هي:", "o": ["Routine and repetitive", "Unique and nonrecurring", "Simple and clear", "Based on rules"], "k": 1, "ans": "فريدة وغير متكررة"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which guide is used for programmed decisions?", "ar": "أي دليل يُستخدم للقرارات المبرمجة؟", "o": ["Creativity", "Procedures, rules, policies", "Intuition", "Brainstorming"], "k": 1, "ans": "الإجراءات والقواعد والسياسات"}, {"t": "q", "s": "اختيار من متعدد", "en": "Decision-making under certainty means:", "ar": "اتخاذ القرار في ظل التأكد يعني:", "o": ["Outcomes are known", "Outcomes are estimated", "Outcomes are unclear", "Outcomes are random"], "k": 0, "ans": "النتائج معروفة"}, {"t": "q", "s": "اختيار من متعدد", "en": "Decision-making under risk means:", "ar": "اتخاذ القرار في ظل المخاطرة يعني:", "o": ["Outcomes are known with certainty", "Probabilities can be estimated", "No information is available", "Decisions are intuitive only"], "k": 1, "ans": "يمكن تقدير الاحتمالات"}, {"t": "q", "s": "اختيار من متعدد", "en": "Decision-making under uncertainty means:", "ar": "اتخاذ القرار في ظل عدم التأكد يعني:", "o": ["Probabilities are clear", "Outcomes are unknown", "Outcomes are guaranteed", "Decisions are routine"], "k": 1, "ans": "النتائج غير معروفة"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which is an advantage of group decision-making?", "ar": "أي مما يلي من مزايا اتخاذ القرار الجماعي؟", "o": ["Faster decisions", "More alternatives generated", "Clearer responsibility", "Less time-consuming"], "k": 1, "ans": "توليد بدائل أكثر"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which contemporary issue involves analyzing vast amounts of information?", "ar": "أي قضية معاصرة فيها تحليل كميات ضخمة من المعلومات؟", "o": ["National culture", "Creativity", "Design thinking", "Big Data"], "k": 3, "ans": "البيانات الضخمة"}, {"t": "q", "s": "صح أو خطأ", "en": "Overconfidence bias means being too confident in your abilities.", "ar": "تحيز الثقة الزائدة يعني إنك واثق زيادة في قدراتك.", "o": ["True", "False"], "k": 0, "ans": "صح"}, {"t": "q", "s": "صح أو خطأ", "en": "Rational decision-making is always realistic in practice.", "ar": "اتخاذ القرار الرشيد واقعي دائمًا في التطبيق.", "o": ["True", "False"], "k": 1, "ans": "خطأ"}, {"t": "q", "s": "صح أو خطأ", "en": "Programmed decisions are repetitive and routine.", "ar": "القرارات المبرمجة متكررة وروتينية.", "o": ["True", "False"], "k": 0, "ans": "صح"}, {"t": "q", "s": "صح أو خطأ", "en": "Nonprogrammed decisions require unique solutions.", "ar": "القرارات غير المبرمجة تحتاج حلول فريدة.", "o": ["True", "False"], "k": 0, "ans": "صح"}, {"t": "q", "s": "صح أو خطأ", "en": "Groupthink improves the quality of decisions.", "ar": "التفكير الجماعي يحسّن جودة القرارات.", "o": ["True", "False"], "k": 1, "ans": "خطأ"}, {"t": "q", "s": "صح أو خطأ", "en": "Design thinking approaches management problems like design problems.", "ar": "التفكير التصميمي يتعامل مع مشاكل الإدارة كأنها مشاكل تصميم.", "o": ["True", "False"], "k": 0, "ans": "صح"}]}];
+const TOTAL='٤٢ سؤال',KEY='mgt111q',L='ABCDEFGHIJ';
+const list=document.getElementById('list'),score=document.getElementById('score');
+let picks={};try{picks=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(picks))}catch(e){}}
+function render(){
+ list.innerHTML='';
+ DATA.forEach((c,ci)=>{
+  const sec=document.createElement('section');sec.dataset.c=ci;
+  sec.innerHTML=`<h2 class="ch"><i>${c.tag}</i>${c.title}</h2>`;
+  let last='',num=0;
+  c.qs.forEach((q,qi)=>{
+   if(q.s!==last){last=q.s;num=0;const h=document.createElement('h3');h.className='sub';h.textContent=q.s;sec.appendChild(h)}
+   num++;
+   const id=ci+'-'+qi,d=document.createElement('div');d.className='q';d.dataset.i=qi;
+   d.innerHTML=`<div class="qe"><span class="n">${q.t==='m'?num:'Q'+num}</span><div></div></div><div class="qa"></div><div class="os"></div><div class="res"></div>`;
+   d.querySelector('.qe div').textContent=q.en;d.querySelector('.qa').textContent=q.ar;
+   const os=d.querySelector('.os');
+   if(q.t==='m'){
+    d.classList.add('m');os.style.display='block';
+    const s=document.createElement('select');s.className='sel';
+    s.innerHTML='<option value="">اختر التعريف…</option>';
+    c.defs.forEach((t,k)=>{const o=document.createElement('option');o.value=k;o.textContent=L[k]+') '+t;s.appendChild(o)});
+    s.onchange=()=>{if(s.value==='')return;const k=+s.value;picks[id]=k;save();mark(d,q,k);tally()};
+    os.appendChild(s);
+   }else q.o.forEach((t,k)=>{const b=document.createElement('button');b.className='o';b.innerHTML=`<span class="l">${L[k]}</span><span></span>`;b.lastChild.textContent=t;b.onclick=()=>{picks[id]=k;save();mark(d,q,k);tally()};os.appendChild(b)});
+   if(id in picks)mark(d,q,picks[id]);
+   sec.appendChild(d);
+  });
+  list.appendChild(sec);
+ });
+ tally();
+}
+function mark(d,q,k){
+ d.classList.add('done');
+ if(q.t==='m'){const s=d.querySelector('.sel');s.value=k===null?q.k:k;s.disabled=true;d.classList.add(k===null||k===q.k?'ok':'bad')}
+ else d.querySelectorAll('.o').forEach((b,i)=>{b.disabled=true;if(i===q.k)b.classList.add('ok');else if(i===k)b.classList.add('bad')});
+ const r=d.querySelector('.res');
+ r.innerHTML=k===null?'<span class="y">✓ الإجابة: </span>':(k===q.k?'<span class="y">✓ صح! </span>':'<span class="x">✗ الإجابة الصحيحة: </span>');
+ if(q.t==='m'){const e=document.createElement('bdi');e.dir='ltr';e.textContent=q.ans;r.append(e)}else r.append(q.ans);
+}
+function tally(){
+ const n=Object.keys(picks).length,ok=Object.entries(picks).filter(([id,k])=>{const[c,q]=id.split('-');return DATA[c].qs[q].k===k}).length;
+ score.innerHTML=n?`<b>${ok}</b> / ${n} صح`:TOTAL;
+}
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+ document.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-pressed',x===t));
+ document.querySelectorAll('section').forEach(s=>s.hidden=t.dataset.c!=='all'&&s.dataset.c!==t.dataset.c);
+});
+document.getElementById('show').onclick=()=>document.querySelectorAll('section').forEach(s=>s.querySelectorAll('.q').forEach(d=>{if(!d.classList.contains('done'))mark(d,DATA[s.dataset.c].qs[d.dataset.i],null)}));
+document.getElementById('reset').onclick=()=>{picks={};save();render();scrollTo(0,0)};
+render();
+</script>
+</body></html>
