@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>BUC112 · بنك أسئلة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Poppins:wght@500;600;700&display=swap">
+<style>
+:root{--navy:#07005E;--yellow:#F7DC6B;--turq:#7DE6D5;--pink:#E980C2;
+ --bg:#F6F5FB;--surface:#fff;--fg:#151238;--muted:#5B5878;--line:#E2E0EE;--opt:#F3F2FA;
+ --ok:#1E9E6A;--okbg:#E2F7EE;--bad:#D2405F;--badbg:#FCE6EB;
+ --display:"Alexandria","IBM Plex Sans Arabic",Tahoma,sans-serif;--body:"IBM Plex Sans Arabic",Tahoma,sans-serif;--en:"Poppins","Segoe UI",sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0B0930;--surface:#141142;--fg:#F1F0FA;--muted:#B4B1D3;--line:#2A2663;--opt:#1B1752;--okbg:#0F3B33;--badbg:#45122A;--ok:#5FE0AE;--bad:#FF8FA6;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0B0930;--surface:#141142;--fg:#F1F0FA;--muted:#B4B1D3;--line:#2A2663;--opt:#1B1752;--okbg:#0F3B33;--badbg:#45122A;--ok:#5FE0AE;--bad:#FF8FA6;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:820px;margin:0 auto;padding-inline:16px}
+header{background:var(--navy);color:#fff;padding:22px 0 30px}
+header img{height:40px;display:block}
+.pill{display:inline-block;margin-top:26px;background:var(--yellow);color:var(--navy);font-family:var(--display);font-weight:700;font-size:15px;padding:4px 16px;border-radius:99px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,7vw,42px);line-height:1.25;margin:12px 0 6px}
+h1 span{color:var(--yellow)}
+.lead{color:#D9D7F3;margin:0}
+.by{display:inline-flex;gap:8px;align-items:center;margin-top:16px;background:rgba(255,255,255,.1);border-radius:12px;padding:6px 14px;font-family:var(--display);font-weight:600}
+.by b{color:var(--yellow)}
+.bar{position:sticky;top:0;z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+.bar .wrap{display:flex;gap:8px;align-items:center;padding-block:10px;flex-wrap:wrap}
+.tab{border:1.5px solid var(--line);background:none;color:var(--fg);font-family:var(--display);font-weight:600;font-size:14px;border-radius:99px;padding:6px 14px;cursor:pointer}
+.tab[aria-pressed=true]{background:var(--navy);border-color:var(--navy);color:#fff}
+.score{margin-inline-start:auto;font-family:var(--display);font-weight:700;font-size:15px;white-space:nowrap}
+.score b{color:var(--ok)}
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0 4px}
+.btn{border:none;background:var(--opt);color:var(--fg);font-family:var(--display);font-weight:600;font-size:14px;border-radius:12px;padding:8px 14px;cursor:pointer}
+.ch{font-family:var(--display);font-weight:700;font-size:20px;margin:26px 0 12px;display:flex;gap:10px;align-items:center}
+.ch i{font-style:normal;font-family:var(--en);font-size:13px;background:var(--turq);color:var(--navy);border-radius:99px;padding:2px 12px}
+.q{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:14px}
+.qe{direction:ltr;text-align:left;display:flex;gap:10px;font-family:var(--en);font-weight:600;font-size:16px;line-height:1.45}
+.qe .n{flex:none;background:var(--yellow);color:var(--navy);border-radius:8px;padding:0 8px;font-weight:700;font-size:13px;height:24px;line-height:24px;margin-top:1px}
+.qa{color:var(--muted);font-size:14.5px;margin:6px 0 10px}
+.os{direction:ltr;display:grid;gap:8px}
+@media (min-width:620px){.os{grid-template-columns:1fr 1fr}}
+.o{display:flex;gap:10px;align-items:center;text-align:left;width:100%;border:1.5px solid transparent;background:var(--opt);color:var(--fg);font-family:var(--en);font-size:14.5px;border-radius:12px;padding:9px 12px;cursor:pointer;min-height:44px}
+.o .l{flex:none;width:26px;height:26px;border-radius:8px;background:var(--line);display:grid;place-items:center;font-weight:700;font-size:13px}
+.o:disabled{cursor:default}
+.o.ok{background:var(--okbg);border-color:var(--ok);font-weight:600}.o.ok .l{background:var(--ok);color:#fff}
+.o.bad{background:var(--badbg);border-color:var(--bad)}.o.bad .l{background:var(--bad);color:#fff}
+.res{display:none;margin-top:10px;font-family:var(--display);font-weight:600;font-size:14.5px}
+.q.done .res{display:block}
+.res .y{color:var(--ok)}.res .x{color:var(--bad)}
+footer{text-align:center;color:var(--muted);font-size:13px;padding:30px 0 40px}
+footer a{color:inherit}
+.sub{font-family:var(--display);font-weight:600;font-size:15px;color:var(--muted);margin:18px 0 10px}
+.m .sel{width:100%;margin-top:8px;font-family:var(--en);font-size:14.5px;color:var(--fg);background:var(--opt);border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;min-height:44px;direction:ltr}
+.m.ok .sel{border-color:var(--ok);background:var(--okbg)}.m.bad .sel{border-color:var(--bad);background:var(--badbg)}
+</style></head><body>
+<header><div class="wrap">
+ <img src="../../tools/logo-horizontal-color-on-navy.svg" alt="الطالب الأكاديمي">
+ <div class="pill">BUC112 · Activity 1 & 2</div>
+ <h1>اختبر نفسك <span>٥٦ سؤال</span> مع الحل</h1>
+ <p class="lead">اختر إجابتك وتشوف الصح مباشرة. الأسئلة على الفصلين ١ و ٢.</p>
+ <div class="by">إعداد <b>أ. أنفال السهو</b></div>
+</div></header>
+<div class="bar"><div class="wrap">
+ <button class="tab" data-c="all" aria-pressed="true">الكل</button>
+ <button class="tab" data-c="0" aria-pressed="false">Chapter 1</button>
+ <button class="tab" data-c="1" aria-pressed="false">Chapter 2</button>
+ <div class="score" id="score"></div>
+</div></div>
+<main class="wrap">
+ <div class="tools"><button class="btn" id="show">اعرض كل الإجابات</button><button class="btn" id="reset">ابدأ من جديد</button></div>
+ <div id="list"></div>
+</main>
+<footer>الطالب الأكاديمي · صفحة خاصة لطلاب BUC112</footer>
+<script>
+const DATA=[{"tag": "Chapter 1", "title": "الوسائط الرقمية", "defs": ["Guidance that helps readers navigate new topics", "Written messages that mimic spoken dialogue", "Storytelling with beginning, middle, end", "Short versions highlighting key points", "Short posts that inform readers", "Withholding info to attract attention", "How-to advice and answers"], "qs": [{"t": "q", "s": "اختيار من متعدد", "en": "Which of the following is a benefit of printed messages?", "ar": "أي مما يلي من فوائد الرسائل المطبوعة؟", "o": ["Faster communication", "Permanent, unchangeable record", "Easy to edit anytime", "Less formal impression"], "k": 1, "ans": "سجل دائم وما يتغير"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which compositional mode is best for guiding readers through new topics or systems?", "ar": "أي أسلوب كتابة هو الأفضل لإرشاد القرّاء في مواضيع أو أنظمة جديدة؟", "o": ["Narratives", "Orientations", "Teasers", "Comments"], "k": 1, "ans": "التوجيهات (Orientations)"}, {"t": "q", "s": "اختيار من متعدد", "en": "What is considered the most important part of an email message?", "ar": "ما هو أهم جزء في رسالة الإيميل؟", "o": ["Greeting", "Subject line", "Signature", "Tone"], "k": 1, "ans": "سطر الموضوع"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which feature of workgroup messaging systems helps organize teamwork?", "ar": "أي ميزة في أنظمة مراسلة فرق العمل تساعد على تنظيم العمل الجماعي؟", "o": ["Threads", "Channels", "Emojis", "Podcasts"], "k": 1, "ans": "القنوات (Channels)"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which is a risk of using emojis in professional communication?", "ar": "أي مما يلي من مخاطر استخدام الإيموجي في التواصل المهني؟", "o": ["Inconsistent interpretations", "Faster communication", "Stronger relationships", "Clearer tone"], "k": 0, "ans": "اختلاف تفسيرها من شخص لشخص"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which compositional mode uses storytelling with beginning, middle, and end?", "ar": "أي أسلوب كتابة يستخدم سرد القصة ببداية ووسط ونهاية؟", "o": ["Summaries", "Narratives", "Teasers", "Reference material"], "k": 1, "ans": "السرد (Narratives)"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which guideline for email writing emphasizes clarity and meaning?", "ar": "أي إرشاد في كتابة الإيميل يركز على الوضوح والمعنى؟", "o": ["Greeting", "Subject line", "emoji", "Signature"], "k": 1, "ans": "سطر الموضوع"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which AI feature helps summarize long email threads?", "ar": "أي ميزة ذكاء اصطناعي تساعد على تلخيص سلاسل الإيميل الطويلة؟", "o": ["Sentiment analysis", "Thread management", "Summarization", "Prioritization"], "k": 2, "ans": "التلخيص"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which messaging platform is commonly used for collaboration?", "ar": "أي منصة مراسلة تُستخدم عادةً للتعاون في العمل؟", "o": ["Slack", "TikTok", "Instagram", "Pinterest"], "k": 0, "ans": "سلاك (Slack)"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which compositional mode is best for short posts that inform readers of updates?", "ar": "أي أسلوب كتابة هو الأفضل للمنشورات القصيرة اللي تبلغ القرّاء بالتحديثات؟", "o": ["Status updates & announcements", "Narratives", "Teasers", "Comments"], "k": 0, "ans": "تحديثات الحالة والإعلانات"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which is a challenge in organizing website content?", "ar": "أي مما يلي من تحديات تنظيم محتوى الموقع الإلكتروني؟", "o": ["Multiple audiences", "Easy planning", "Simple organization", "Limited purposes"], "k": 0, "ans": "تعدد الجماهير"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which podcasting application helps HR attract new recruits?", "ar": "أي استخدام للبودكاست يساعد الموارد البشرية على جذب موظفين جدد؟", "o": ["Training", "Marketing", "HR/Recruiting", "Selling"], "k": 2, "ans": "الموارد البشرية والتوظيف"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which step in the three-step podcasting process involves recording and distributing?", "ar": "أي خطوة من خطوات البودكاست الثلاث فيها التسجيل والنشر؟", "o": ["Plan", "Write", "Complete", "Organize"], "k": 2, "ans": "الإكمال (Complete)"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which is a best practice for business messaging?", "ar": "أي مما يلي من أفضل الممارسات في مراسلات العمل؟", "o": ["Use channels and threads", "Avoid company policies", "Write long complex messages", "Ignore tone"], "k": 0, "ans": "استخدام القنوات والمحادثات المتسلسلة"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which benefit of printed messages makes them stand out?", "ar": "أي فائدة للرسائل المطبوعة تخليها مميزة؟", "o": ["Easy to edit", "Less formal impression", "Standing out from digital flood", "Faster communication"], "k": 2, "ans": "التميّز وسط زحمة المحتوى الرقمي"}, {"t": "q", "s": "صح أو خطأ", "en": "Emojis should always be used in formal communication.", "ar": "لازم نستخدم الإيموجي دائمًا في التواصل الرسمي.", "o": ["True", "False"], "k": 1, "ans": "خطأ"}, {"t": "q", "s": "صح أو خطأ", "en": "Subject lines are the most important part of an email.", "ar": "سطر الموضوع هو أهم جزء في الإيميل.", "o": ["True", "False"], "k": 0, "ans": "صح"}, {"t": "q", "s": "صح أو خطأ", "en": "Narratives are short versions of documents highlighting key points.", "ar": "السرد هو نسخة مختصرة من المستند تبرز النقاط الأساسية.", "o": ["True", "False"], "k": 1, "ans": "خطأ"}, {"t": "q", "s": "صح أو خطأ", "en": "Slack and Teams are examples of workgroup messaging systems.", "ar": "Slack و Teams أمثلة على أنظمة مراسلة فرق العمل.", "o": ["True", "False"], "k": 0, "ans": "صح"}, {"t": "q", "s": "صح أو خطأ", "en": "Printed messages can provide a permanent, secure record.", "ar": "الرسائل المطبوعة توفر سجل دائم وآمن.", "o": ["True", "False"], "k": 0, "ans": "صح"}, {"t": "q", "s": "صح أو خطأ", "en": "Podcasting can be used for training and marketing.", "ar": "البودكاست ممكن يُستخدم للتدريب والتسويق.", "o": ["True", "False"], "k": 0, "ans": "صح"}, {"t": "m", "s": "وصّل كل مصطلح بتعريفه", "en": "Conversations", "ar": "المحادثات", "k": 1, "ans": "B) Written messages that mimic spoken dialogue"}, {"t": "m", "s": "وصّل كل مصطلح بتعريفه", "en": "Orientations", "ar": "التوجيهات", "k": 0, "ans": "A) Guidance that helps readers navigate new topics"}, {"t": "m", "s": "وصّل كل مصطلح بتعريفه", "en": "Summaries", "ar": "الملخصات", "k": 3, "ans": "D) Short versions highlighting key points"}, {"t": "m", "s": "وصّل كل مصطلح بتعريفه", "en": "Narratives", "ar": "السرد", "k": 2, "ans": "C) Storytelling with beginning, middle, end"}, {"t": "m", "s": "وصّل كل مصطلح بتعريفه", "en": "Teasers", "ar": "التشويق", "k": 5, "ans": "F) Withholding info to attract attention"}, {"t": "m", "s": "وصّل كل مصطلح بتعريفه", "en": "Status Updates", "ar": "تحديثات الحالة", "k": 4, "ans": "E) Short posts that inform readers"}, {"t": "m", "s": "وصّل كل مصطلح بتعريفه", "en": "Tutorials & FAQs", "ar": "الشروحات والأسئلة الشائعة", "k": 6, "ans": "G) How-to advice and answers"}]}, {"tag": "Chapter 2", "title": "وسائل التواصل الاجتماعي", "defs": ["People sharing hobbies/interests", "People sharing same profession/skills", "Integrating and expanding workforce", "People connected to a brand", "Content created by customers/users", "Selecting and sharing existing material", "Developing and sharing new material"], "qs": [{"t": "q", "s": "اختيار من متعدد", "en": "Which is the first step in developing a social media strategy?", "ar": "ما هي أول خطوة في بناء استراتيجية التواصل الاجتماعي؟", "o": ["Who", "What", "Why", "Where"], "k": 2, "ans": "لماذا (Why)"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which social media use helps companies find talent?", "ar": "أي استخدام للتواصل الاجتماعي يساعد الشركات تلقى المواهب؟", "o": ["Promotion", "Recruiting", "Customer support", "Crisis communication"], "k": 1, "ans": "التوظيف"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which AI feature helps segment audiences?", "ar": "أي ميزة ذكاء اصطناعي تساعد على تقسيم الجمهور؟", "o": ["Market intelligence", "Audience segmentation", "Content moderation", "Performance analytics"], "k": 1, "ans": "تقسيم الجمهور"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which writing approach is best for social media content?", "ar": "أي أسلوب كتابة هو الأفضل لمحتوى التواصل الاجتماعي؟", "o": ["Formal and lengthy", "Conversational and shareable", "Technical and complex", "Silent and minimal"], "k": 1, "ans": "حواري وقابل للمشاركة"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which platform is best for professional networking?", "ar": "أي منصة هي الأفضل لبناء العلاقات المهنية؟", "o": ["Facebook", "LinkedIn", "TikTok", "Snapchat"], "k": 1, "ans": "لينكدإن"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which platform is best for short, creative videos?", "ar": "أي منصة هي الأفضل للفيديوهات القصيرة الإبداعية؟", "o": ["YouTube", "TikTok", "Pinterest", "LinkedIn"], "k": 1, "ans": "تيك توك"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which blogging application helps leaders position themselves as experts?", "ar": "أي استخدام للتدوين يساعد القادة يقدّمون نفسهم كخبراء؟", "o": ["Recruiting", "Thought leadership", "Customer education", "SEO"], "k": 1, "ans": "القيادة الفكرية"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which blogging tip emphasizes clear, attractive titles?", "ar": "أي نصيحة في التدوين تركز على العناوين الواضحة والجذابة؟", "o": ["Draft the post", "Curate content", "Write compelling headlines", "Finalize and format"], "k": 2, "ans": "كتابة عناوين جذابة"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which microblogging platform is designed for short posts?", "ar": "أي منصة تدوين مصغّر مصممة للمنشورات القصيرة؟", "o": ["Twitter/X", "YouTube", "LinkedIn", "Pinterest"], "k": 0, "ans": "تويتر / X"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which microblogging application supports customer service?", "ar": "أي استخدام للتدوين المصغّر يدعم خدمة العملاء؟", "o": ["Crowdsourcing", "Customer service", "Integration", "Spontaneous communication"], "k": 1, "ans": "خدمة العملاء"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which social media use helps during crises?", "ar": "أي استخدام للتواصل الاجتماعي يساعد وقت الأزمات؟", "o": ["Promotion", "Crisis communication", "Market research", "Community building"], "k": 1, "ans": "التواصل في الأزمات"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which blogging application improves search engine ranking?", "ar": "أي استخدام للتدوين يحسّن ترتيب الموقع في محركات البحث؟", "o": ["Customer education", "SEO", "Recruiting", "Thought leadership"], "k": 1, "ans": "تحسين محركات البحث (SEO)"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which microblogging tip emphasizes hashtags?", "ar": "أي نصيحة في التدوين المصغّر تركز على الهاشتاقات؟", "o": ["Define purpose", "Use hashtags", "Explore timelines", "Maintain presence"], "k": 1, "ans": "استخدام الهاشتاقات"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which platform is best for long-form video tutorials?", "ar": "أي منصة هي الأفضل للفيديوهات التعليمية الطويلة؟", "o": ["TikTok", "YouTube", "Instagram", "Snapchat"], "k": 1, "ans": "يوتيوب"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which social media management task involves monitoring public opinion?", "ar": "أي مهمة في إدارة التواصل الاجتماعي فيها متابعة الرأي العام؟", "o": ["Crisis communication", "Reputation monitoring", "Recruiting", "Promotion"], "k": 1, "ans": "مراقبة السمعة"}, {"t": "q", "s": "صح أو خطأ", "en": "Social media can be used for recruiting and promotion.", "ar": "وسائل التواصل الاجتماعي ممكن تُستخدم للتوظيف والترويج.", "o": ["True", "False"], "k": 0, "ans": "صح"}, {"t": "q", "s": "صح أو خطأ", "en": "LinkedIn is mainly for entertainment videos.", "ar": "لينكدإن أساسًا لفيديوهات الترفيه.", "o": ["True", "False"], "k": 1, "ans": "خطأ"}, {"t": "q", "s": "صح أو خطأ", "en": "Blogging can improve search engine ranking.", "ar": "التدوين ممكن يحسّن ترتيب الموقع في محركات البحث.", "o": ["True", "False"], "k": 0, "ans": "صح"}, {"t": "q", "s": "صح أو خطأ", "en": "Microblogging posts are designed to be read quickly.", "ar": "منشورات التدوين المصغّر مصممة عشان تنقرا بسرعة.", "o": ["True", "False"], "k": 0, "ans": "صح"}, {"t": "q", "s": "صح أو خطأ", "en": "TikTok is best for long-form video tutorials.", "ar": "تيك توك هو الأفضل للفيديوهات التعليمية الطويلة.", "o": ["True", "False"], "k": 1, "ans": "خطأ"}, {"t": "q", "s": "صح أو خطأ", "en": "AI can help with content moderation and risk management.", "ar": "الذكاء الاصطناعي يقدر يساعد في الإشراف على المحتوى وإدارة المخاطر.", "o": ["True", "False"], "k": 0, "ans": "صح"}, {"t": "m", "s": "وصّل كل مصطلح بتعريفه", "en": "Communities of practice", "ar": "مجتمعات الممارسة", "k": 1, "ans": "B) People sharing same profession/skills"}, {"t": "m", "s": "وصّل كل مصطلح بتعريفه", "en": "Communities of interest", "ar": "مجتمعات الاهتمام", "k": 0, "ans": "A) People sharing hobbies/interests"}, {"t": "m", "s": "وصّل كل مصطلح بتعريفه", "en": "Brand communities", "ar": "مجتمعات العلامة التجارية", "k": 3, "ans": "D) People connected to a brand"}, {"t": "m", "s": "وصّل كل مصطلح بتعريفه", "en": "Enterprise networking", "ar": "الشبكات المؤسسية", "k": 2, "ans": "C) Integrating and expanding workforce"}, {"t": "m", "s": "وصّل كل مصطلح بتعريفه", "en": "Original content", "ar": "المحتوى الأصلي", "k": 6, "ans": "G) Developing and sharing new material"}, {"t": "m", "s": "وصّل كل مصطلح بتعريفه", "en": "Curated content", "ar": "المحتوى المنسّق", "k": 5, "ans": "F) Selecting and sharing existing material"}, {"t": "m", "s": "وصّل كل مصطلح بتعريفه", "en": "User-generated content", "ar": "المحتوى اللي ينشئه المستخدمين", "k": 4, "ans": "E) Content created by customers/users"}]}];
+const TOTAL='٥٦ سؤال',KEY='buc112q',L='ABCDEFGHIJ';
+const list=document.getElementById('list'),score=document.getElementById('score');
+let picks={};try{picks=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(picks))}catch(e){}}
+function render(){
+ list.innerHTML='';
+ DATA.forEach((c,ci)=>{
+  const sec=document.createElement('section');sec.dataset.c=ci;
+  sec.innerHTML=`<h2 class="ch"><i>${c.tag}</i>${c.title}</h2>`;
+  let last='',num=0;
+  c.qs.forEach((q,qi)=>{
+   if(q.s!==last){last=q.s;num=0;const h=document.createElement('h3');h.className='sub';h.textContent=q.s;sec.appendChild(h)}
+   num++;
+   const id=ci+'-'+qi,d=document.createElement('div');d.className='q';d.dataset.i=qi;
+   d.innerHTML=`<div class="qe"><span class="n">${q.t==='m'?num:'Q'+num}</span><div></div></div><div class="qa"></div><div class="os"></div><div class="res"></div>`;
+   d.querySelector('.qe div').textContent=q.en;d.querySelector('.qa').textContent=q.ar;
+   const os=d.querySelector('.os');
+   if(q.t==='m'){
+    d.classList.add('m');os.style.display='block';
+    const s=document.createElement('select');s.className='sel';
+    s.innerHTML='<option value="">اختر التعريف…</option>';
+    c.defs.forEach((t,k)=>{const o=document.createElement('option');o.value=k;o.textContent=L[k]+') '+t;s.appendChild(o)});
+    s.onchange=()=>{if(s.value==='')return;const k=+s.value;picks[id]=k;save();mark(d,q,k);tally()};
+    os.appendChild(s);
+   }else q.o.forEach((t,k)=>{const b=document.createElement('button');b.className='o';b.innerHTML=`<span class="l">${L[k]}</span><span></span>`;b.lastChild.textContent=t;b.onclick=()=>{picks[id]=k;save();mark(d,q,k);tally()};os.appendChild(b)});
+   if(id in picks)mark(d,q,picks[id]);
+   sec.appendChild(d);
+  });
+  list.appendChild(sec);
+ });
+ tally();
+}
+function mark(d,q,k){
+ d.classList.add('done');
+ if(q.t==='m'){const s=d.querySelector('.sel');s.value=k===null?q.k:k;s.disabled=true;d.classList.add(k===null||k===q.k?'ok':'bad')}
+ else d.querySelectorAll('.o').forEach((b,i)=>{b.disabled=true;if(i===q.k)b.classList.add('ok');else if(i===k)b.classList.add('bad')});
+ const r=d.querySelector('.res');
+ r.innerHTML=k===null?'<span class="y">✓ الإجابة: </span>':(k===q.k?'<span class="y">✓ صح! </span>':'<span class="x">✗ الإجابة الصحيحة: </span>');
+ if(q.t==='m'){const e=document.createElement('bdi');e.dir='ltr';e.textContent=q.ans;r.append(e)}else r.append(q.ans);
+}
+function tally(){
+ const n=Object.keys(picks).length,ok=Object.entries(picks).filter(([id,k])=>{const[c,q]=id.split('-');return DATA[c].qs[q].k===k}).length;
+ score.innerHTML=n?`<b>${ok}</b> / ${n} صح`:TOTAL;
+}
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+ document.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-pressed',x===t));
+ document.querySelectorAll('section').forEach(s=>s.hidden=t.dataset.c!=='all'&&s.dataset.c!==t.dataset.c);
+});
+document.getElementById('show').onclick=()=>document.querySelectorAll('section').forEach(s=>s.querySelectorAll('.q').forEach(d=>{if(!d.classList.contains('done'))mark(d,DATA[s.dataset.c].qs[d.dataset.i],null)}));
+document.getElementById('reset').onclick=()=>{picks={};save();render();scrollTo(0,0)};
+render();
+</script>
+</body></html>

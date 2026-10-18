@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>BUC111 · بنك أسئلة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Poppins:wght@500;600;700&display=swap">
+<style>
+:root{--navy:#07005E;--yellow:#F7DC6B;--turq:#7DE6D5;--pink:#E980C2;
+ --bg:#F6F5FB;--surface:#fff;--fg:#151238;--muted:#5B5878;--line:#E2E0EE;--opt:#F3F2FA;
+ --ok:#1E9E6A;--okbg:#E2F7EE;--bad:#D2405F;--badbg:#FCE6EB;
+ --display:"Alexandria","IBM Plex Sans Arabic",Tahoma,sans-serif;--body:"IBM Plex Sans Arabic",Tahoma,sans-serif;--en:"Poppins","Segoe UI",sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0B0930;--surface:#141142;--fg:#F1F0FA;--muted:#B4B1D3;--line:#2A2663;--opt:#1B1752;--okbg:#0F3B33;--badbg:#45122A;--ok:#5FE0AE;--bad:#FF8FA6;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0B0930;--surface:#141142;--fg:#F1F0FA;--muted:#B4B1D3;--line:#2A2663;--opt:#1B1752;--okbg:#0F3B33;--badbg:#45122A;--ok:#5FE0AE;--bad:#FF8FA6;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:820px;margin:0 auto;padding-inline:16px}
+header{background:var(--navy);color:#fff;padding:22px 0 30px}
+header img{height:40px;display:block}
+.pill{display:inline-block;margin-top:26px;background:var(--yellow);color:var(--navy);font-family:var(--display);font-weight:700;font-size:15px;padding:4px 16px;border-radius:99px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,7vw,42px);line-height:1.25;margin:12px 0 6px}
+h1 span{color:var(--yellow)}
+.lead{color:#D9D7F3;margin:0}
+.by{display:inline-flex;gap:8px;align-items:center;margin-top:16px;background:rgba(255,255,255,.1);border-radius:12px;padding:6px 14px;font-family:var(--display);font-weight:600}
+.by b{color:var(--yellow)}
+.bar{position:sticky;top:0;z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+.bar .wrap{display:flex;gap:8px;align-items:center;padding-block:10px;flex-wrap:wrap}
+.tab{border:1.5px solid var(--line);background:none;color:var(--fg);font-family:var(--display);font-weight:600;font-size:14px;border-radius:99px;padding:6px 14px;cursor:pointer}
+.tab[aria-pressed=true]{background:var(--navy);border-color:var(--navy);color:#fff}
+.score{margin-inline-start:auto;font-family:var(--display);font-weight:700;font-size:15px;white-space:nowrap}
+.score b{color:var(--ok)}
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0 4px}
+.btn{border:none;background:var(--opt);color:var(--fg);font-family:var(--display);font-weight:600;font-size:14px;border-radius:12px;padding:8px 14px;cursor:pointer}
+.ch{font-family:var(--display);font-weight:700;font-size:20px;margin:26px 0 12px;display:flex;gap:10px;align-items:center}
+.ch i{font-style:normal;font-family:var(--en);font-size:13px;background:var(--turq);color:var(--navy);border-radius:99px;padding:2px 12px}
+.q{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:14px}
+.qe{direction:ltr;text-align:left;display:flex;gap:10px;font-family:var(--en);font-weight:600;font-size:16px;line-height:1.45}
+.qe .n{flex:none;background:var(--yellow);color:var(--navy);border-radius:8px;padding:0 8px;font-weight:700;font-size:13px;height:24px;line-height:24px;margin-top:1px}
+.qa{color:var(--muted);font-size:14.5px;margin:6px 0 10px}
+.os{direction:ltr;display:grid;gap:8px}
+@media (min-width:620px){.os{grid-template-columns:1fr 1fr}}
+.o{display:flex;gap:10px;align-items:center;text-align:left;width:100%;border:1.5px solid transparent;background:var(--opt);color:var(--fg);font-family:var(--en);font-size:14.5px;border-radius:12px;padding:9px 12px;cursor:pointer;min-height:44px}
+.o .l{flex:none;width:26px;height:26px;border-radius:8px;background:var(--line);display:grid;place-items:center;font-weight:700;font-size:13px}
+.o:disabled{cursor:default}
+.o.ok{background:var(--okbg);border-color:var(--ok);font-weight:600}.o.ok .l{background:var(--ok);color:#fff}
+.o.bad{background:var(--badbg);border-color:var(--bad)}.o.bad .l{background:var(--bad);color:#fff}
+.res{display:none;margin-top:10px;font-family:var(--display);font-weight:600;font-size:14.5px}
+.q.done .res{display:block}
+.res .y{color:var(--ok)}.res .x{color:var(--bad)}
+footer{text-align:center;color:var(--muted);font-size:13px;padding:30px 0 40px}
+footer a{color:inherit}
+.sub{font-family:var(--display);font-weight:600;font-size:15px;color:var(--muted);margin:18px 0 10px}
+.m .sel{width:100%;margin-top:8px;font-family:var(--en);font-size:14.5px;color:var(--fg);background:var(--opt);border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;min-height:44px;direction:ltr}
+.m.ok .sel{border-color:var(--ok);background:var(--okbg)}.m.bad .sel{border-color:var(--bad);background:var(--badbg)}
+</style></head><body>
+<header><div class="wrap">
+ <img src="../../tools/logo-horizontal-color-on-navy.svg" alt="الطالب الأكاديمي">
+ <div class="pill">BUC111 · Activity 1</div>
+ <h1>اختبر نفسك <span>٥٥ سؤال</span> مع الحل</h1>
+ <p class="lead">اختر إجابتك وتشوف الصح مباشرة. الأسئلة على الفصلين ١ و ٢.</p>
+ <div class="by">إعداد <b>أ. أنفال السهو</b></div>
+</div></header>
+<div class="bar"><div class="wrap">
+ <button class="tab" data-c="all" aria-pressed="true">الكل</button>
+ <button class="tab" data-c="0" aria-pressed="false">Chapter 1</button>
+ <button class="tab" data-c="1" aria-pressed="false">Chapter 2</button>
+ <div class="score" id="score"></div>
+</div></div>
+<main class="wrap">
+ <div class="tools"><button class="btn" id="show">اعرض كل الإجابات</button><button class="btn" id="reset">ابدأ من جديد</button></div>
+ <div id="list"></div>
+</main>
+<footer>الطالب الأكاديمي · صفحة خاصة لطلاب BUC111</footer>
+<script>
+const DATA=[{"tag": "Chapter 1", "title": "التواصل المهني في عصر الذكاء الاصطناعي", "defs": ["Ideas flow along company structure", "Across different levels/departments", "From employees to managers", "Personal conversations inside company", "From managers to employees", "Between departments for teamwork"], "qs": [{"t": "q", "s": "اختيار من متعدد", "en": "One result of poor communication in operations is:", "ar": "من نتائج ضعف التواصل في العمليات:", "o": ["Better teamwork", "Higher customer trust", "Mistakes and delays", "Faster production"], "k": 2, "ans": "الأخطاء والتأخير"}, {"t": "q", "s": "اختيار من متعدد", "en": "A practical message should:", "ar": "الرسالة العملية يجب أن:", "o": ["Help the reader solve a problem", "Make the reader feel happy", "Include unrelated facts", "Be as long as possible"], "k": 0, "ans": "تساعد القارئ على حل مشكلة"}, {"t": "q", "s": "اختيار من متعدد", "en": "Improving your communication skills is:", "ar": "تطوير مهارات التواصل لديك هو:", "o": ["The single most important step in your career", "Not important if you work with numbers", "A minor component of success", "Unnecessary for entrepreneurs"], "k": 0, "ans": "أهم خطوة في مسيرتك المهنية"}, {"t": "q", "s": "اختيار من متعدد", "en": "Focusing on _________ makes communication more effective:", "ar": "التركيز على ______ يجعل التواصل أكثر فعالية:", "o": ["Clarifying expectations and responsibilities", "Opinions", "Personal goals", "Impressions"], "k": 0, "ans": "توضيح التوقعات والمسؤوليات"}, {"t": "q", "s": "اختيار من متعدد", "en": "Companies value diversity today mainly because:", "ar": "تقدّر الشركات التنوع اليوم بشكل رئيسي بسبب:", "o": ["Equal opportunity", "Prevent lawsuits", "Competitive advantages", "Reduce risk"], "k": 2, "ans": "المزايا التنافسية"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which of the following is NOT a form of unethical communication?", "ar": "أي مما يلي ليس من أشكال التواصل غير الأخلاقي؟", "o": ["Withholding information", "Distorting information", "Plagiarizing", "Transparency"], "k": 3, "ans": "الشفافية"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which communication direction flows from employees to managers?", "ar": "أي اتجاه للتواصل ينتقل من الموظفين إلى المدراء؟", "o": ["Downward", "Upward", "Horizontal", "Diagonal"], "k": 1, "ans": "التواصل الصاعد"}, {"t": "q", "s": "اختيار من متعدد", "en": "Emotional intelligence helps you:", "ar": "الذكاء العاطفي يساعدك على:", "o": ["Understand and relate to others", "Avoid technology", "Focus only on tasks", "Ignore emotions"], "k": 0, "ans": "فهم الآخرين والتواصل معهم"}, {"t": "q", "s": "اختيار من متعدد", "en": "Generative AI is capable of:", "ar": "الذكاء الاصطناعي التوليدي قادر على:", "o": ["Only analyzing data", "Producing text, images, audio, video", "Managing employees", "Writing contracts"], "k": 1, "ans": "إنتاج النصوص والصور والصوت والفيديو"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which is a risk of GenAI?", "ar": "أي مما يلي من مخاطر الذكاء الاصطناعي التوليدي؟", "o": ["Mistakes and hallucinations", "Faster communication", "Better personalization", "Improved collaboration"], "k": 0, "ans": "الأخطاء والهلوسة"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which skill involves analyzing situations and making sound judgments?", "ar": "أي مهارة تشمل تحليل المواقف واتخاذ أحكام سليمة؟", "o": ["Collaboration", "Critical Thinking", "Data Literacy", "Business Ethics"], "k": 1, "ans": "التفكير النقدي"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which of the following is part of legal communication?", "ar": "أي مما يلي جزء من التواصل القانوني؟", "o": ["Gossip", "Contracts", "Informal chats", "Personal bias"], "k": 1, "ans": "العقود"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which communication network is informal?", "ar": "أي شبكة تواصل تعتبر غير رسمية؟", "o": ["Downward", "Horizontal", "Informal", "Diagonal"], "k": 2, "ans": "الشبكة غير الرسمية"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which guideline ensures ethical communication?", "ar": "أي إرشاد يضمن التواصل الأخلاقي؟", "o": ["Include all relevant information", "Hide sensitive details", "Distort facts", "Ignore consequences"], "k": 0, "ans": "تضمين كل المعلومات ذات الصلة"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which is a benefit of AI in communication?", "ar": "أي مما يلي من فوائد الذكاء الاصطناعي في التواصل؟", "o": ["Personalization and localization", "Erosion of human connections", "Overreliance on tools", "Ethical lapses"], "k": 0, "ans": "التخصيص والتوطين"}, {"t": "q", "s": "صح أو خطأ", "en": "Effective communication builds strong ties with stakeholders.", "ar": "التواصل الفعّال يبني علاقات قوية مع أصحاب المصلحة.", "o": ["True", "False"], "k": 0, "ans": "صح"}, {"t": "q", "s": "صح أو خطأ", "en": "Upward communication flows from managers to employees.", "ar": "التواصل الصاعد ينتقل من المدراء إلى الموظفين.", "o": ["True", "False"], "k": 1, "ans": "خطأ"}, {"t": "q", "s": "صح أو خطأ", "en": "Generative AI can never make mistakes.", "ar": "الذكاء الاصطناعي التوليدي لا يخطئ أبدًا.", "o": ["True", "False"], "k": 1, "ans": "خطأ"}, {"t": "q", "s": "صح أو خطأ", "en": "Transparency is the practice of being open and honest, giving the audience complete access to the information they need to understand a message correctly.", "ar": "الشفافية هي الانفتاح والصدق، وإعطاء الجمهور كل المعلومات اللي يحتاجها عشان يفهم الرسالة صح.", "o": ["True", "False"], "k": 0, "ans": "صح"}, {"t": "q", "s": "صح أو خطأ", "en": "Plagiarizing is considered ethical.", "ar": "الانتحال (السرقة الأدبية) يعتبر سلوكًا أخلاقيًا.", "o": ["True", "False"], "k": 1, "ans": "خطأ"}, {"t": "q", "s": "صح أو خطأ", "en": "Data literacy means accessing and interpreting data accurately.", "ar": "الإلمام بالبيانات يعني الوصول إلى البيانات وتفسيرها بدقة.", "o": ["True", "False"], "k": 0, "ans": "صح"}, {"t": "m", "s": "وصّل كل مصطلح بتعريفه", "en": "Formal Communication", "ar": "التواصل الرسمي", "k": 0, "ans": "A) Ideas flow along company structure"}, {"t": "m", "s": "وصّل كل مصطلح بتعريفه", "en": "Downward Communication", "ar": "التواصل الهابط", "k": 4, "ans": "E) From managers to employees"}, {"t": "m", "s": "وصّل كل مصطلح بتعريفه", "en": "Upward Communication", "ar": "التواصل الصاعد", "k": 2, "ans": "C) From employees to managers"}, {"t": "m", "s": "وصّل كل مصطلح بتعريفه", "en": "Horizontal Communication", "ar": "التواصل الأفقي", "k": 5, "ans": "F) Between departments for teamwork"}, {"t": "m", "s": "وصّل كل مصطلح بتعريفه", "en": "Diagonal Communication", "ar": "التواصل القُطري", "k": 1, "ans": "B) Across different levels/departments"}, {"t": "m", "s": "وصّل كل مصطلح بتعريفه", "en": "Informal Network", "ar": "الشبكة غير الرسمية", "k": 3, "ans": "D) Personal conversations inside company"}]}, {"tag": "Chapter 2", "title": "التعاون والتواصل الشخصي وإتيكيت الأعمال", "defs": ["Conflict may emerge, disagreements natural", "Team comes together, roles start", "Team works productively", "Rules and expectations become clear", "Understand feelings and needs", "Teams disband, lessons recorded", "Collared shirts, slacks, skirts"], "qs": [{"t": "q", "s": "اختيار من متعدد", "en": "Which stage of team development involves conflict?", "ar": "أي مرحلة من مراحل تطور الفريق فيها صراع؟", "o": ["Forming", "Storming", "Norming", "Performing"], "k": 1, "ans": "مرحلة العصف (Storming)"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which is a characteristic of effective teams?", "ar": "أي مما يلي من خصائص الفرق الفعّالة؟", "o": ["Lack of purpose", "Psychological safety", "Ignoring communication", "Undefined goals"], "k": 1, "ans": "الأمان النفسي"}, {"t": "q", "s": "اختيار من متعدد", "en": "A virtual team is defined as:", "ar": "يُعرَّف الفريق الافتراضي بأنه:", "o": ["Members in one office", "Members in different locations using technology", "Informal group chats", "Temporary social groups"], "k": 1, "ans": "أعضاء في مواقع مختلفة يستخدمون التكنولوجيا"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which is NOT a guideline for collaborative writing?", "ar": "أي مما يلي ليس من إرشادات الكتابة التعاونية؟", "o": ["Clear goals", "Frequent checkpoints", "Ignoring writing styles", "Using strengths"], "k": 2, "ans": "تجاهل أساليب الكتابة"}, {"t": "q", "s": "اختيار من متعدد", "en": "Constructive feedback should:", "ar": "التغذية الراجعة البنّاءة يجب أن:", "o": ["Focus on flaws only", "Be specific and impersonal", "Be destructive", "Ignore timing"], "k": 1, "ans": "تكون محددة وغير شخصية"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which step is essential for productive meetings?", "ar": "أي خطوة ضرورية لاجتماعات منتجة؟", "o": ["Define purpose", "Avoid agenda", "Invite everyone", "Skip preparation"], "k": 0, "ans": "تحديد الهدف"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which listening type evaluates logic and evidence?", "ar": "أي نوع من الاستماع يقيّم المنطق والأدلة؟", "o": ["Content listening", "Critical listening", "Empathic listening", "Active listening"], "k": 1, "ans": "الاستماع النقدي"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which listening type focuses on feelings and needs?", "ar": "أي نوع من الاستماع يركز على المشاعر والاحتياجات؟", "o": ["Empathic listening", "Critical listening", "Content listening", "Defensive listening"], "k": 0, "ans": "الاستماع التعاطفي"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which is a major category of nonverbal communication?", "ar": "أي مما يلي من الفئات الرئيسية للتواصل غير اللفظي؟", "o": ["Facial expressions", "Contracts", "Written reports", "Emails"], "k": 0, "ans": "تعابير الوجه"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which etiquette rule is essential in meetings?", "ar": "أي قاعدة إتيكيت ضرورية في الاجتماعات؟", "o": ["Respect time", "Gossip", "Eating at desk", "Ignoring hygiene"], "k": 0, "ans": "احترام الوقت"}, {"t": "q", "s": "اختيار من متعدد", "en": "Business casual attire includes:", "ar": "اللبس العملي غير الرسمي (Business casual) يشمل:", "o": ["Jeans and T-shirts", "Collared shirts and slacks", "Suits and ties", "Formal dresses"], "k": 1, "ans": "قمصان بياقة وبناطيل قماش"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which is NOT part of virtual workplace etiquette?", "ar": "أي مما يلي ليس من إتيكيت بيئة العمل الافتراضية؟", "o": ["Avoid personal attacks", "Stay focused", "Use virus protection", "Gossip"], "k": 3, "ans": "النميمة"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which is a guideline for online etiquette?", "ar": "أي مما يلي من إرشادات الإتيكيت على الإنترنت؟", "o": ["Assume privacy", "Think before you post", "Waste others’ time", "Ignore spelling"], "k": 1, "ans": "فكّر قبل لا تنشر"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which is a mobile etiquette rule?", "ar": "أي مما يلي من قواعد إتيكيت الهاتف؟", "o": ["Keep private calls private", "Record without consent", "Loud ringtones in meetings", "Ignore nonverbal signals"], "k": 0, "ans": "خلّ مكالماتك الخاصة خاصة"}, {"t": "q", "s": "اختيار من متعدد", "en": "Which is a business etiquette rule in social settings?", "ar": "أي مما يلي من قواعد إتيكيت الأعمال في المناسبات الاجتماعية؟", "o": ["Represent your company", "Ignore customs", "Choose alcohol", "Avoid introductions"], "k": 0, "ans": "تمثيل شركتك"}, {"t": "q", "s": "صح أو خطأ", "en": "Norming stage is when team rules become clear.", "ar": "مرحلة Norming هي لما تتضح قواعد الفريق.", "o": ["True", "False"], "k": 0, "ans": "صح"}, {"t": "q", "s": "صح أو خطأ", "en": "Hybrid teams include both co-located and remote members.", "ar": "الفرق الهجينة فيها أعضاء بنفس المكان وأعضاء عن بُعد.", "o": ["True", "False"], "k": 0, "ans": "صح"}, {"t": "q", "s": "صح أو خطأ", "en": "Constructive feedback should highlight flaws only.", "ar": "التغذية الراجعة البنّاءة لازم تبرز العيوب بس.", "o": ["True", "False"], "k": 1, "ans": "خطأ"}, {"t": "q", "s": "صح أو خطأ", "en": "Effective meetings require a clear agenda.", "ar": "الاجتماعات الفعّالة تحتاج جدول أعمال واضح.", "o": ["True", "False"], "k": 0, "ans": "صح"}, {"t": "q", "s": "صح أو خطأ", "en": "Empathic listening focuses on logic and evidence.", "ar": "الاستماع التعاطفي يركز على المنطق والأدلة.", "o": ["True", "False"], "k": 1, "ans": "خطأ"}, {"t": "q", "s": "صح أو خطأ", "en": "Business formal attire is the most casual dress code.", "ar": "اللبس الرسمي للأعمال هو أكثر لبس غير رسمي.", "o": ["True", "False"], "k": 1, "ans": "خطأ"}, {"t": "m", "s": "وصّل كل مصطلح بتعريفه", "en": "Forming", "ar": "التكوين", "k": 1, "ans": "B) Team comes together, roles start"}, {"t": "m", "s": "وصّل كل مصطلح بتعريفه", "en": "Storming", "ar": "العصف", "k": 0, "ans": "A) Conflict may emerge, disagreements natural"}, {"t": "m", "s": "وصّل كل مصطلح بتعريفه", "en": "Norming", "ar": "وضع القواعد", "k": 3, "ans": "D) Rules and expectations become clear"}, {"t": "m", "s": "وصّل كل مصطلح بتعريفه", "en": "Performing", "ar": "الأداء", "k": 2, "ans": "C) Team works productively"}, {"t": "m", "s": "وصّل كل مصطلح بتعريفه", "en": "Adjourning", "ar": "الانفضاض", "k": 5, "ans": "F) Teams disband, lessons recorded"}, {"t": "m", "s": "وصّل كل مصطلح بتعريفه", "en": "Empathic Listening", "ar": "الاستماع التعاطفي", "k": 4, "ans": "E) Understand feelings and needs"}, {"t": "m", "s": "وصّل كل مصطلح بتعريفه", "en": "Business Casual", "ar": "اللبس العملي غير الرسمي", "k": 6, "ans": "G) Collared shirts, slacks, skirts"}]}];
+const TOTAL='٥٥ سؤال',KEY='buc111q',L='ABCDEFGHIJ';
+const list=document.getElementById('list'),score=document.getElementById('score');
+let picks={};try{picks=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(picks))}catch(e){}}
+function render(){
+ list.innerHTML='';
+ DATA.forEach((c,ci)=>{
+  const sec=document.createElement('section');sec.dataset.c=ci;
+  sec.innerHTML=`<h2 class="ch"><i>${c.tag}</i>${c.title}</h2>`;
+  let last='',num=0;
+  c.qs.forEach((q,qi)=>{
+   if(q.s!==last){last=q.s;num=0;const h=document.createElement('h3');h.className='sub';h.textContent=q.s;sec.appendChild(h)}
+   num++;
+   const id=ci+'-'+qi,d=document.createElement('div');d.className='q';d.dataset.i=qi;
+   d.innerHTML=`<div class="qe"><span class="n">${q.t==='m'?num:'Q'+num}</span><div></div></div><div class="qa"></div><div class="os"></div><div class="res"></div>`;
+   d.querySelector('.qe div').textContent=q.en;d.querySelector('.qa').textContent=q.ar;
+   const os=d.querySelector('.os');
+   if(q.t==='m'){
+    d.classList.add('m');os.style.display='block';
+    const s=document.createElement('select');s.className='sel';
+    s.innerHTML='<option value="">اختر التعريف…</option>';
+    c.defs.forEach((t,k)=>{const o=document.createElement('option');o.value=k;o.textContent=L[k]+') '+t;s.appendChild(o)});
+    s.onchange=()=>{if(s.value==='')return;const k=+s.value;picks[id]=k;save();mark(d,q,k);tally()};
+    os.appendChild(s);
+   }else q.o.forEach((t,k)=>{const b=document.createElement('button');b.className='o';b.innerHTML=`<span class="l">${L[k]}</span><span></span>`;b.lastChild.textContent=t;b.onclick=()=>{picks[id]=k;save();mark(d,q,k);tally()};os.appendChild(b)});
+   if(id in picks)mark(d,q,picks[id]);
+   sec.appendChild(d);
+  });
+  list.appendChild(sec);
+ });
+ tally();
+}
+function mark(d,q,k){
+ d.classList.add('done');
+ if(q.t==='m'){const s=d.querySelector('.sel');s.value=k===null?q.k:k;s.disabled=true;d.classList.add(k===null||k===q.k?'ok':'bad')}
+ else d.querySelectorAll('.o').forEach((b,i)=>{b.disabled=true;if(i===q.k)b.classList.add('ok');else if(i===k)b.classList.add('bad')});
+ const r=d.querySelector('.res');
+ r.innerHTML=k===null?'<span class="y">✓ الإجابة: </span>':(k===q.k?'<span class="y">✓ صح! </span>':'<span class="x">✗ الإجابة الصحيحة: </span>');
+ if(q.t==='m'){const e=document.createElement('bdi');e.dir='ltr';e.textContent=q.ans;r.append(e)}else r.append(q.ans);
+}
+function tally(){
+ const n=Object.keys(picks).length,ok=Object.entries(picks).filter(([id,k])=>{const[c,q]=id.split('-');return DATA[c].qs[q].k===k}).length;
+ score.innerHTML=n?`<b>${ok}</b> / ${n} صح`:TOTAL;
+}
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+ document.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-pressed',x===t));
+ document.querySelectorAll('section').forEach(s=>s.hidden=t.dataset.c!=='all'&&s.dataset.c!==t.dataset.c);
+});
+document.getElementById('show').onclick=()=>document.querySelectorAll('section').forEach(s=>s.querySelectorAll('.q').forEach(d=>{if(!d.classList.contains('done'))mark(d,DATA[s.dataset.c].qs[d.dataset.i],null)}));
+document.getElementById('reset').onclick=()=>{picks={};save();render();scrollTo(0,0)};
+render();
+</script>
+</body></html>
