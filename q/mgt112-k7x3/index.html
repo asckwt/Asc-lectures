@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>MGT112 · بنك أسئلة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Poppins:wght@500;600;700&display=swap">
+<style>
+:root{--navy:#07005E;--yellow:#F7DC6B;--turq:#7DE6D5;--pink:#E980C2;
+ --bg:#F6F5FB;--surface:#fff;--fg:#151238;--muted:#5B5878;--line:#E2E0EE;--opt:#F3F2FA;
+ --ok:#1E9E6A;--okbg:#E2F7EE;--bad:#D2405F;--badbg:#FCE6EB;
+ --display:"Alexandria","IBM Plex Sans Arabic",Tahoma,sans-serif;--body:"IBM Plex Sans Arabic",Tahoma,sans-serif;--en:"Poppins","Segoe UI",sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0B0930;--surface:#141142;--fg:#F1F0FA;--muted:#B4B1D3;--line:#2A2663;--opt:#1B1752;--okbg:#0F3B33;--badbg:#45122A;--ok:#5FE0AE;--bad:#FF8FA6;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0B0930;--surface:#141142;--fg:#F1F0FA;--muted:#B4B1D3;--line:#2A2663;--opt:#1B1752;--okbg:#0F3B33;--badbg:#45122A;--ok:#5FE0AE;--bad:#FF8FA6;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:820px;margin:0 auto;padding-inline:16px}
+header{background:var(--navy);color:#fff;padding:22px 0 30px}
+header img{height:40px;display:block}
+.pill{display:inline-block;margin-top:26px;background:var(--yellow);color:var(--navy);font-family:var(--display);font-weight:700;font-size:15px;padding:4px 16px;border-radius:99px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,7vw,42px);line-height:1.25;margin:12px 0 6px}
+h1 span{color:var(--yellow)}
+.lead{color:#D9D7F3;margin:0}
+.by{display:inline-flex;gap:8px;align-items:center;margin-top:16px;background:rgba(255,255,255,.1);border-radius:12px;padding:6px 14px;font-family:var(--display);font-weight:600}
+.by b{color:var(--yellow)}
+.bar{position:sticky;top:0;z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+.bar .wrap{display:flex;gap:8px;align-items:center;padding-block:10px;flex-wrap:wrap}
+.tab{border:1.5px solid var(--line);background:none;color:var(--fg);font-family:var(--display);font-weight:600;font-size:14px;border-radius:99px;padding:6px 14px;cursor:pointer}
+.tab[aria-pressed=true]{background:var(--navy);border-color:var(--navy);color:#fff}
+.score{margin-inline-start:auto;font-family:var(--display);font-weight:700;font-size:15px;white-space:nowrap}
+.score b{color:var(--ok)}
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0 4px}
+.btn{border:none;background:var(--opt);color:var(--fg);font-family:var(--display);font-weight:600;font-size:14px;border-radius:12px;padding:8px 14px;cursor:pointer}
+.ch{font-family:var(--display);font-weight:700;font-size:20px;margin:26px 0 12px;display:flex;gap:10px;align-items:center}
+.ch i{font-style:normal;font-family:var(--en);font-size:13px;background:var(--turq);color:var(--navy);border-radius:99px;padding:2px 12px}
+.q{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:14px}
+.qe{direction:ltr;text-align:left;display:flex;gap:10px;font-family:var(--en);font-weight:600;font-size:16px;line-height:1.45}
+.qe .n{flex:none;background:var(--yellow);color:var(--navy);border-radius:8px;padding:0 8px;font-weight:700;font-size:13px;height:24px;line-height:24px;margin-top:1px}
+.qa{color:var(--muted);font-size:14.5px;margin:6px 0 10px}
+.os{direction:ltr;display:grid;gap:8px}
+@media (min-width:620px){.os{grid-template-columns:1fr 1fr}}
+.o{display:flex;gap:10px;align-items:center;text-align:left;width:100%;border:1.5px solid transparent;background:var(--opt);color:var(--fg);font-family:var(--en);font-size:14.5px;border-radius:12px;padding:9px 12px;cursor:pointer;min-height:44px}
+.o .l{flex:none;width:26px;height:26px;border-radius:8px;background:var(--line);display:grid;place-items:center;font-weight:700;font-size:13px}
+.o:disabled{cursor:default}
+.o.ok{background:var(--okbg);border-color:var(--ok);font-weight:600}.o.ok .l{background:var(--ok);color:#fff}
+.o.bad{background:var(--badbg);border-color:var(--bad)}.o.bad .l{background:var(--bad);color:#fff}
+.res{display:none;margin-top:10px;font-family:var(--display);font-weight:600;font-size:14.5px}
+.q.done .res{display:block}
+.res .y{color:var(--ok)}.res .x{color:var(--bad)}
+footer{text-align:center;color:var(--muted);font-size:13px;padding:30px 0 40px}
+footer a{color:inherit}
+</style></head><body>
+<header><div class="wrap">
+ <img src="../../tools/logo-horizontal-color-on-navy.svg" alt="الطالب الأكاديمي">
+ <div class="pill">MGT112 · مبادئ الإدارة 2</div>
+ <h1>اختبر نفسك <span>٣٠ سؤال</span> مع الحل</h1>
+ <p class="lead">اختر إجابتك وتشوف الصح مباشرة. الأسئلة على الفصلين ٧ و ٨.</p>
+ <div class="by">إعداد <b>أ. أنفال السهو</b></div>
+</div></header>
+<div class="bar"><div class="wrap">
+ <button class="tab" data-c="all" aria-pressed="true">الكل</button>
+ <button class="tab" data-c="0" aria-pressed="false">Chapter 7</button>
+ <button class="tab" data-c="1" aria-pressed="false">Chapter 8</button>
+ <div class="score" id="score"></div>
+</div></div>
+<main class="wrap">
+ <div class="tools"><button class="btn" id="show">اعرض كل الإجابات</button><button class="btn" id="reset">ابدأ من جديد</button></div>
+ <div id="list"></div>
+</main>
+<footer>الطالب الأكاديمي · صفحة خاصة لطلاب MGT112</footer>
+<script>
+const DATA=[{"tag": "Chapter 7", "title": "الهيكل والتصميم التنظيمي", "qs": [{"en": "Which element of organizational design refers to dividing work into separate job tasks?", "ar": "أي عنصر في التصميم التنظيمي يشير إلى تقسيم العمل إلى مهام منفصلة؟", "o": ["Departmentalization", "Work Specialization", "Authority", "Formalization"], "k": 1, "ans": "تخصص العمل"}, {"en": "Grouping employees based on customers’ problems and needs is called:", "ar": "تجميع الموظفين بناءً على مشاكل واحتياجات العملاء يسمى:", "o": ["Product Departmentalization", "Customer Departmentalization", "Geographic Departmentalization", "Process Departmentalization"], "k": 1, "ans": "التقسيم حسب العملاء"}, {"en": "The principle that each employee should report to only one manager is:", "ar": "المبدأ الذي ينص على أن كل موظف يرفع تقاريره إلى مدير واحد فقط هو:", "o": ["Span of Control", "Unity of Command", "Line Authority", "Staff Authority"], "k": 1, "ans": "وحدة القيادة"}, {"en": "Which type of power is based on fear?", "ar": "أي نوع من القوة يعتمد على الخوف؟", "o": ["Reward Power", "Coercive Power", "Expert Power", "Referent Power"], "k": 1, "ans": "القوة القسرية"}, {"en": "When decision-making is concentrated at upper levels, the organization is:", "ar": "عندما يكون اتخاذ القرار متركزًا في المستويات العليا، تكون المنظمة:", "o": ["Decentralized", "Centralized", "Organic", "Mechanistic"], "k": 1, "ans": "مركزية"}, {"en": "Which factor increases the need for more supervision?", "ar": "أي عامل يزيد الحاجة إلى إشراف أكبر؟", "o": ["Employee training and experience", "Similarity of tasks", "Task complexity", "Informal communication"], "k": 2, "ans": "تعقيد المهام"}, {"en": "A mechanistic organization is characterized by:", "ar": "المنظمة الآلية تتميز بـ:", "o": ["Few rules", "Informal communication", "Centralized authority", "Flatter structures"], "k": 2, "ans": "سلطة مركزية"}, {"en": "Which organizational design is most suitable for dynamic and uncertain environments?", "ar": "أي تصميم تنظيمي مناسب أكثر للبيئات الديناميكية وغير المؤكدة؟", "o": ["Mechanistic", "Organic", "Functional", "Divisional"], "k": 1, "ans": "عضوي"}, {"en": "Which traditional structure is fast, flexible, and inexpensive but risky as the organization grows?", "ar": "أي هيكل تقليدي سريع ومرن وقليل التكلفة لكنه محفوف بالمخاطر مع نمو المنظمة؟", "o": ["Functional Structure", "Divisional Structure", "Simple Structure", "Matrix Structure"], "k": 2, "ans": "الهيكل البسيط"}, {"en": "Which contemporary design uses dual chains of command (functional + project)?", "ar": "أي تصميم حديث يستخدم سلسلتين من القيادة (وظيفية + مشروع)؟", "o": ["Team Structure", "Matrix Structure", "Project Structure", "Boundaryless Organization"], "k": 1, "ans": "الهيكل المصفوفي"}, {"en": "Which structure focuses on results but increases duplication of activities and costs?", "ar": "أي هيكل يركز على النتائج لكنه يزيد من تكرار الأنشطة والتكاليف؟", "o": ["Functional", "Divisional", "Simple", "Team"], "k": 1, "ans": "تقسيمي"}, {"en": "Which design challenge involves keeping dispersed staff connected through technology?", "ar": "أي تحدٍّ في التصميم يشمل الحفاظ على اتصال الموظفين الموزعين عبر التكنولوجيا؟", "o": ["Managing global structural issues", "Building a learning organization", "Designing flexible work arrangements", "Keeping employees connected"], "k": 3, "ans": "الحفاظ على اتصال الموظفين"}, {"en": "A learning organization is considered the only sustainable source of:", "ar": "تُعتبر المنظمة المتعلمة المصدر الوحيد المستدام لـ:", "o": ["Competitive Advantage", "Centralization", "Formalization", "Departmentalization"], "k": 0, "ans": "الميزة التنافسية"}, {"en": "Which flexible work arrangement involves two or more people splitting one full-time job?", "ar": "أي ترتيب عمل مرن يشمل شخصين أو أكثر يتقاسمون وظيفة بدوام كامل؟", "o": ["Flextime", "Job Sharing", "Telecommuting", "Compressed Workweek"], "k": 1, "ans": "تقاسم الوظيفة"}, {"en": "Employees working longer hours per day but fewer days per week is called:", "ar": "عمل الموظفين لساعات أطول يوميًا لكن أيام أقل أسبوعيًا يسمى:", "o": ["Remote Work", "Compressed Workweek", "Flextime", "Contingent Workforce"], "k": 1, "ans": "أسبوع عمل مضغوط"}]}, {"tag": "Chapter 8", "title": "إدارة الموارد البشرية", "qs": [{"en": "Human Resource Management (HRM) is mainly concerned with:", "ar": "إدارة الموارد البشرية تهتم أساسًا بـ:", "o": ["Producing goods", "Getting, training, motivating, and keeping competent employees", "Financial planning", "Marketing strategies"], "k": 1, "ans": "استقطاب وتدريب وتحفيز والاحتفاظ بالموظفين الأكفاء"}, {"en": "Which step in the HRM process ensures the organization has the right number and kinds of people?", "ar": "أي خطوة في عملية إدارة الموارد البشرية تضمن وجود العدد والنوع المناسب من الموظفين؟", "o": ["Employment Planning", "Orientation", "Compensation", "Performance Appraisal"], "k": 0, "ans": "تخطيط التوظيف"}, {"en": "Recruiting through employee referrals may reduce:", "ar": "الاستقطاب عبر ترشيحات الموظفين قد يقلل من:", "o": ["Costs", "Employee diversity", "Training needs", "Job satisfaction"], "k": 1, "ans": "تنوع الموظفين"}, {"en": "Which selection error occurs when a suitable applicant is rejected?", "ar": "أي خطأ في الاختيار يحدث عند رفض متقدم مناسب؟", "o": ["Accept Error", "Reject Error", "Reliability Error", "Validity Error"], "k": 1, "ans": "خطأ الرفض"}, {"en": "Reliability in selection devices means:", "ar": "الموثوقية في أدوات الاختيار تعني:", "o": ["Measuring the same thing consistently", "Relationship between test and job performance", "Predicting future demand", "Reducing recruitment costs"], "k": 0, "ans": "قياس الشيء نفسه بشكل ثابت"}, {"en": "Which interview type is more effective in predicting job performance?", "ar": "أي نوع من المقابلات أكثر فعالية في التنبؤ بالأداء الوظيفي؟", "o": ["Traditional Interview", "Behavioral Interview", "Informal Interview", "Telephone Interview"], "k": 1, "ans": "المقابلة السلوكية"}, {"en": "A Realistic Job Preview (RJP) shows:", "ar": "المعاينة الواقعية للوظيفة تعرض:", "o": ["Only positive aspects", "Both positive and negative aspects", "Only negative aspects", "Salary details only"], "k": 1, "ans": "الجوانب الإيجابية والسلبية معًا"}, {"en": "Orientation programs mainly aim to:", "ar": "برامج التوجيه تهدف أساسًا إلى:", "o": ["Reduce employee anxiety", "Increase company profits", "Replace old employees", "Reduce training costs"], "k": 0, "ans": "تقليل قلق الموظفين"}, {"en": "Which training method involves learning by actually performing the job?", "ar": "أي طريقة تدريب تشمل التعلم من خلال أداء الوظيفة فعليًا؟", "o": ["Job Rotation", "On-the-job Training", "Mentoring", "E-learning"], "k": 1, "ans": "التدريب أثناء العمل"}, {"en": "Which performance appraisal method records effective and ineffective behaviors?", "ar": "أي طريقة لتقييم الأداء تسجل السلوكيات الفعالة وغير الفعالة؟", "o": ["Written Essay", "Critical Incidents", "Adjective Rating Scales", "MBO"], "k": 1, "ans": "الحوادث الحرجة"}, {"en": "360-Degree Appraisal means:", "ar": "التقييم بزاوية 360 درجة يعني:", "o": ["Feedback only from managers", "Feedback from coworkers, managers, and others", "Ranking employees numerically", "Comparing employees in pairs"], "k": 1, "ans": "تغذية راجعة من الزملاء والمديرين وآخرين"}, {"en": "Which factor usually leads to higher pay?", "ar": "أي عامل عادةً يؤدي إلى راتب أعلى؟", "o": ["Short tenure", "Longer service and strong performance", "Low skill requirements", "Small company size"], "k": 1, "ans": "مدة خدمة أطول وأداء قوي"}, {"en": "Unionized companies often provide:", "ar": "الشركات ذات النقابات غالبًا تقدم:", "o": ["Equal benefits to all workers", "Higher pay only to managers", "No benefits", "Flexible work arrangements"], "k": 0, "ans": "مزايا موحدة لجميع العمال"}, {"en": "Which contemporary HR issue involves respecting differences in culture, gender, and background?", "ar": "أي قضية حديثة في الموارد البشرية تتعلق باحترام الاختلافات في الثقافة والجنس والخلفية؟", "o": ["Downsizing", "Workforce Diversity", "Sexual Harassment", "Workplace Spirituality"], "k": 1, "ans": "تنوع القوى العاملة"}, {"en": "Which HR issue requires managers to prevent unwanted behavior and protect employees?", "ar": "أي قضية في الموارد البشرية تتطلب من المديرين منع السلوك غير المرغوب فيه وحماية الموظفين؟", "o": ["Workforce Diversity", "Sexual Harassment", "Downsizing", "Compensation"], "k": 1, "ans": "التحرش الجنسي"}]}];
+const list=document.getElementById('list'),score=document.getElementById('score');
+let picks={};try{picks=JSON.parse(localStorage.getItem('mgt112q')||'{}')}catch(e){}
+function save(){try{localStorage.setItem('mgt112q',JSON.stringify(picks))}catch(e){}}
+function render(){
+ list.innerHTML='';
+ DATA.forEach((c,ci)=>{
+  const sec=document.createElement('section');sec.dataset.c=ci;
+  sec.innerHTML=`<h2 class="ch"><i>${c.tag}</i>${c.title}</h2>`;
+  c.qs.forEach((q,qi)=>{
+   const id=ci+'-'+qi,d=document.createElement('div');d.className='q';
+   d.innerHTML=`<div class="qe"><span class="n">Q${qi+1}</span><div></div></div><div class="qa"></div><div class="os"></div><div class="res"></div>`;
+   d.querySelector('.qe div').textContent=q.en;d.querySelector('.qa').textContent=q.ar;
+   const os=d.querySelector('.os');
+   q.o.forEach((t,k)=>{const b=document.createElement('button');b.className='o';b.innerHTML=`<span class="l">${'ABCD'[k]}</span><span></span>`;b.lastChild.textContent=t;b.onclick=()=>{picks[id]=k;save();mark(d,q,k);tally()};os.appendChild(b)});
+   if(id in picks)mark(d,q,picks[id]);
+   sec.appendChild(d);
+  });
+  list.appendChild(sec);
+ });
+ tally();
+}
+function mark(d,q,k){
+ d.classList.add('done');
+ d.querySelectorAll('.o').forEach((b,i)=>{b.disabled=true;if(i===q.k)b.classList.add('ok');else if(i===k)b.classList.add('bad')});
+ const r=d.querySelector('.res');
+ r.innerHTML=k===null?'<span class="y">✓ الإجابة: </span>':(k===q.k?'<span class="y">✓ صح! </span>':'<span class="x">✗ الإجابة الصحيحة: </span>');
+ r.append(q.ans);
+}
+function tally(){
+ const n=Object.keys(picks).length,ok=Object.entries(picks).filter(([id,k])=>{const[c,q]=id.split('-');return DATA[c].qs[q].k===k}).length;
+ score.innerHTML=n?`<b>${ok}</b> / ${n} صح`:'٣٠ سؤال';
+}
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+ document.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-pressed',x===t));
+ document.querySelectorAll('section').forEach(s=>s.hidden=t.dataset.c!=='all'&&s.dataset.c!==t.dataset.c);
+});
+document.getElementById('show').onclick=()=>document.querySelectorAll('section').forEach(s=>s.querySelectorAll('.q').forEach((d,qi)=>{if(!d.classList.contains('done'))mark(d,DATA[s.dataset.c].qs[qi],null)}));
+document.getElementById('reset').onclick=()=>{picks={};save();render();scrollTo(0,0)};
+render();
+</script>
+</body></html>
