@@ -299,7 +299,7 @@ function courseCard(plan, c, foot) {
   return `<li class="pc k-${kindOf(plan, c)}"><div>${codeTag(c)}<em>${C[c][2]} س.م</em></div><span>${esc(C[c][1])}</span>${foot ?? `<small>${pre ? "يحتاج: " + preNice(pre) : "بدون متطلب"}</small>`}${links(c)}</li>`;
 }
 function links(c) {
-  const lect = typeof CONFIG !== "undefined" ? CONFIG.lectures.find(l => l.code === c || (c === "BB293" && l.code === "B293")) : null;
+  const lect = typeof CONFIG !== "undefined" ? CONFIG.lectures.find(l => l.code === c) : null;
   const chat = typeof courseChat !== "undefined" ? courseChat[c] : null;
   return lect || chat ? `<p class="pl">${lect ? `<a href="${esc(lect.url)}" target="_blank" rel="noopener">محاضرة مجانية</a>` : ""}${chat ? `<a class="wa" href="${esc(chat)}" target="_blank" rel="noopener">قروب المادة</a>` : ""}</p>` : "";
 }
