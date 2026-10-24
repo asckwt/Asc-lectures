@@ -228,6 +228,9 @@ main .wrap{display:grid;grid-template-columns:1fr;gap:40px;padding-block:36px 56
 .chip button{margin:0;width:24px;height:24px;padding:0;border-radius:50%;background:rgba(255,255,255,.15);color:#fff;font-size:15px;line-height:1}
 .mine-acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
 .mine-acts button{margin:0;width:auto;flex:1;min-width:200px;padding:11px 14px;font-size:15px}
+.mine-cal{flex-basis:100%;display:flex;flex-wrap:wrap;gap:8px}
+.mine-cal p{flex-basis:100%;margin:0;font-size:14px;color:var(--muted)}
+.mine-cal .btn{background:var(--yellow);color:#07005E;font-size:15px;padding:9px 16px}
 .mine-acts .w{background:#25D366;color:#06301A}
 .wafab{position:fixed;inset-inline-start:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:5;box-shadow:0 10px 24px -10px rgba(0,0,0,.4)}
 </style></head><body>
@@ -311,11 +314,11 @@ main .wrap{display:grid;grid-template-columns:1fr;gap:40px;padding-block:36px 56
         <form class="mine-add" id="mine-f"><label for="mine-in" class="sr">رمز المادة</label><input id="mine-in" list="schedcodes" placeholder="مثلاً MGT111, ACC204" dir="ltr" autocomplete="off"><button type="submit">أضف</button></form>
         <div class="chips" id="mine-chips"></div>
         <div id="mine-list"></div>
-        <div class="mine-acts" id="mine-acts" hidden><button type="button" id="mine-ics">أضف اختباراتي لتقويم جوالي</button><button type="button" id="mine-share" class="w">أرسل جدولي واتساب</button></div>
+        <div class="mine-acts" id="mine-acts" hidden><div id="mine-cal" class="mine-cal"></div><button type="button" id="mine-share" class="w">أرسل جدولي واتساب</button></div>
         <p class="src">من جداول الجامعة الرسمية (UPD2): <span id="schedpdf"></span>. لو صار تغيير، المعتمد جدول الجامعة.</p>
       </div>
       <div id="callist"></div>
-      <a class="btn cal-ics" id="calics" href="#" download="AOUKW-2026-1.ics">أضف المواعيد لتقويم جوالك</a>
+      <a class="btn cal-ics" id="calics" href="ics/aoukw-calendar.ics">أضف المواعيد لتقويم جوالك</a>
       <p class="cal-src">المصدر: <a href="https://www.aou.edu.kw/students/Pages/academic-calendar.aspx" target="_blank" rel="noopener">التقويم الأكاديمي الرسمي للجامعة</a> (ملف Academic Calendar 2026-1-UPD1). الإجازات الرسمية ما تنذكر بالتقويم، تعلنها الجامعة وقتها. لو صار تعارض، المعتمد هو تقويم الجامعة.</p>
     </section>
 
@@ -758,13 +761,7 @@ if (next) {
   const n = days(kwToday, next.from), on = n <= 0;
   $("calnext").innerHTML = `<div class="cal-next"><div class="n">${on ? "الحين" : n}<small>${on ? "" : "يوم"}</small></div><div><span>${on ? "صاير الحين" : "باقي على"}</span><b>${next.name}</b><span>${calWhen(next)}</span></div></div>`;
 }
-const icsDate = s => s.replace(/-/g, "");
-const icsNext = s => { const d = toD(s); d.setUTCDate(d.getUTCDate() + 1); return d.toISOString().slice(0, 10).replace(/-/g, ""); };
-const ics = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//asckwt.com//AOUKW calendar//AR", "CALSCALE:GREGORIAN",
-  ...calItems.map((e, i) => { const a = e.from || e.to, b = e.to || e.from;
-    return ["BEGIN:VEVENT", `UID:aoukw-2026-1-${i}@asckwt.com`, `DTSTAMP:${icsDate(kwToday)}T000000Z`, `DTSTART;VALUE=DATE:${icsDate(a)}`, `DTEND;VALUE=DATE:${icsNext(b)}`, `SUMMARY:${e.name}`, "END:VEVENT"].join("\r\n"); }),
-  "END:VCALENDAR"].join("\r\n");
-$("calics").href = "data:text/calendar;charset=utf-8," + encodeURIComponent(ics);
+// ملفات التقويم (ics/) تنبني بـ tools/build-courses.js: ملف حقيقي يفتح التقويم في الآيفون والآيباد بعكس data:
 const views = [...document.querySelectorAll(".view")];
 function route() {
   const [v, sub] = location.hash.slice(1).split("/");
@@ -941,17 +938,12 @@ function drawMine() {
   }).join("")}</ul><p class="cal-src">التعويضي بس للي عنده عذر وقدّم طلب تأجيل من SIS خلال أسبوع من موعد اختباره.</p>` : "") +
     (miss.length ? `<p class="err">ما لقينا <bdi>${miss.map(esc).join("، ")}</bdi> في جدول الاختبارات، تأكد من رمز المادة.</p>` : "");
   $("mine-acts").hidden = !all.length;
+  const cal = mine.filter(c => slots[c]);
+  $("mine-cal").innerHTML = `<p>📅 أضف مواعيد الميد والفاينل لتقويم جوالك مع تذكير قبلها بيوم${cal.length > 1 ? "، اضغط على كل مادة" : ""}:</p>` +
+    cal.map(c => `<a class="btn" href="ics/${c}.ics" data-ics="${c}"><span dir="ltr">${c}</span></a>`).join("");
 }
+$("mine-cal").addEventListener("click", e => { const a = e.target.closest("[data-ics]"); if (a) track("my_exams_ics", {course: a.dataset.ics}); });
 $("mine-f").onsubmit = e => { e.preventDefault(); addMine($("mine-in").value.split(/[,،\s]+/)); $("mine-in").value = ""; track("my_exams_add", {courses: mine.join(",")}); };
-const utc = t => new Date(t).toISOString().replace(/[-:]|\.\d+/g, "");
-$("mine-ics").onclick = () => {
-  const ev = mine.flatMap(c => (slots[c] || []).filter(e => e.type !== "makeup").map(e => ({...e, c})));
-  const body = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//asckwt.com//my exams//AR", "CALSCALE:GREGORIAN", ...ev.map(e => ["BEGIN:VEVENT", `UID:${e.c}-${e.type}-2026-1@asckwt.com`, `DTSTAMP:${utc(Date.now())}`,
-    ...(e.online ? [`DTSTART;VALUE=DATE:${icsDate(e.date)}`, `DTEND;VALUE=DATE:${icsNext(e.date)}`] : [`DTSTART:${utc(examStart(e))}`, `DTEND:${utc(examEnd(e))}`]),
-    `SUMMARY:${SCH[e.type].title} ${e.c}`, "BEGIN:VALARM", "ACTION:DISPLAY", `DESCRIPTION:${SCH[e.type].title} ${e.c}`, "TRIGGER:-P1D", "END:VALARM", "END:VEVENT"].join("\r\n")), "END:VCALENDAR"].join("\r\n");
-  const a = Object.assign(document.createElement("a"), {href: "data:text/calendar;charset=utf-8," + encodeURIComponent(body), download: "my-exams-2026-1.ics"});
-  a.click(); track("my_exams_ics", {courses: mine.join(",")});
-};
 $("mine-share").onclick = () => {
   const url = `${location.origin}${location.pathname}#calendar/${mine.join(",")}`;
   open(`https://wa.me/?text=${encodeURIComponent("مواعيد اختباراتي هالفصل 📅\n" + url)}`, "_blank", "noopener");
