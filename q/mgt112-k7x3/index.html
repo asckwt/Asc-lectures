@@ -48,6 +48,9 @@ h1 span{color:var(--yellow)}
 .res .y{color:var(--ok)}.res .x{color:var(--bad)}
 footer{text-align:center;color:var(--muted);font-size:13px;padding:30px 0 40px}
 footer a{color:inherit}
+.btn.go{background:var(--navy);color:#fff}
+.again{text-align:center;margin:26px 0 0}
+.again .btn{font-size:16px;padding:12px 26px}
 </style></head><body>
 <header><div class="wrap">
  <img src="../../tools/logo-horizontal-color-on-navy.svg" alt="الطالب الأكاديمي">
@@ -63,8 +66,9 @@ footer a{color:inherit}
  <div class="score" id="score"></div>
 </div></div>
 <main class="wrap">
- <div class="tools"><button class="btn" id="show">اعرض كل الإجابات</button><button class="btn" id="reset">ابدأ من جديد</button></div>
+ <div class="tools"><button class="btn" id="show">اعرض كل الإجابات</button><button class="btn go" id="reset">↻ إعادة الاختبار</button></div>
  <div id="list"></div>
+ <div class="again"><button class="btn go" id="again">↻ إعادة الاختبار من البداية</button></div>
 </main>
 <footer>الطالب الأكاديمي · صفحة خاصة لطلاب MGT112</footer>
 <script>
@@ -106,7 +110,7 @@ document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
  document.querySelectorAll('section').forEach(s=>s.hidden=t.dataset.c!=='all'&&s.dataset.c!==t.dataset.c);
 });
 document.getElementById('show').onclick=()=>document.querySelectorAll('section').forEach(s=>s.querySelectorAll('.q').forEach((d,qi)=>{if(!d.classList.contains('done'))mark(d,DATA[s.dataset.c].qs[qi],null)}));
-document.getElementById('reset').onclick=()=>{picks={};save();render();scrollTo(0,0)};
+document.getElementById('reset').onclick=document.getElementById('again').onclick=()=>{picks={};save();render();document.querySelector('.tab').click();scrollTo(0,0)};
 render();
 </script>
 </body></html>
