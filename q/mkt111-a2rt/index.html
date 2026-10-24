@@ -51,6 +51,9 @@ footer a{color:inherit}
 .sub{font-family:var(--display);font-weight:600;font-size:15px;color:var(--muted);margin:18px 0 10px}
 .m .sel{width:100%;margin-top:8px;font-family:var(--en);font-size:14.5px;color:var(--fg);background:var(--opt);border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;min-height:44px;direction:ltr}
 .m.ok .sel{border-color:var(--ok);background:var(--okbg)}.m.bad .sel{border-color:var(--bad);background:var(--badbg)}
+.btn.go{background:var(--navy);color:#fff}
+.again{text-align:center;margin:26px 0 0}
+.again .btn{font-size:16px;padding:12px 26px}
 </style></head><body>
 <header><div class="wrap">
  <img src="../../tools/logo-horizontal-color-on-navy.svg" alt="الطالب الأكاديمي">
@@ -66,8 +69,9 @@ footer a{color:inherit}
  <div class="score" id="score"></div>
 </div></div>
 <main class="wrap">
- <div class="tools"><button class="btn" id="show">اعرض كل الإجابات</button><button class="btn" id="reset">ابدأ من جديد</button></div>
+ <div class="tools"><button class="btn" id="show">اعرض كل الإجابات</button><button class="btn go" id="reset">↻ إعادة الاختبار</button></div>
  <div id="list"></div>
+ <div class="again"><button class="btn go" id="again">↻ إعادة الاختبار من البداية</button></div>
 </main>
 <footer>الطالب الأكاديمي · صفحة خاصة لطلاب MKT111</footer>
 <script>
@@ -121,7 +125,7 @@ document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
  document.querySelectorAll('section').forEach(s=>s.hidden=t.dataset.c!=='all'&&s.dataset.c!==t.dataset.c);
 });
 document.getElementById('show').onclick=()=>document.querySelectorAll('section').forEach(s=>s.querySelectorAll('.q').forEach(d=>{if(!d.classList.contains('done'))mark(d,DATA[s.dataset.c].qs[d.dataset.i],null)}));
-document.getElementById('reset').onclick=()=>{picks={};save();render();scrollTo(0,0)};
+document.getElementById('reset').onclick=document.getElementById('again').onclick=()=>{picks={};save();render();document.querySelector('.tab').click();scrollTo(0,0)};
 render();
 </script>
 </body></html>
