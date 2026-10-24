@@ -1,0 +1,22 @@
+{
+  "name": "الطالب الأكاديمي",
+  "short_name": "الطالب الأكاديمي",
+  "description": "محاضرات مجانية، نماذج اختبارات، خطط دراسية وحاسبة المعدل لطلاب الجامعة العربية المفتوحة الكويت",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#07005E",
+  "theme_color": "#07005E",
+  "icons": [
+    {"src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png"},
+    {"src": "/icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ],
+  "shortcuts": [
+    {"name": "نماذج الاختبارات", "url": "/#exams"},
+    {"name": "حاسبة المعدل", "url": "/#gpa"},
+    {"name": "تقويم الجامعة", "url": "/#calendar"}
+  ]
+}

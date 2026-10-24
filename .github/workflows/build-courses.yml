@@ -1,0 +1,25 @@
+# يبني صفحات المواد (c/) و sitemap.xml من جديد كل ما تغيّر index.html
+name: Build course pages
+on:
+  push:
+    branches: [main]
+    paths: [index.html, tools/build-courses.js]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - run: node tools/build-courses.js
+      - name: Commit if changed
+        run: |
+          git add -A c sitemap.xml
+          if git diff --cached --quiet; then exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Rebuild course pages"
+          git push
