@@ -33,8 +33,8 @@ const fmt = s => { const d = new Date(s + "T00:00:00Z"); return `${DAY[d.getUTCD
 const to12 = t => { let [h, m] = t.split(":").map(Number); const pm = h >= 12; h = h % 12 || 12; return `${h}:${String(m).padStart(2, "0")} ${pm ? "م" : "ص"}`; };
 const slots = {};
 for (const [type, x] of Object.entries(CONFIG.examSchedule || {})) {
-  Object.entries(x.days).forEach(([date, cols]) => cols.forEach((list, i) => list.split(" ").filter(Boolean).forEach(c => (slots[c] ??= []).push({type, date, time: `${to12(x.times[i][0])} – ${to12(x.times[i][1])}`}))));
-  Object.entries(x.online || {}).forEach(([date, list]) => list.split(" ").forEach(c => (slots[c] ??= []).push({type, date, time: "محوسب، الوقت يتعلن بعدين"})));
+  Object.entries(x.days).forEach(([date, cols]) => cols.forEach((list, i) => list.split(" ").filter(Boolean).forEach(c => (slots[c] ??= []).push({type, date, from: x.times[i][0], to: x.times[i][1], time: `${to12(x.times[i][0])} – ${to12(x.times[i][1])}`}))));
+  Object.entries(x.online || {}).forEach(([date, list]) => list.split(" ").forEach(c => (slots[c] ??= []).push({type, date, online: true, time: "محوسب، الوقت يتعلن بعدين"})));
 }
 const wa = (CONFIG.whatsapp.find(w => /^\d{8,15}$/.test(w.number)) || {}).number;
 const ga = /^G-[A-Z0-9]+$/.test(CONFIG.analytics) ? CONFIG.analytics : "";
@@ -110,7 +110,7 @@ footer a{color:inherit}
   <div class="chips">${hrs ? `<span>${hrs} ساعات</span>` : ""}${has.map(h => `<span>${h}</span>`).join("")}</div>
 </div></header>
 <main class="wrap">
-${ex.length ? `<section><h2>مواعيد الاختبارات</h2><ul class="list">${ex.map(e => `<li class="item"><b>${esc(CONFIG.examSchedule[e.type].title)}</b><span>${fmt(e.date)}</span><small>${e.time}</small></li>`).join("")}</ul><p class="pass" style="margin-top:10px">التعويضي بس للي عنده عذر وقدّم طلب تأجيل من SIS. حط كل موادك في <a href="../../#calendar/${c.code}" style="color:var(--accent-ink)">جدول اختباراتي</a> وتطلع لك مواعيدك كلها مع تذكير على جوالك.</p></section>` : ""}
+${ex.length ? `<section><h2>مواعيد الاختبارات</h2><ul class="list">${ex.map(e => `<li class="item"><b>${esc(CONFIG.examSchedule[e.type].title)}</b><span>${fmt(e.date)}</span><small>${e.time}</small></li>`).join("")}</ul><p class="pass" style="margin-top:10px">التعويضي بس للي عنده عذر وقدّم طلب تأجيل من SIS. <a class="btn o" href="../../ics/${c.code}.ics" style="margin:6px 0">📅 أضف مواعيدها لتقويم جوالك</a><br>حط كل موادك في <a href="../../#calendar/${c.code}" style="color:var(--accent-ink)">جدول اختباراتي</a> وتطلع لك مواعيدك كلها مع تذكير على جوالك.</p></section>` : ""}
 ${c.lectures.length ? `<section><h2>المحاضرات المجانية</h2><ul class="list">${c.lectures.map(l => `<li class="item"><b>${esc(l.title)}</b><small>مسجلة على الزوم</small><a class="btn" href="${esc(l.url)}" target="_blank" rel="noopener">شاهد المحاضرة</a>${l.pass ? `<span class="pass">الباسكود: <b dir="ltr">${esc(l.pass)}</b></span>` : ""}</li>`).join("")}</ul></section>` : ""}
 ${c.exams ? `<section><h2>نماذج الاختبارات السابقة</h2>${years.map(y => `<h3>${y}</h3><ul class="list">${c.exams.items.filter(e => e.year === y).map(e => `<li class="item"><b>${EXT[e.type]}</b><small>${SEM[e.sem]} ${e.year} · نسخة ${esc(e.ver)} · ${e.pages} صفحات</small><a class="btn" href="../../exams/${c.code}/${e.file}.pdf" target="_blank" rel="noopener">افتح النموذج PDF</a></li>`).join("")}</ul>`).join("")}</section>` : ""}
 ${c.chat ? `<section><h2>قروب المادة</h2><div class="item"><b>قروب واتساب لطلاب ${c.code}</b><small>أسئلة ومساعدة وأخبار المادة من الطلاب.</small><a class="btn w" href="${c.chat}" target="_blank" rel="noopener">انضم للقروب</a></div></section>` : ""}
@@ -140,4 +140,27 @@ fs.writeFileSync(path.join(root, "sitemap.xml"), `<?xml version="1.0" encoding="
 ${list.map(c => `  <url><loc>${SITE}c/${c.code.toLowerCase()}/</loc></url>`).join("\n")}
 </urlset>
 `);
-console.log(`بنيت ${list.length} صفحة مادة و sitemap.xml`);
+
+// ملفات تقويم (ics/) حقيقية بدل data: لأن سفاري الآيفون والآيباد ما يفتح التقويم من data:
+// ics/<المادة>.ics = الميد والفاينل للمادة مع تذكير قبلها بيوم، و ics/aoukw-<الفصل>.ics = تقويم الجامعة
+const utc = (d, t) => new Date(Date.parse(`${d}T${t}:00+03:00`)).toISOString().replace(/[-:]|\.\d+/g, "");
+const dayAfter = d => { const x = new Date(d + "T00:00:00Z"); x.setUTCDate(x.getUTCDate() + 1); return x.toISOString().slice(0, 10).replace(/-/g, ""); };
+const cal = (name, events) => ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//asckwt.com//AOUKW//AR", "CALSCALE:GREGORIAN", "METHOD:PUBLISH", `X-WR-CALNAME:${name}`, ...events, "END:VCALENDAR", ""].join("\r\n");
+const stamp = "20260901T000000Z"; // ثابت عشان الملفات ما تتغير كل ما انبنت
+const icsDir = path.join(root, "ics");
+fs.rmSync(icsDir, {recursive: true, force: true}); fs.mkdirSync(icsDir);
+for (const [code, list] of Object.entries(slots)) {
+  const ev = list.filter(e => e.type !== "makeup").map(e => {
+    const title = `${CONFIG.examSchedule[e.type].title} ${code}`;
+    return ["BEGIN:VEVENT", `UID:${code}-${e.type}-${e.date}@asckwt.com`, `DTSTAMP:${stamp}`,
+      ...(e.online ? [`DTSTART;VALUE=DATE:${e.date.replace(/-/g, "")}`, `DTEND;VALUE=DATE:${dayAfter(e.date)}`] : [`DTSTART:${utc(e.date, e.from)}`, `DTEND:${utc(e.date, e.to)}`]),
+      `SUMMARY:${title}`, `DESCRIPTION:${e.time} · asckwt.com`, "BEGIN:VALARM", "ACTION:DISPLAY", `DESCRIPTION:${title}`, "TRIGGER:-P1D", "END:VALARM", "END:VEVENT"].join("\r\n");
+  });
+  if (ev.length) fs.writeFileSync(path.join(icsDir, code + ".ics"), cal(`اختبارات ${code}`, ev));
+}
+const calItems = CONFIG.calendar.flatMap(g => g.items);
+fs.writeFileSync(path.join(icsDir, "aoukw-calendar.ics"), cal("تقويم الجامعة العربية المفتوحة", calItems.map((e, i) => {
+  const a = e.from || e.to, b = e.to || e.from;
+  return ["BEGIN:VEVENT", `UID:aoukw-cal-${a}-${i}@asckwt.com`, `DTSTAMP:${stamp}`, `DTSTART;VALUE=DATE:${a.replace(/-/g, "")}`, `DTEND;VALUE=DATE:${dayAfter(b)}`, `SUMMARY:${e.name}`, "END:VEVENT"].join("\r\n");
+})));
+console.log(`بنيت ${list.length} صفحة مادة و sitemap.xml و ${fs.readdirSync(icsDir).length} ملف تقويم`);
