@@ -26,13 +26,24 @@ const info = Object.fromEntries(COURSES.map(([c, h, t]) => [c, {h, t}]));
 CONFIG.courseChats.forEach(g => g.items.forEach(([code, k]) => code.split(" / ").forEach(x => get(x).chat ??= WAG + k)));
 CONFIG.lectures.forEach(l => { const c = get(l.code); c.lectures.push(l); if (l.chat) c.chat = l.chat; });
 CONFIG.exams.forEach(e => { const c = get(e.code); c.exams = e; });
+// مواعيد الاختبارات من examSchedule
+const MON = ["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
+const DAY = ["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
+const fmt = s => { const d = new Date(s + "T00:00:00Z"); return `${DAY[d.getUTCDay()]} ${d.getUTCDate()} ${MON[d.getUTCMonth()]} ${d.getUTCFullYear()}`; };
+const to12 = t => { let [h, m] = t.split(":").map(Number); const pm = h >= 12; h = h % 12 || 12; return `${h}:${String(m).padStart(2, "0")} ${pm ? "م" : "ص"}`; };
+const slots = {};
+for (const [type, x] of Object.entries(CONFIG.examSchedule || {})) {
+  Object.entries(x.days).forEach(([date, cols]) => cols.forEach((list, i) => list.split(" ").filter(Boolean).forEach(c => (slots[c] ??= []).push({type, date, time: `${to12(x.times[i][0])} – ${to12(x.times[i][1])}`}))));
+  Object.entries(x.online || {}).forEach(([date, list]) => list.split(" ").forEach(c => (slots[c] ??= []).push({type, date, time: "محوسب، الوقت يتعلن بعدين"})));
+}
 const wa = (CONFIG.whatsapp.find(w => /^\d{8,15}$/.test(w.number)) || {}).number;
 const ga = /^G-[A-Z0-9]+$/.test(CONFIG.analytics) ? CONFIG.analytics : "";
 
 function page(c) {
   const name = info[c.code]?.t || c.exams?.name || "";
   const hrs = info[c.code]?.h;
-  const has = [c.lectures.length && "محاضرة مجانية مسجلة", c.exams && `${c.exams.items.length} نماذج اختبارات سابقة`, c.chat && "قروب واتساب للمادة"].filter(Boolean);
+  const ex = (slots[c.code] || []).sort((a, b) => a.date.localeCompare(b.date));
+  const has = [ex.length && "مواعيد الاختبارات", c.lectures.length && "محاضرة مجانية مسجلة", c.exams && `${c.exams.items.length} نماذج اختبارات سابقة`, c.chat && "قروب واتساب للمادة"].filter(Boolean);
   const desc = `مادة ${c.code}${name ? ` (${name})` : ""} في الجامعة العربية المفتوحة الكويت: ${has.join("، ")}، والاشتراك في شرح المادة كامل مع الطالب الأكاديمي.`;
   const url = `${SITE}c/${c.code.toLowerCase()}/`;
   const title = `${c.code}${name ? ` ${name}` : ""} · نماذج اختبارات ومحاضرات | الطالب الأكاديمي`;
@@ -99,6 +110,7 @@ footer a{color:inherit}
   <div class="chips">${hrs ? `<span>${hrs} ساعات</span>` : ""}${has.map(h => `<span>${h}</span>`).join("")}</div>
 </div></header>
 <main class="wrap">
+${ex.length ? `<section><h2>مواعيد الاختبارات</h2><ul class="list">${ex.map(e => `<li class="item"><b>${esc(CONFIG.examSchedule[e.type].title)}</b><span>${fmt(e.date)}</span><small>${e.time}</small></li>`).join("")}</ul><p class="pass" style="margin-top:10px">التعويضي بس للي عنده عذر وقدّم طلب تأجيل من SIS. حط كل موادك في <a href="../../#calendar/${c.code}" style="color:var(--accent-ink)">جدول اختباراتي</a> وتطلع لك مواعيدك كلها مع تذكير على جوالك.</p></section>` : ""}
 ${c.lectures.length ? `<section><h2>المحاضرات المجانية</h2><ul class="list">${c.lectures.map(l => `<li class="item"><b>${esc(l.title)}</b><small>مسجلة على الزوم</small><a class="btn" href="${esc(l.url)}" target="_blank" rel="noopener">شاهد المحاضرة</a>${l.pass ? `<span class="pass">الباسكود: <b dir="ltr">${esc(l.pass)}</b></span>` : ""}</li>`).join("")}</ul></section>` : ""}
 ${c.exams ? `<section><h2>نماذج الاختبارات السابقة</h2>${years.map(y => `<h3>${y}</h3><ul class="list">${c.exams.items.filter(e => e.year === y).map(e => `<li class="item"><b>${EXT[e.type]}</b><small>${SEM[e.sem]} ${e.year} · نسخة ${esc(e.ver)} · ${e.pages} صفحات</small><a class="btn" href="../../exams/${c.code}/${e.file}.pdf" target="_blank" rel="noopener">افتح النموذج PDF</a></li>`).join("")}</ul>`).join("")}</section>` : ""}
 ${c.chat ? `<section><h2>قروب المادة</h2><div class="item"><b>قروب واتساب لطلاب ${c.code}</b><small>أسئلة ومساعدة وأخبار المادة من الطلاب.</small><a class="btn w" href="${c.chat}" target="_blank" rel="noopener">انضم للقروب</a></div></section>` : ""}

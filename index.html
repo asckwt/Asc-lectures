@@ -215,6 +215,16 @@ main .wrap{display:grid;grid-template-columns:1fr;gap:40px;padding-block:36px 56
 .follow{display:flex;flex-wrap:wrap;gap:10px}
 .follow a{border:1.5px solid var(--line);color:var(--fg);font-size:15px;padding:9px 16px}
 .s .go.pg{background:transparent;color:var(--accent-ink);border:1.5px solid var(--line);margin-inline-start:6px}
+.mine{margin-bottom:8px}
+.mine .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.mine-add{display:flex;gap:8px}
+.mine-add button{margin:0;width:auto;padding:0 20px;font-size:16px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}
+.chip{display:inline-flex;align-items:center;gap:4px;background:var(--navy);color:#fff;border-radius:999px;padding:2px 4px 2px 12px;font-family:var(--display);font-weight:700;font-size:14px}
+.chip button{margin:0;width:24px;height:24px;padding:0;border-radius:50%;background:rgba(255,255,255,.15);color:#fff;font-size:15px;line-height:1}
+.mine-acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.mine-acts button{margin:0;width:auto;flex:1;min-width:200px;padding:11px 14px;font-size:15px}
+.mine-acts .w{background:#25D366;color:#06301A}
 .wafab{position:fixed;inset-inline-start:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:5;box-shadow:0 10px 24px -10px rgba(0,0,0,.4)}
 </style></head><body>
 
@@ -291,6 +301,15 @@ main .wrap{display:grid;grid-template-columns:1fr;gap:40px;padding-block:36px 56
       <h2>تقويم الجامعة</h2>
       <p class="sub">مواعيد الفصل الأول 2026/2027 في الجامعة العربية المفتوحة، فرع الكويت.</p>
       <div id="calnext"></div>
+      <div class="mine gcard">
+        <h3>جدول اختباراتي</h3>
+        <p class="sub">اكتب رموز موادك وتطلع لك مواعيد الميد والتعويضي والفاينل بالساعة، وتنحفظ على جوالك.</p>
+        <form class="mine-add" id="mine-f"><label for="mine-in" class="sr">رمز المادة</label><input id="mine-in" list="schedcodes" placeholder="مثلاً MGT111, ACC204" dir="ltr" autocomplete="off"><button type="submit">أضف</button></form>
+        <div class="chips" id="mine-chips"></div>
+        <div id="mine-list"></div>
+        <div class="mine-acts" id="mine-acts" hidden><button type="button" id="mine-ics">أضف اختباراتي لتقويم جوالي</button><button type="button" id="mine-share" class="w">أرسل جدولي واتساب</button></div>
+        <p class="src">من جداول الجامعة الرسمية (UPD2): <span id="schedpdf"></span>. لو صار تغيير، المعتمد جدول الجامعة.</p>
+      </div>
       <div id="callist"></div>
       <a class="btn cal-ics" id="calics" href="#" download="AOUKW-2026-1.ics">أضف المواعيد لتقويم جوالك</a>
       <p class="cal-src">المصدر: <a href="https://www.aou.edu.kw/students/Pages/academic-calendar.aspx" target="_blank" rel="noopener">التقويم الأكاديمي الرسمي للجامعة</a> (ملف Academic Calendar 2026-1-UPD1). الإجازات الرسمية ما تنذكر بالتقويم، تعلنها الجامعة وقتها. لو صار تعارض، المعتمد هو تقويم الجامعة.</p>
@@ -503,9 +522,58 @@ const CONFIG = {
     ]},
     {title:"الاختبارات", items:[
       {from:"2026-11-14", to:"2026-11-19", name:"اختبارات منتصف الفصل (الميد)", note:"MTA", key:true},
+      {from:"2026-11-29", to:"2026-12-03", name:"اختبارات الميد التعويضي", note:"لو عندك عذر، قدّم طلب التأجيل من SIS خلال أسبوع من موعد اختبارك"},
       {from:"2027-01-04", to:"2027-01-20", name:"الاختبارات النهائية (الفاينل)", note:"Final", key:true}
     ]}
   ],
+  examSchedule: { // جدول اختبارات الفصل من الجامعة: days = "التاريخ": [مواد الفترة الأولى, الثانية, ...] حسب times، و online = الاختبارات المحوسبة (وقتها يتعلن بعدين)
+    mta: {title:"الميد", pdf:"exams/schedule/MTA-2026-1.pdf", times:[["09:30", "11:30"], ["12:00", "14:00"], ["14:30", "16:30"], ["17:00", "19:00"]], days:{
+      "2026-11-14": ["A112B ACT112 TM351", "FR101 EA300A MIS111 B205A ACC204 SYS380 MIS200-IS", "A112A MIS330 DD309B ACT111 M269", "BUS629 ACC300 MIS112 MKT332 MT131"],
+      "2026-11-16": ["EA300B E121 BUS628 B327 B326 DD209B MST129", "BUC111 B206 MT132", "A230B DD309A BUC112 TM260", "A230A MIS201-IS BUS115"],
+      "2026-11-17": ["MGT111 T215B", "EL117 MGT112 B328 M110", "EL230 ECO342 BUS310 B207A TM255", "EL122 B207B TM355 TM112"],
+      "2026-11-18": ["E304B BUS208 B391 B205B SYS210 MT390", "L201A MIS332 B329 B294 TM103", "E304A BUS102 MT101", "L201B MIS300 BUS101"],
+      "2026-11-19": ["SYS111 ECO102 ACC302 TM354 TM105", "EL330 ECO101 DD209A BB293 M251", "TR102 MKT331 MKT111", "SL101 MKT112 MIS331"]
+    }, online:{
+      "2026-11-14": "E120 GR131",
+      "2026-11-15": "AR113 AFL113",
+      "2026-11-16": "EL118E EL118 GR118 GB102E",
+      "2026-11-17": "GT101 GR118E",
+      "2026-11-18": "GB102 GR121",
+      "2026-11-19": "GR111 GR112 GR121E"
+    }},
+    makeup: {title:"الميد التعويضي", pdf:"exams/schedule/MTA-Makeup-2026-1.pdf", times:[["09:30", "11:30"], ["12:00", "14:00"], ["14:30", "16:30"], ["17:00", "19:00"]], days:{
+      "2026-12-01": ["TR102 B205B B205A ACC300 MIS112 MIS111 B206 SYS380 MKT332 MIS201-IS TM255 TM112 T215B", "L201A MGT112 BUS629 B327 SYS111 M251", "E304A BUS310 B207A TM354 TM105", "A230B A112A MKT112 MKT111 MST129"],
+      "2026-12-02": ["A112B BUS208 B391 B294 SYS210 DD209A BUS628 MT101", "L201B MIS332 BUC111 B207B MT132", "E304B BUS102 BUS101 ACC302 MIS331 MT390", "EL117 EA300B ECO102 ECO101 BB293 MIS330 TM260 M110"],
+      "2026-12-03": ["EL122 DD309B DD309A BUC112 TM351", "FR101 EL330 EL230 SL101 DD209B BUS115 ACC204 MIS200-IS M269", "EA300A E121 B326 ACT112 ACT111 MKT331 ECO342 TM103", "A230A MGT111 B329 B328 MIS300 TM355 MT131"]
+    }, online:{
+      "2026-11-29": "AFL113 AR113 E120",
+      "2026-11-30": "GR131 EL118 EL118E",
+      "2026-12-01": "GT101 GB102E GR112",
+      "2026-12-02": "GB102 GR111 GR121E",
+      "2026-12-03": "GR118 GR121 GR118E"
+    }},
+    final: {title:"الفاينل", pdf:"exams/schedule/Final-2026-1.pdf", times:[["09:30", "12:30"], ["13:00", "16:00"], ["16:30", "19:30"]], days:{
+      "2027-01-04": ["EA300A BUS102 TM112", "E304A BUS310 TM255", "L201A ECO342 BUS101 T215B"],
+      "2027-01-05": ["MIS330 B391 B205A SYS380 M251", "E304B MGT111 TM355", "E121 B294 B205B MIS200-IS MKT331 TM105"],
+      "2027-01-09": ["L201B ACT112 TM351", "DD309B ACT111", "B327 ACC300 MST129"],
+      "2027-01-12": ["DD209B BUC111", "BUC112", "EL117 EA300B DD309A B206 MT132"],
+      "2027-01-13": ["EL230 MIS201-IS ACC302", "MKT111 MT390 M180", "EL330 MKT112 MT131"],
+      "2027-01-14": ["B207B", "A230A MKT332 B207A M269", "MIS300 B329 M110"],
+      "2027-01-16": ["MIS331 BUS629 B326", "A230B SYS111 DD209A BUS208 TM354", "A112A MGT112 MT101"],
+      "2027-01-18": ["BUS628", "A112B SYS210 BB293 B328 TM103", "ECO101"],
+      "2027-01-19": ["SL101 MIS112", "EL122 TM260 M275", "MIS332 BUS115"],
+      "2027-01-20": ["TR102", "FR101 ACC204", "MIS111 ECO102"]
+    }, online:{
+      "2027-01-04": "GR131 GR131R",
+      "2027-01-05": "AFL113 AFL113R",
+      "2027-01-06": "GB102 GB102E GB102R GB102ER",
+      "2027-01-07": "GR111 GR112 GR111R",
+      "2027-01-09": "GR121 GT101 GR121R GT101R",
+      "2027-01-10": "GR118 GR118R EL118 EL118E",
+      "2027-01-16": "GR118E GR118ER GR121E",
+      "2027-01-17": "AR113 AR113R E120"
+    }}
+  },
   reviews: [ // آراء الطلاب الحقيقية فقط (منقولة من قروبات المشتركين). كل رأي سطر:
     // {name:"الاسم الأول", major:"المادة أو خريج/ة", text:"..."}  واختياري rating:5 لو الطالب عطى تقييم
     {name:"عبدالله", major:"خريج", text:"الحمدلله رب العالمين تخرجت. ألف كله شكر ما توفي حقكم، شكراً لك دكتور شريف على جهدك وتعبك معانا، ومحمد ما قصرت كفيتو ووفيتو كل الكورسات اللي كنت فيها معاكم."},
@@ -833,22 +901,90 @@ $("rvform").onsubmit = e => {
   open(`https://wa.me/${nums[0].number}?text=${encodeURIComponent(body)}`, "_blank", "noopener");
 };
 if (nums.length) { const f = $("fab"); f.href = `https://wa.me/${nums[0].number}?text=${msg}`; f.target = "_blank"; f.rel = "noopener"; f.hidden = false; }
+/* ===== جدول اختباراتي: مواعيد كل مادة من جدول الجامعة ===== */
+const SCH = CONFIG.examSchedule;
+const to12 = t => { let [h, m] = t.split(":").map(Number); const pm = h >= 12; h = h % 12 || 12; return `${h}:${String(m).padStart(2, "0")} ${pm ? "م" : "ص"}`; };
+const slots = {};
+for (const [type, x] of Object.entries(SCH)) {
+  Object.entries(x.days).forEach(([date, cols]) => cols.forEach((list, i) => list.split(" ").filter(Boolean).forEach(c => (slots[c] ??= []).push({type, date, from: x.times[i][0], to: x.times[i][1]}))));
+  Object.entries(x.online || {}).forEach(([date, list]) => list.split(" ").forEach(c => (slots[c] ??= []).push({type, date, online: true})));
+}
+const examStart = e => Date.parse(`${e.date}T${e.from || "00:00"}:00+03:00`);
+const examEnd = e => e.online ? examStart(e) + 864e5 : Date.parse(`${e.date}T${e.to}:00+03:00`);
+Object.values(slots).forEach(l => l.sort((a, b) => examStart(a) - examStart(b)));
+const examWhen = e => `${fmt(e.date)} · ${e.online ? "محوسب، الوقت يتعلن بعدين" : `<span style="white-space:nowrap">${to12(e.from)} – ${to12(e.to)}</span>`}`;
+const nextExam = c => (slots[c] || []).find(e => e.type !== "makeup" && examEnd(e) > Date.now());
+document.body.insertAdjacentHTML("beforeend", `<datalist id="schedcodes">${Object.keys(slots).sort().map(c => `<option value="${c}">${COURSES.find(x => x[0] === c)?.[2] || ""}</option>`).join("")}</datalist>`);
+let mine = (() => { try { return JSON.parse(localStorage.getItem("my-courses") || "[]"); } catch { return []; } })();
+const saveMine = () => { try { localStorage.setItem("my-courses", JSON.stringify(mine)); } catch {} };
+let missNow = [];
+function addMine(codes) {
+  codes = codes.map(c => c.trim().toUpperCase().replace(/\s+/g, "")).filter(Boolean);
+  missNow = codes.filter(c => !slots[c]);
+  codes.filter(c => slots[c] && !mine.includes(c)).forEach(c => mine.push(c));
+  saveMine(); drawMine(); tick();
+}
+function drawMine() {
+  $("mine-chips").innerHTML = mine.map(c => `<span class="chip"><span dir="ltr">${esc(c)}</span><button type="button" data-c="${esc(c)}" aria-label="شيل ${esc(c)}">×</button></span>`).join("");
+  $("mine-chips").querySelectorAll("button").forEach(b => b.onclick = () => { mine = mine.filter(x => x !== b.dataset.c); saveMine(); drawMine(); tick(); });
+  const all = mine.flatMap(c => (slots[c] || []).map(e => ({...e, c}))).sort((a, b) => examStart(a) - examStart(b));
+  const miss = missNow;
+  const now = Date.now();
+  $("mine-list").innerHTML = (all.length ? `<ul class="cal">${all.map(e => {
+    const left = examStart(e) - now, past = examEnd(e) < now, dd = Math.ceil(days(kwToday, e.date));
+    const st = past ? "انتهى" : left <= 0 ? "الحين، بالتوفيق" : dd === 0 ? "اليوم" : dd === 1 ? "باجر" : `باقي ${dd} يوم`;
+    return `<li class="${past ? "past" : dd <= 0 ? "now" : ""}" style="--c:${e.type === "final" ? "var(--pink)" : e.type === "makeup" ? "var(--turq)" : "var(--yellow)"}">${calChip({from: e.date})}<div><h3><span class="code">${e.c}</span> · ${SCH[e.type].title}</h3><p>${examWhen(e)}</p><span class="st">${st}</span></div></li>`;
+  }).join("")}</ul><p class="cal-src">التعويضي بس للي عنده عذر وقدّم طلب تأجيل من SIS خلال أسبوع من موعد اختباره.</p>` : "") +
+    (miss.length ? `<p class="err">ما لقينا <bdi>${miss.map(esc).join("، ")}</bdi> في جدول الاختبارات، تأكد من رمز المادة.</p>` : "");
+  $("mine-acts").hidden = !all.length;
+}
+$("mine-f").onsubmit = e => { e.preventDefault(); addMine($("mine-in").value.split(/[,،\s]+/)); $("mine-in").value = ""; track("my_exams_add", {courses: mine.join(",")}); };
+const utc = t => new Date(t).toISOString().replace(/[-:]|\.\d+/g, "");
+$("mine-ics").onclick = () => {
+  const ev = mine.flatMap(c => (slots[c] || []).filter(e => e.type !== "makeup").map(e => ({...e, c})));
+  const body = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//asckwt.com//my exams//AR", "CALSCALE:GREGORIAN", ...ev.map(e => ["BEGIN:VEVENT", `UID:${e.c}-${e.type}-2026-1@asckwt.com`, `DTSTAMP:${utc(Date.now())}`,
+    ...(e.online ? [`DTSTART;VALUE=DATE:${icsDate(e.date)}`, `DTEND;VALUE=DATE:${icsNext(e.date)}`] : [`DTSTART:${utc(examStart(e))}`, `DTEND:${utc(examEnd(e))}`]),
+    `SUMMARY:${SCH[e.type].title} ${e.c}`, "BEGIN:VALARM", "ACTION:DISPLAY", `DESCRIPTION:${SCH[e.type].title} ${e.c}`, "TRIGGER:-P1D", "END:VALARM", "END:VEVENT"].join("\r\n")), "END:VCALENDAR"].join("\r\n");
+  const a = Object.assign(document.createElement("a"), {href: "data:text/calendar;charset=utf-8," + encodeURIComponent(body), download: "my-exams-2026-1.ics"});
+  a.click(); track("my_exams_ics", {courses: mine.join(",")});
+};
+$("mine-share").onclick = () => {
+  const url = `${location.origin}${location.pathname}#calendar/${mine.join(",")}`;
+  open(`https://wa.me/?text=${encodeURIComponent("مواعيد اختباراتي هالفصل 📅\n" + url)}`, "_blank", "noopener");
+};
+$("schedpdf").innerHTML = Object.values(SCH).map(x => `<a href="${x.pdf}" target="_blank" rel="noopener">جدول ${x.title}</a>`).join(" · ");
+const fromHash = () => { const [v, sub] = location.hash.slice(1).split("/"); if (v === "calendar" && sub) addMine(decodeURIComponent(sub).split(",")); };
+addEventListener("hashchange", fromHash);
+
 /* ===== عدّاد الاختبارات ===== */
 const kwStart = s => Date.parse(s + "T00:00:00+03:00");
 const examDates = calItems.filter(e => e.key && e.g === "الاختبارات");
 function tick() {
-  const now = Date.now(), e = examDates.find(x => kwStart(x.to || x.from) + 864e5 > now);
+  const now = Date.now();
+  // لو الطالب حاط مواده نعد لأقرب اختبار له، وإلا لأقرب فترة اختبارات
+  const my = mine.flatMap(c => (slots[c] || []).filter(e => e.type !== "makeup" && !e.online).map(e => ({...e, c}))).filter(e => examEnd(e) > now).sort((a, b) => examStart(a) - examStart(b))[0];
+  if (my) {
+    const left = examStart(my) - now, name = `${SCH[my.type].title} <span class="code" style="color:inherit">${my.c}</span>`;
+    $("homecount").innerHTML = left <= 0
+      ? `<a class="count" href="#calendar"><div><small>اختبارك الحين، بالتوفيق 🤞</small><b>${name}</b><small>${examWhen(my)}</small></div></a>`
+      : clock(left, name, examWhen(my), "باقي على اختبارك");
+    return;
+  }
+  const e = examDates.find(x => kwStart(x.to || x.from) + 864e5 > now);
   if (!e) { $("homecount").innerHTML = ""; return; }
   const left = kwStart(e.from || e.to) - now;
   if (left <= 0) {
     $("homecount").innerHTML = `<a class="count" href="#calendar"><div><small>صايرة الحين، بالتوفيق 🤞</small><b>${e.name}</b><small>${calWhen(e)}</small></div></a>`;
     return;
   }
+  $("homecount").innerHTML = clock(left, e.name, calWhen(e) + ` · <span style="color:var(--yellow)">حط موادك وتطلع لك مواعيدك ←</span>`, "باقي على");
+}
+function clock(left, name, when, lead) {
   const d = Math.floor(left / 864e5), h = Math.floor(left / 36e5) % 24, m = Math.floor(left / 6e4) % 60;
-  $("homecount").innerHTML = `<a class="count" href="#calendar" aria-label="باقي ${d} يوم على ${e.name}"><div><small>باقي على</small><b>${e.name}</b><small>${calWhen(e)}</small></div>
+  return `<a class="count" href="#calendar" aria-label="باقي ${d} يوم"><div><small>${lead}</small><b>${name}</b><small>${when}</small></div>
     <div class="clock" aria-hidden="true"><div><span>${d}</span><i>يوم</i></div><div><span>${h}</span><i>ساعة</i></div><div><span>${m}</span><i>دقيقة</i></div></div></a>`;
 }
-tick(); setInterval(tick, 3e4);
+drawMine(); fromHash(); tick(); setInterval(() => { tick(); drawMine(); }, 3e4);
 
 /* ===== البحث بكود المادة ===== */
 const courseName = Object.fromEntries(COURSES.map(([c, , t]) => [c, t]));
@@ -870,7 +1006,7 @@ $("q").oninput = () => {
   if (!q) { $("hits").innerHTML = ""; return; }
   const hits = Object.keys(courseIndex).filter(c => norm(c).includes(q) || norm(courseName[c] || "").includes(q))
     .sort((a, b) => norm(b).startsWith(q) - norm(a).startsWith(q) || a.localeCompare(b)).slice(0, 8)
-    .map(c => `<li><a href="${coursePage(c)}"><span class="code">${c}</span><span><b dir="ltr" style="text-align:right;display:block">${esc(courseName[c] || c)}</b><small>${[...courseIndex[c]].join(" · ")}</small></span></a></li>`);
+    .map(c => `<li><a href="${coursePage(c)}"><span class="code">${c}</span><span><b dir="ltr" style="text-align:right;display:block">${esc(courseName[c] || c)}</b><small>${[...courseIndex[c]].join(" · ")}${nextExam(c) ? ` · ${SCH[nextExam(c).type].title}: ${fmt(nextExam(c).date)}` : ""}</small></span></a></li>`);
   const pages = PAGES.filter(([t, , k]) => norm(t + k).includes(q)).map(([t, h]) => `<li><a href="${h}"><span class="code">قسم</span><span><b>${t}</b></span></a></li>`);
   $("hits").innerHTML = [...hits, ...pages].join("") || `<li class="none">ما لقينا شي بهالاسم. جرب رمز المادة مثل ACC204، أو اسألنا في <a href="#chats" style="color:var(--accent-ink)">القروبات</a>.</li>`;
   clearTimeout(searchT); searchT = setTimeout(() => track("search", {search_term: $("q").value.trim()}), 1500);
