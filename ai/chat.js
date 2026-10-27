@@ -32,6 +32,10 @@ document.head.insertAdjacentHTML("beforeend", `<style>
 .ai-m p{margin:0 0 6px}.ai-m p:last-child{margin:0}
 .ai-m ul,.ai-m ol{margin:4px 0 8px;padding-inline-start:20px}.ai-m li{margin:2px 0}
 .ai-m h4{margin:8px 0 4px;font-family:var(--display);font-size:15px;color:var(--accent-ink,var(--navy))}
+.ai-tb{overflow-x:auto;margin:6px 0 8px}
+.ai-m table{border-collapse:collapse;font-size:14px;min-width:100%}
+.ai-m th,.ai-m td{border:1px solid var(--line);padding:5px 7px;text-align:start;vertical-align:top}
+.ai-m th{background:rgba(125,230,213,.15);font-weight:700}
 .ai-m hr{border:0;border-top:1px solid var(--line);margin:8px 0}
 .ai-m code{background:rgba(7,0,94,.07);border-radius:5px;padding:0 4px;font-size:.92em}
 .ai-m a{color:#2B6CB0;font-weight:700;text-decoration:underline;word-break:break-all}
@@ -106,10 +110,15 @@ const esc = t => t.replace(/[&<>]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt
 const inl = t => t.replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/`([^`]+)`/g, "<code>$1</code>")
   .replace(/https?:\/\/[^\s<)\]،"]+/g, u => { const s = u.replace(/[.,:;!?]+$/, ""); return `<a href="${s}" target="_blank" rel="noopener" dir="ltr">${s.replace(/^https?:\/\/(www\.)?/, "").slice(0, 40)}${s.length > 48 ? "…" : ""}</a>${u.slice(s.length)}`; });
 const fmt = t => { let h = "", list = "";
-  const close = () => { if (list) { h += `</${list}>`; list = ""; } };
+  const close = () => { if (list) { h += list === "table" ? "</table></div>" : `</${list}>`; list = ""; } };
   esc(t).split("\n").forEach(l => {
     let m;
-    if ((m = l.match(/^\s*[-•*] (.+)/))) { if (list !== "ul") { close(); h += "<ul>"; list = "ul"; } h += `<li>${inl(m[1])}</li>`; }
+    // جداول (القيود المحاسبية وجداول الإهلاك): الصف الأول عنوان، وسطر --- يتخطاه
+    if (/^\s*\|.*\|\s*$/.test(l)) { const cells = l.trim().slice(1, -1).split("|").map(c => c.trim());
+      if (cells.every(c => /^:?-{2,}:?$/.test(c))) return;
+      if (list !== "table") { close(); h += '<div class="ai-tb"><table>'; list = "table"; h += `<tr>${cells.map(c => `<th>${inl(c)}</th>`).join("")}</tr>`; }
+      else h += `<tr>${cells.map(c => `<td>${inl(c)}</td>`).join("")}</tr>`; }
+    else if ((m = l.match(/^\s*[-•*] (.+)/))) { if (list !== "ul") { close(); h += "<ul>"; list = "ul"; } h += `<li>${inl(m[1])}</li>`; }
     else if ((m = l.match(/^\s*\d+[.)] (.+)/))) { if (list !== "ol") { close(); h += "<ol>"; list = "ol"; } h += `<li>${inl(m[1])}</li>`; }
     else { close(); if ((m = l.match(/^#{1,4} (.+)/))) h += `<h4>${inl(m[1])}</h4>`; else if (/^-{3,}$/.test(l.trim())) h += "<hr>"; else if (l.trim()) h += `<p>${inl(l)}</p>`; }
   });
