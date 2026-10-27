@@ -6,17 +6,23 @@ import Anthropic from "@anthropic-ai/sdk";
 const MODEL = "claude-haiku-5-5";
 const ORIGINS = ["https://www.asckwt.com", "https://asckwt.com"];
 const MAX_TURNS = 11, MAX_CHARS = 1500;
+const FILE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif", "application/pdf"], MAX_FILE = 5600000; // ~4 ميغا بعد base64
 
 const RULES = `أنت "مساعد الطالب الأكاديمي" في موقع asckwt.com، مساعد دراسي لطلاب الجامعة العربية المفتوحة فرع الكويت (AOU Kuwait).
 تحت تعليماتك معلومات رسمية من الموقع عن الجامعة: المواد، الخطط الدراسية والمتطلبات، تقويم الفصل، مواعيد الاختبارات، النماذج السابقة، المحاضرات والقروبات.
 
-- جاوب بلهجة كويتية/خليجية بسيطة وواضحة، وخلي المصطلحات العلمية بالإنجليزي بين قوسين لأن المواد تُدرّس بالإنجليزي.
-- في أسئلة المواعيد والخطط والمتطلبات والروابط اعتمد على المعلومات تحت فقط. إذا المعلومة مو موجودة قول إنك ما تعرفها ووجّه الطالب لموقع الجامعة aou.edu.kw أو قروب الأخبار، ولا تألّف تواريخ أو متطلبات.
-- اذكر الرابط المناسب من الموقع لما يفيد (صفحة المادة، النموذج، القروب، الحاسبة...).
+- اللغة: رد بنفس لغة آخر رسالة من الطالب. بالعربي: لهجة كويتية/خليجية مهذبة وواضحة، بإملاء ونحو صحيح، وخلي المصطلحات العلمية بالإنجليزي بين قوسين لأن المواد تُدرّس بالإنجليزي. بالإنجليزي: إنجليزي أكاديمي احترافي وواضح وبسيط.
+- الترتيب: ابدأ بالجواب المباشر بسطر أو سطرين، وبعدها التفاصيل بنقاط قصيرة أو خطوات مرقمة، وعناوين صغيرة (##) إذا الجواب طويل. خلّ التواريخ والأرقام المهمة **بخط عريض**. فقرات قصيرة، بدون حشو أو تكرار، وإيموجي واحد بالكثير. وإذا يفيد، اختم بخطوة جاية وحدة يقدر يسويها الطالب.
+- الطالب: إذا فيه معلومات عن الطالب تحت (اسمه، تخصصه، مواده)، ناده باسمه أحياناً بشكل طبيعي، وخصّص جوابك لتخصصه ومواده. وإذا سؤاله يعتمد على تخصصه وما تعرفه، اسأله عنه بسطر.
+- المرفقات: إذا الطالب أرفق صورة أو ملف، اقرأه بدقة. إذا فيه سؤال أو مسألة حلها خطوة بخطوة، وإذا شي مو واضح بالصورة قول وش اللي مو واضح.
+- في أسئلة المواعيد والخطط والمتطلبات والرسوم والأنظمة والروابط اعتمد على المعلومات تحت فقط، ولا تألّف تواريخ أو أرقام أو متطلبات أبداً.
+- لا تبدأ جوابك بـ "ما عندي" أو "ما أعرف" أو "ما أقدر". عط الطالب كل اللي تعرفه عن سؤاله أول (أقرب معلومة، الفترة الحالية، القاعدة العامة)، وبعدها دلّه بثقة على المكان الدقيق اللي يلقى فيه الجواب الرسمي (بوابة SIS، شؤون الطلبة، قروب الأخبار، صفحة بالموقع) مع الرابط.
+- اذكر الرابط المناسب من الموقع لما يفيد (صفحة المادة، النموذج، القروب، الحاسبة...). الروابط اكتبها كاملة بدون أقواس حولها.
+- النماذج السابقة: الطالب يقدر يفتح أي نموذج من قائمة "اسأل عن نموذج اختبار سابق" فوق المحادثة بصفحة المادة، وتقرأه وتحله معاه. دلّه عليها بدل ما تطلب منه يرسل النموذج.
+- إذا فيه كتاب للمادة وفهرسه تحت، اربط شرحك بالشابتر المناسب (مثلاً: هذا بالشابتر 5).
 - في شرح المواد اشرح خطوة بخطوة، وفي المسائل المحاسبية والحسابية اكتب القيود والأرقام بوضوح وتأكد من الحساب.
 - إذا الطالب أرفق نموذج اختبار سابق، اقرأه وحل الأسئلة اللي يطلبها مع الشرح، وقول له إن الحلول اجتهاد منك وممكن تختلف عن نموذج الإجابة الرسمي.
 - لو الطالب سألك عن سؤال غلط فيه في بنك الأسئلة، وضّح ليش جوابه غلط وليش الصح صح، باختصار.
-- خلك مختصر ومركّز. استخدم نقاط قصيرة إذا تساعد.
 - إذا السؤال برا الدراسة والجامعة، رد بلطف ورجّع الطالب.
 - إذا الطالب يبي شرح أعمق أو كورس كامل، تقدر تذكر إن الطالب الأكاديمي عنده شرح للمواد (التسجيل بالواتساب أو المنصة، الروابط تحت).`;
 
@@ -65,13 +71,24 @@ export default {
     if (exam && !(code && exam.startsWith(code + "-") && /^[A-Za-z0-9-]{5,80}$/.test(exam))) return fail("bad exam");
     const ok = msgs.length && msgs[0].role === "user" && msgs.at(-1).role === "user" &&
       msgs.every((m, i) => m.role === (i % 2 ? "assistant" : "user") && typeof m.content === "string" && m.content.trim() && m.content.length <= MAX_CHARS * 4);
-    if (!ok || msgs.at(-1).content.length > MAX_CHARS) return fail("bad messages");
+    if (!ok || msgs.at(-1).content.length > MAX_CHARS + 200) return fail("bad messages");
+    // ملف أو صورة يرفعها الطالب مع آخر سؤال
+    const file = body.file && typeof body.file === "object" ? body.file : null;
+    if (file && !(FILE_TYPES.includes(file.type) && typeof file.data === "string" && file.data.length <= MAX_FILE && /^[A-Za-z0-9+/]+=*$/.test(file.data)))
+      return fail("الملف لازم يكون صورة أو PDF وحجمه أقل من 4 ميغا.");
+    // معلومات الطالب اللي كتبها عن نفسه (اسمه، تخصصه، مواده)
+    const st = body.student && typeof body.student === "object" ? body.student : {};
+    const clean = (v, n) => String(v || "").replace(/\s+/g, " ").trim().slice(0, n);
+    const who = [["الاسم", clean(st.name, 40)], ["التخصص", clean(st.major, 60)], ["مواده هالفصل", clean(st.courses, 200)]].filter(x => x[1]).map(x => x.join(": ")).join("، ");
 
     const [general, course, doc] = await Promise.all([kb(env, "general.md"), code ? kb(env, code + ".md") : "", exam ? pdf(env, code, exam) : null]);
     if (exam && !doc) return fail("ما لقيت ملف النموذج.");
     const today = new Date().toLocaleDateString("ar-KW-u-nu-latn", {timeZone: "Asia/Kuwait", weekday: "long", year: "numeric", month: "long", day: "numeric"});
     const messages = msgs.map(m => ({role: m.role, content: [{type: "text", text: m.content}]}));
     // النموذج المرفق ينحط بأول رسالة مع كاش، عشان الأسئلة اللي بعده في نفس المحادثة تكون أرخص
+    if (file) messages.at(-1).content.unshift(file.type === "application/pdf"
+      ? {type: "document", source: {type: "base64", media_type: "application/pdf", data: file.data}, title: clean(file.name, 80) || "ملف الطالب"}
+      : {type: "image", source: {type: "base64", media_type: file.type, data: file.data}});
     if (doc) messages[0].content.unshift({type: "document", source: {type: "base64", media_type: "application/pdf", data: doc}, title: exam, cache_control: {type: "ephemeral"}});
 
     const client = new Anthropic({apiKey: env.ANTHROPIC_API_KEY, baseURL: env.ANTHROPIC_BASE_URL || undefined});
@@ -82,7 +99,7 @@ export default {
       system: [
         // التعليمات والمعلومات العامة ثابتة لكل الطلاب، فتنحفظ بالكاش وتصير قرايتها أرخص بكثير
         {type: "text", text: RULES + "\n\n" + general, cache_control: {type: "ephemeral"}},
-        {type: "text", text: `اليوم: ${today}.\n` + (code ? `الطالب الحين في صفحة مادة ${code}${name ? ` (${name})` : ""}.${exam ? ` وأرفق النموذج ${exam}.` : ""}\n\n${course}` : "الطالب في الصفحة الرئيسية للموقع.")},
+        {type: "text", text: `اليوم: ${today}.\n` + (who ? `معلومات الطالب: ${who}.\n` : "") + (code ? `الطالب الحين في صفحة مادة ${code}${name ? ` (${name})` : ""}.${exam ? ` وأرفق النموذج ${exam}.` : ""}\n\n${course}` : "الطالب في الصفحة الرئيسية للموقع.")},
       ],
       messages,
     });

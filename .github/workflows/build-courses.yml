@@ -3,7 +3,7 @@ name: Build course pages
 on:
   push:
     branches: [main]
-    paths: [index.html, plans.js, tools/build-courses.js, tools/build-ai.js]
+    paths: [index.html, plans.js, tools/build-courses.js, tools/build-ai.js, ai/facts.md, "ai/books/**"]
   workflow_dispatch:
 permissions:
   contents: write
