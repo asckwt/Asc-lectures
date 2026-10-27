@@ -15,6 +15,7 @@ if (used.d !== TODAY) used = {d: TODAY, n: 0};
 let busy = false;
 
 document.head.insertAdjacentHTML("beforeend", `<style>
+.ai-fab,.ai-box button{margin:0;width:auto;transition:none}
 .ai-fab{position:fixed;inset-inline-start:16px;bottom:16px;z-index:30;display:flex;align-items:center;gap:8px;border:0;cursor:pointer;
  font-family:var(--display);font-weight:700;font-size:15px;padding:12px 18px;border-radius:999px;background:var(--yellow);color:#07005E;box-shadow:0 6px 24px rgba(7,0,94,.25)}
 .ai-box{position:fixed;inset-inline-start:16px;bottom:16px;z-index:31;width:min(400px,calc(100vw - 32px));height:min(600px,calc(100dvh - 32px));
@@ -22,7 +23,7 @@ document.head.insertAdjacentHTML("beforeend", `<style>
 .ai-box.open{display:flex}
 .ai-hd{background:var(--navy);color:#fff;padding:12px 14px;display:flex;align-items:center;gap:8px}
 .ai-hd b{font-family:var(--display);font-size:15px;flex:1}
-.ai-hd button{background:none;border:0;color:#D9D7F3;font-size:13px;cursor:pointer;font-family:inherit}
+.ai-hd button{white-space:nowrap;background:none;border:0;color:#D9D7F3;font-size:13px;cursor:pointer;font-family:inherit}
 .ai-log{flex:1;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
 .ai-m{max-width:88%;padding:9px 13px;border-radius:14px;white-space:pre-wrap;word-wrap:break-word;font-size:15px;line-height:1.7}
 .ai-m.u{align-self:flex-start;background:var(--navy);color:#fff}
@@ -31,8 +32,8 @@ document.head.insertAdjacentHTML("beforeend", `<style>
 .ai-sug{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:10px}
 .ai-sug button{border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:999px;padding:5px 11px;font:inherit;font-size:13px;cursor:pointer}
 .ai-in{display:flex;gap:8px;padding:10px;border-top:1px solid var(--line)}
-.ai-in textarea{flex:1;resize:none;border:1px solid var(--line);border-radius:12px;padding:9px 11px;font:inherit;font-size:15px;background:var(--bg);color:var(--fg);height:44px;max-height:120px}
-.ai-in button{border:0;border-radius:12px;padding:0 16px;background:var(--navy);color:#fff;font-family:var(--display);font-weight:700;cursor:pointer}
+.ai-in textarea{flex:1;min-width:0;width:auto;resize:none;border:1px solid var(--line);border-radius:12px;padding:9px 11px;font:inherit;font-size:16px;background:var(--bg);color:var(--fg);height:44px;max-height:120px}
+.ai-in button{flex:none;border:0;border-radius:12px;padding:0 16px;font-size:15px;background:var(--navy);color:#fff;font-family:var(--display);font-weight:700;cursor:pointer}
 .ai-in button:disabled{opacity:.5}
 .ai-ex{padding:8px 10px;border-bottom:1px solid var(--line)}
 .ai-ex select{width:100%;border:1px solid var(--line);border-radius:10px;padding:7px 9px;font:inherit;font-size:14px;background:var(--bg);color:var(--fg)}
@@ -47,7 +48,7 @@ fab.innerHTML = D.course ? "🤖 اسأل مساعد المادة" : "🤖 اس�
 box.innerHTML = `<div class="ai-hd"><b>${TITLE}</b><button data-x="new">محادثة جديدة</button><button data-x="close" aria-label="إغلاق">✕</button></div>
 ${EXAMS.length ? `<div class="ai-ex"><select aria-label="نموذج سابق"><option value="">📄 اسأل عن نموذج اختبار سابق…</option>${EXAMS.map(([f, t]) => `<option value="${f}">${t}</option>`).join("")}</select></div>` : ""}
 <div class="ai-log"></div>
-<form class="ai-in"><textarea placeholder="اكتب سؤالك عن المادة…" maxlength="1500"></textarea><button>إرسال</button></form>
+<form class="ai-in"><textarea placeholder="${D.course ? "اكتب سؤالك عن المادة…" : "اكتب سؤالك…"}" maxlength="1500"></textarea><button>إرسال</button></form>
 <div class="ai-ft">ذكاء اصطناعي وممكن يغلط، تأكد من المعلومات المهمة. <span class="ai-left"></span></div>`;
 document.body.append(fab, box);
 const log = box.querySelector(".ai-log"), ta = box.querySelector("textarea"), send = box.querySelector(".ai-in button"), left = box.querySelector(".ai-left");
