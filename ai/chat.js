@@ -22,11 +22,16 @@ document.head.insertAdjacentHTML("beforeend", `<style>
  display:none;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 12px 40px rgba(7,0,94,.3)}
 .ai-box.open{display:flex}
 .ai-fab.ai-off{display:none}
-.ai-hd{background:var(--navy);color:#fff;padding:12px 14px;display:flex;align-items:center;gap:8px}
-.ai-hd b{font-family:var(--display);font-size:15px;flex:1;display:flex;align-items:center;gap:8px;line-height:1.3}
-.ai-hd b small{display:block;font-family:inherit;font-weight:400;font-size:11px;color:#9FE8DC}
-.ai-av{flex:none;width:32px;height:32px;border-radius:50%;background:var(--yellow);display:grid;place-items:center;font-size:17px}
-.ai-hd button{white-space:nowrap;background:none;border:0;color:#D9D7F3;font-size:13px;cursor:pointer;font-family:inherit}
+.ai-hd{background:var(--navy);color:#fff;padding:10px 12px;display:flex;align-items:center;gap:10px}
+.ai-hd b{flex:1;min-width:0;display:flex;align-items:center;gap:10px}
+.ai-hd b>span:last-child{min-width:0;display:flex;flex-direction:column;gap:1px}
+.ai-hd b i{font-style:normal;font-family:var(--display);font-size:16px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ai-hd b small{font-family:var(--body);font-weight:400;font-size:12px;line-height:1.2;color:#9FE8DC;white-space:nowrap}
+.ai-av{flex:none;width:36px;height:36px;border-radius:50%;background:var(--yellow);display:grid;place-items:center;font-size:19px}
+.ai-hd nav{flex:none;display:flex;gap:6px}
+.ai-box .ai-hd button{width:36px;height:36px;padding:0;border:0;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.1);color:#fff;cursor:pointer}
+.ai-box .ai-hd button:hover{background:rgba(255,255,255,.2)}
+.ai-hd svg{width:18px;height:18px}
 .ai-log{flex:1;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
 .ai-m{max-width:90%;padding:10px 14px;border-radius:16px;word-wrap:break-word;font-size:15px;line-height:1.75}
 .ai-m p{margin:0 0 6px}.ai-m p:last-child{margin:0}
@@ -62,7 +67,7 @@ document.head.insertAdjacentHTML("beforeend", `<style>
 .ai-att span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ai-att button{border:0;background:none;color:var(--muted);font-size:16px;cursor:pointer;padding:0 4px}
 .ai-m .ai-img{display:block;max-width:100%;max-height:160px;width:auto;border-radius:10px;margin-bottom:6px}
-@media (max-width:520px){.ai-box{inset:0;width:100%;height:100dvh;border-radius:0;border:0}}
+@media (max-width:520px){.ai-box{inset:0;width:100%;height:100dvh;border-radius:0;border:0}.ai-hd{padding-top:calc(10px + env(safe-area-inset-top,0px))}.ai-ft{padding-bottom:calc(8px + env(safe-area-inset-bottom,0px))}}
 .ai-m .ai-fl{display:inline-block;background:rgba(255,255,255,.15);border-radius:8px;padding:2px 8px;margin-bottom:6px;font-size:13px}
 .ai-me{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:14px;display:grid;gap:8px;font-size:14px}
 .ai-me b{font-family:var(--display);font-size:15px}
@@ -89,9 +94,9 @@ document.head.insertAdjacentHTML("beforeend", `<style>
 const fab = Object.assign(document.createElement("button"), {className: "ai-fab", innerHTML: "🤖 اسأل مساعد المادة"});
 const box = document.createElement("div");
 box.className = "ai-box";
-const TITLE = D.course ? `مساعد <bdi dir="ltr">${D.course}</bdi>` : "مساعد الطالب الأكاديمي";
+const TITLE = D.course ? `مساعد <bdi dir="ltr">${D.course}</bdi>` : "المساعد الأكاديمي";
 fab.innerHTML = D.course ? "🤖 اسأل مساعد المادة" : "🤖 اسأل المساعد";
-box.innerHTML = `<div class="ai-hd"><b><span class="ai-av">🤖</span><span>${TITLE}<small>● متصل الحين</small></span></b><button data-x="me" title="معلوماتي" aria-label="معلوماتي">👤</button><button data-x="new">محادثة جديدة</button><button data-x="close" aria-label="إغلاق">✕</button></div>
+box.innerHTML = `<div class="ai-hd"><b><span class="ai-av">🤖</span><span><i>${TITLE}</i><small>● متصل الحين</small></span></b><nav><button data-x="me" title="معلوماتي" aria-label="معلوماتي"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></button><button data-x="new" title="محادثة جديدة" aria-label="محادثة جديدة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button><button data-x="close" title="إغلاق" aria-label="إغلاق"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></nav></div>
 ${EXAMS.length ? `<div class="ai-ex"><select aria-label="نموذج سابق"><option value="">📄 اسأل عن نموذج اختبار سابق…</option>${EXAMS.map(([f, t]) => `<option value="${f}">${t}</option>`).join("")}</select></div>` : ""}
 <div class="ai-log"></div>
 <form class="ai-in"><div class="ai-att" hidden></div><div class="ai-row">
