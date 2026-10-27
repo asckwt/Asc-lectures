@@ -306,8 +306,79 @@
 - التسويق (Marketing): https://chat.whatsapp.com/HkNUahhfYoc9JDGEjMiJG8
 - الاقتصاد (Economics): https://chat.whatsapp.com/EvflfsMeaR9KqnS1OJpb0A
 
-## المواد اللي لها نماذج اختبارات سابقة في الموقع
+## قروبات واتساب المواد
+BUC111: https://chat.whatsapp.com/C4ccOXu5BjyH5RdMvjI0aY
+BUC112: https://chat.whatsapp.com/Lqq3wkgkMAh262m7Ky7ASG
+MGT111: https://chat.whatsapp.com/GvYAoijLLdI5doUnPX8nZJ
+MGT112: https://chat.whatsapp.com/IxEDwFuK0PGH3oFi9OuAML
+ACT111: https://chat.whatsapp.com/EqEtgemAvXwJ0vdEm9xyqW
+ACT112: https://chat.whatsapp.com/EPXeCk0eSPU85xliQHtSxL
+MKT111: https://chat.whatsapp.com/FRmr16i4rc7IncyovPJIKl
+MKT112: https://chat.whatsapp.com/FRmr16i4rc7IncyovPJIKl
+ACC204: https://chat.whatsapp.com/E12Vs4ElPa0HO5J7IlhFwH
+BUS101: https://chat.whatsapp.com/KOUB5NKII9i2LHRfoE7R8V
+BUS102: https://chat.whatsapp.com/JzkTNkmKKjmKYyKvXQKX9I
+BUS110: https://chat.whatsapp.com/IIaoMtF7WjIAVS4PBZEgZh
+LB170: https://chat.whatsapp.com/Iu2GngSNcEnFh1atdU3S8f
+B207A: https://chat.whatsapp.com/Fwf3rG3OxUYJUqspDtpMZ0
+B207B: https://chat.whatsapp.com/Dlnr8jcfbl9GwrED4bG396
+BUS310: https://chat.whatsapp.com/JXfjs2OHGVE3z6a9w2626O
+B124: https://chat.whatsapp.com/DrvLIVTueoZCKjNb8aeW6N
+B291: https://chat.whatsapp.com/LLVGpRijlloA2lAWRFg4KK
+B292: https://chat.whatsapp.com/KBtyAo8MuPP4jZBBEWxabw
+B392: https://chat.whatsapp.com/GebdpXHaTg8EVf71ye7Y7I
+B326: https://chat.whatsapp.com/F9ypnEa5iyrLJlk2DBy2wC
+ACC300: https://chat.whatsapp.com/BT02QjwynaT7pzLTDLN70F
+ACC302: https://chat.whatsapp.com/I6GnS9Y8xbw6mxO7ElMODU
+B391: https://chat.whatsapp.com/JsaduhinC32Kxi14pCJ1AG
+BB293: https://chat.whatsapp.com/FTj2hdK1J8X8gxOlptby4s
+B294: https://chat.whatsapp.com/J6N4XNEMdvLIM3bMvlIkx5
+B123: https://chat.whatsapp.com/IhdU9dKlDAC4uzEe92M5dK
+B205A: https://chat.whatsapp.com/LseApR2GV2k3o60UP4SNny
+B205B: https://chat.whatsapp.com/JlB7mdLqiXVJxfTTUlWFow
+B325: https://chat.whatsapp.com/EZB9pBrUyXI6SYEk5bxFL3
+B628: https://chat.whatsapp.com/Hx0deLNHwDbBPuKll78Dle
+B629: https://chat.whatsapp.com/BHd9ox17Pe8KUO9uJWlsIi
+SYS111: https://chat.whatsapp.com/EA04YqJ0YqU5DtKCZsIH3f
+MIS111: https://chat.whatsapp.com/BMspNVrD4hFAZLDVpqsfK4
+SYS210: https://chat.whatsapp.com/BdrIQbreVDP7BpotZEvtk9
+SYS280: https://chat.whatsapp.com/F4dhRUBkwnXCqpSU7BvvFT
+SYS380: https://chat.whatsapp.com/FU93HLXAEaHKFktL3xs1YR
+B327: https://chat.whatsapp.com/FCB6xITwDaFB3SQH5Yt4Xw
+B122: https://chat.whatsapp.com/Ku9Q0lhvxEV5ifOf0EwXvY
+B324: https://chat.whatsapp.com/FoHBegYuKLM5ZvzyhbnuHX
+MKT331: https://chat.whatsapp.com/KZep32UUXy6GwBYpPEGxvz
+MKT332: https://chat.whatsapp.com/HKplPlcxdF8JdyjehARVBG
+ECO101: https://chat.whatsapp.com/EAonYEJswdR6oKwW2pkwc4
+ECO102: https://chat.whatsapp.com/ImxyfXjnDOZ7neVpzcuVbt
+DD209A: https://chat.whatsapp.com/GvqiogwpFm53HY07Bgl1AW
+DD209B: https://chat.whatsapp.com/HZSJ7hGSgc1JKeXMHbL7SQ
+DD309A: https://chat.whatsapp.com/LgV85JRDn86AOiAtyG8bug
+DD309B: https://chat.whatsapp.com/CEA2KbAgxro6RIcNH3UZz9
+BUS115: https://chat.whatsapp.com/FeM6bb3jdrKI8CbHMgnX31
+
+## سلم الدرجات وحساب المعدل
+- A: 90 – 100، 4 نقاط
+- B+: 82 – 89، 3.5 نقاط
+- B: 74 – 81، 3 نقاط
+- C+: 66 – 73، 2.5 نقاط
+- C: 58 – 65، 2 نقاط
+- D: 50 – 57، 1.5 نقاط
+- F: أقل من 50، 0 نقاط
+- أقل تقدير للنجاح D، والـ F يدخل في المعدل.
+- تصنيف المعدل: ممتاز 3.67 فأعلى، جيد جداً 3.00، جيد 2.33، مقبول 2.00.
+- المعدل = مجموع (نقاط التقدير × ساعات المادة) ÷ مجموع الساعات، ويتقرّب لأقرب منزلتين.
+- المواد التمهيدية (EL097 إلى EL099) والمواد المعفاة والمعادلة وأي مادة خارج الخطة ما تدخل في المعدل.
+- حاسبة المعدل بالموقع: https://www.asckwt.com/#gpa (للتقدير، والمعدل الرسمي من بوابة الجامعة).
+
+## المواد اللي لها نماذج اختبارات سابقة في الموقع (يفتحها الطالب من صفحة المادة، ومن قائمة النماذج فوق محادثة المساعد يقدر يحلها معاك)
 ACC204 (6)، ACC300 (3)، ACC302 (5)، BUS101 (4)، BUS102 (3)، BUS310 (4)، BUS629 (1)، ECO101 (1)، ECO102 (3)، MGT111 (3)، MGT112 (3)، MIS111 (3)، MIS112 (3)، MIS200 (2)
 
 ## المواد اللي لها محاضرات مجانية مسجلة
 ACT111، ACT112، BB293، B294، B391، ACC204، B326، ACC300، ACC302، MGT112، MKT112، MGT111، BUC111، BUC112، MKT111، EL096، EL097، EL098، EL099، EL111، EL112
+
+## روابط الجامعة الرسمية
+- موقع الجامعة العربية المفتوحة فرع الكويت: https://www.aou.edu.kw
+- التقويم الأكاديمي الرسمي: https://www.aou.edu.kw/students/Pages/academic-calendar.aspx
+- دليل طالب كلية الدراسات التجارية 2022: https://www.aou.edu.kw/media/PublishingImages/Lists/Announcements/AllItems/FBS-%20Student%20Handbook%202022-V%206.1-U1.pdf
+- طريقة حساب المعدل: https://www.arabou.edu.kw/students/guide/Pages/average-rate.aspx

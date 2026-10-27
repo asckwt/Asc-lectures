@@ -21,13 +21,26 @@ document.head.insertAdjacentHTML("beforeend", `<style>
 .ai-box{position:fixed;inset-inline-start:16px;bottom:16px;z-index:31;width:min(400px,calc(100vw - 32px));height:min(600px,calc(100dvh - 32px));
  display:none;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 12px 40px rgba(7,0,94,.3)}
 .ai-box.open{display:flex}
+.ai-fab.ai-off{display:none}
 .ai-hd{background:var(--navy);color:#fff;padding:12px 14px;display:flex;align-items:center;gap:8px}
-.ai-hd b{font-family:var(--display);font-size:15px;flex:1}
+.ai-hd b{font-family:var(--display);font-size:15px;flex:1;display:flex;align-items:center;gap:8px;line-height:1.3}
+.ai-hd b small{display:block;font-family:inherit;font-weight:400;font-size:11px;color:#9FE8DC}
+.ai-av{flex:none;width:32px;height:32px;border-radius:50%;background:var(--yellow);display:grid;place-items:center;font-size:17px}
 .ai-hd button{white-space:nowrap;background:none;border:0;color:#D9D7F3;font-size:13px;cursor:pointer;font-family:inherit}
 .ai-log{flex:1;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
-.ai-m{max-width:88%;padding:9px 13px;border-radius:14px;white-space:pre-wrap;word-wrap:break-word;font-size:15px;line-height:1.7}
-.ai-m.u{align-self:flex-start;background:var(--navy);color:#fff}
-.ai-m.a{align-self:flex-end;background:var(--bg);border:1px solid var(--line)}
+.ai-m{max-width:90%;padding:10px 14px;border-radius:16px;word-wrap:break-word;font-size:15px;line-height:1.75}
+.ai-m p{margin:0 0 6px}.ai-m p:last-child{margin:0}
+.ai-m ul,.ai-m ol{margin:4px 0 8px;padding-inline-start:20px}.ai-m li{margin:2px 0}
+.ai-m h4{margin:8px 0 4px;font-family:var(--display);font-size:15px;color:var(--navy)}
+.ai-m hr{border:0;border-top:1px solid var(--line);margin:8px 0}
+.ai-m code{background:rgba(7,0,94,.07);border-radius:5px;padding:0 4px;font-size:.92em}
+.ai-m a{color:#2B6CB0;font-weight:700;text-decoration:underline;word-break:break-all}
+.ai-m.u a{color:#fff}
+.ai-dots{display:inline-flex;gap:4px;padding:4px 0}.ai-dots i{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:aib 1s infinite}
+.ai-dots i:nth-child(2){animation-delay:.15s}.ai-dots i:nth-child(3){animation-delay:.3s}
+@keyframes aib{0%,80%,100%{opacity:.3;transform:translateY(0)}40%{opacity:1;transform:translateY(-3px)}}
+.ai-m.u{align-self:flex-start;background:var(--navy);color:#fff;border-end-start-radius:4px}
+.ai-m.a{align-self:flex-end;background:var(--bg);border:1px solid var(--line);border-end-end-radius:4px}
 .ai-hint{color:var(--muted);font-size:13px;text-align:center;margin:auto 0}
 .ai-sug{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:10px}
 .ai-sug button{border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:999px;padding:5px 11px;font:inherit;font-size:13px;cursor:pointer}
@@ -37,6 +50,11 @@ document.head.insertAdjacentHTML("beforeend", `<style>
 .ai-in button:disabled{opacity:.5}
 .ai-ex{padding:8px 10px;border-bottom:1px solid var(--line)}
 .ai-ex select{width:100%;border:1px solid var(--line);border-radius:10px;padding:7px 9px;font:inherit;font-size:14px;background:var(--bg);color:var(--fg)}
+.ai-top{margin:20px 0 0;max-width:560px}
+.ai-top small{display:block;font-size:14px;font-weight:700;margin-bottom:6px}
+.ai-top form{display:flex;gap:6px;background:#fff;border:2px solid var(--turq,#4FD1C0);border-radius:14px;padding:5px}
+.ai-top input{flex:1;min-width:0;width:auto;margin:0;border:0;background:none;color:#151238;font:inherit;font-size:16px;padding:9px 10px;outline:0}
+.ai-top button{flex:none;margin:0;width:auto;border:0;border-radius:10px;padding:0 18px;background:var(--navy,#07005E);color:#fff;font-family:var(--display);font-weight:700;font-size:15px;cursor:pointer}
 .ai-ft{font-size:11px;color:var(--muted);text-align:center;padding:0 10px 8px}
 </style>`);
 
@@ -45,7 +63,7 @@ const box = document.createElement("div");
 box.className = "ai-box";
 const TITLE = D.course ? `مساعد <bdi dir="ltr">${D.course}</bdi>` : "مساعد الطالب الأكاديمي";
 fab.innerHTML = D.course ? "🤖 اسأل مساعد المادة" : "🤖 اسأل المساعد";
-box.innerHTML = `<div class="ai-hd"><b>${TITLE}</b><button data-x="new">محادثة جديدة</button><button data-x="close" aria-label="إغلاق">✕</button></div>
+box.innerHTML = `<div class="ai-hd"><b><span class="ai-av">🤖</span><span>${TITLE}<small>● متصل الحين</small></span></b><button data-x="new">محادثة جديدة</button><button data-x="close" aria-label="إغلاق">✕</button></div>
 ${EXAMS.length ? `<div class="ai-ex"><select aria-label="نموذج سابق"><option value="">📄 اسأل عن نموذج اختبار سابق…</option>${EXAMS.map(([f, t]) => `<option value="${f}">${t}</option>`).join("")}</select></div>` : ""}
 <div class="ai-log"></div>
 <form class="ai-in"><textarea placeholder="${D.course ? "اكتب سؤالك عن المادة…" : "اكتب سؤالك…"}" maxlength="1500"></textarea><button>إرسال</button></form>
@@ -54,7 +72,18 @@ document.body.append(fab, box);
 const log = box.querySelector(".ai-log"), ta = box.querySelector("textarea"), send = box.querySelector(".ai-in button"), left = box.querySelector(".ai-left");
 
 const esc = t => t.replace(/[&<>]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;"})[c]);
-const fmt = t => esc(t).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/^#{1,4} (.+)$/gm, "<b>$1</b>");
+// ماركداون بسيط: عناوين، خط عريض، نقاط وأرقام، وروابط تنفتح
+const inl = t => t.replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/`([^`]+)`/g, "<code>$1</code>")
+  .replace(/https?:\/\/[^\s<)\]،"]+/g, u => { const s = u.replace(/[.,:;!?]+$/, ""); return `<a href="${s}" target="_blank" rel="noopener" dir="ltr">${s.replace(/^https?:\/\/(www\.)?/, "").slice(0, 40)}${s.length > 48 ? "…" : ""}</a>${u.slice(s.length)}`; });
+const fmt = t => { let h = "", list = "";
+  const close = () => { if (list) { h += `</${list}>`; list = ""; } };
+  esc(t).split("\n").forEach(l => {
+    let m;
+    if ((m = l.match(/^\s*[-•*] (.+)/))) { if (list !== "ul") { close(); h += "<ul>"; list = "ul"; } h += `<li>${inl(m[1])}</li>`; }
+    else if ((m = l.match(/^\s*\d+[.)] (.+)/))) { if (list !== "ol") { close(); h += "<ol>"; list = "ol"; } h += `<li>${inl(m[1])}</li>`; }
+    else { close(); if ((m = l.match(/^#{1,4} (.+)/))) h += `<h4>${inl(m[1])}</h4>`; else if (/^-{3,}$/.test(l.trim())) h += "<hr>"; else if (l.trim()) h += `<p>${inl(l)}</p>`; }
+  });
+  close(); return h; };
 const bubble = (role, text) => { const d = document.createElement("div"); d.className = "ai-m " + (role === "user" ? "u" : "a"); d.innerHTML = fmt(text); log.append(d); log.scrollTop = log.scrollHeight; return d; };
 const exSel = box.querySelector(".ai-ex select");
 const exName = () => (EXAMS.find(x => x[0] === exam) || [, ""])[1];
@@ -78,7 +107,7 @@ async function ask(q) {
   if (!msgs.length) log.innerHTML = "";
   busy = send.disabled = true; ta.value = "";
   msgs.push({role: "user", content: q}); bubble("user", q);
-  const out = bubble("assistant", "…");
+  const out = bubble("assistant", ""); out.innerHTML = '<span class="ai-dots"><i></i><i></i><i></i></span>';
   let text = "";
   try {
     const r = await fetch(D.endpoint, {method: "POST", headers: {"Content-Type": "application/json"},
@@ -103,6 +132,18 @@ const reset = () => { msgs = []; keep(KEY, {m: msgs, e: exam}); draw(); };
 fab.onclick = () => { open(); ta.focus(); };
 if (exSel) exSel.onchange = () => { if (busy) { exSel.value = exam; return; } exam = exSel.value; reset(); };
 window.ascAI = {ask(q, fresh) { open(); if (fresh && !busy) { exam = ""; reset(); } ask(q); }};
+// خانة "اسأل المساعد" فوق بالصفحة: تحت بحث الرئيسية، أو آخر الهيدر بصفحات المواد
+const spot = document.querySelector("[data-ai-top]") || document.querySelector(".hero-search") || document.querySelector("header .wrap");
+if (spot) {
+  const top = document.createElement("div");
+  top.className = "ai-top";
+  top.innerHTML = `<small>🤖 مساعد ذكي يعرف ${D.course ? "هالمادة ونماذجها ومواعيدها" : "موادك ومواعيدك وخططك ونماذج الاختبارات"}</small><form><input type="text" enterkeyhint="send" dir="auto" maxlength="1500" placeholder="${D.course ? "اسأل عن المادة… مثلاً متى الفاينل؟" : "اسأل أي شي عن الجامعة والمواد…"}" aria-label="اسأل المساعد"><button>اسأل</button></form>`;
+  spot.matches(".wrap") ? spot.append(top) : spot.after(top);
+  const qi = top.querySelector("input");
+  top.querySelector("form").onsubmit = e => { e.preventDefault(); const q = qi.value; qi.value = ""; qi.blur(); open(); ask(q); };
+  // الزر العايم يطلع بس لما تنزل وتختفي الخانة
+  if ("IntersectionObserver" in window) new IntersectionObserver(([en]) => fab.classList.toggle("ai-off", en.isIntersecting)).observe(top);
+}
 box.querySelector("[data-x=close]").onclick = () => { box.classList.remove("open"); fab.hidden = false; };
 box.querySelector("[data-x=new]").onclick = () => { if (!busy) { exam = ""; reset(); } };
 box.querySelector("form").onsubmit = e => { e.preventDefault(); ask(ta.value); };

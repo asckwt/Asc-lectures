@@ -16,6 +16,7 @@ const grab = (src, start, end) => {
 };
 const CONFIG = grab(html, "const CONFIG = ", "\n};");
 const COURSES = grab(html, "const COURSES = ", "\n];");
+const GRADES = grab(html, "const GRADES = ", "];");
 const pjs = fs.readFileSync(path.join(root, "plans.js"), "utf8");
 const {C, PLANS, KIND} = vm.runInNewContext(pjs.slice(pjs.indexOf("const C = {"), pjs.indexOf("/* ===== ترتيب الخريطة")) + "\n({C, PLANS, KIND})");
 
@@ -83,10 +84,23 @@ PLANS.forEach(p => {
 });
 g.push("\n## قروبات الواتساب العامة");
 CONFIG.chats.forEach(c => g.push(`- ${c.title}${c.note ? ` (${c.note})` : ""}: ${c.url}`));
-g.push("\n## المواد اللي لها نماذج اختبارات سابقة في الموقع");
+g.push("\n## قروبات واتساب المواد");
+g.push(Object.entries(chats).map(([c, u]) => `${c}: ${u}`).join("\n"));
+g.push(`\n## سلم الدرجات وحساب المعدل
+${GRADES.map(([l, pt, r]) => `- ${l}: ${r}، ${pt} نقاط`).join("\n")}
+- أقل تقدير للنجاح D، والـ F يدخل في المعدل.
+- تصنيف المعدل: ممتاز 3.67 فأعلى، جيد جداً 3.00، جيد 2.33، مقبول 2.00.
+- المعدل = مجموع (نقاط التقدير × ساعات المادة) ÷ مجموع الساعات، ويتقرّب لأقرب منزلتين.
+- المواد التمهيدية (EL097 إلى EL099) والمواد المعفاة والمعادلة وأي مادة خارج الخطة ما تدخل في المعدل.
+- حاسبة المعدل بالموقع: ${SITE}#gpa (للتقدير، والمعدل الرسمي من بوابة الجامعة).`);
+g.push("\n## المواد اللي لها نماذج اختبارات سابقة في الموقع (يفتحها الطالب من صفحة المادة، ومن قائمة النماذج فوق محادثة المساعد يقدر يحلها معاك)");
 g.push(CONFIG.exams.map(e => `${e.code} (${e.items.length})`).join("، "));
 g.push("\n## المواد اللي لها محاضرات مجانية مسجلة");
 g.push(Object.keys(lectures).join("، "));
+
+// معلومات مكتوبة باليد عن الجامعة (رسوم، أنظمة، أرقام تواصل...) في ai/facts.md
+const facts = path.join(root, "ai", "facts.md");
+if (fs.existsSync(facts)) g.push("\n" + fs.readFileSync(facts, "utf8").trim());
 
 const dir = path.join(root, "ai", "kb");
 fs.rmSync(dir, {recursive: true, force: true}); fs.mkdirSync(dir, {recursive: true});
@@ -113,6 +127,9 @@ for (const c of codes) {
   }
   if (lectures[c]) { L.push("\n## محاضرات مجانية مسجلة"); lectures[c].forEach(l => L.push(`- ${l.title}: ${l.url}${l.pass ? ` (الباسكود ${l.pass})` : ""}`)); }
   if (chats[c]) L.push(`\nقروب واتساب المادة: ${chats[c]}`);
+  // كتاب المادة وفهرسه (اسم الكتاب والطبعة والشباتر) في ai/books/<المادة>.md
+  const book = path.join(root, "ai", "books", c + ".md");
+  if (fs.existsSync(book)) L.push("\n## كتاب المادة\n" + fs.readFileSync(book, "utf8").trim());
   fs.writeFileSync(path.join(dir, c + ".md"), L.join("\n") + "\n"); n++;
 }
 
