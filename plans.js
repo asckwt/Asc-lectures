@@ -418,7 +418,7 @@ function render(id, v) {
     <div class="pview" role="tablist">${VIEWS.map(([v, t]) => `<button type="button" role="tab" data-v="${v}" aria-selected="${view === v}">${t}</button>`).join("")}</div>
     <div id="vimg"${view === "img" ? "" : " hidden"}>
       <p class="phint">هذي خطة التخصص كاملة في صورة وحدة. احفظها عندك من زر «صورة للجوال» فوق، أو اضغط على الصورة مطولاً واختر حفظ.</p>
-      <a class="pimg" href="plans/${plan.id}.png" target="_blank" rel="noopener"><img src="plans/${plan.id}.png" alt="الخطة الدراسية لتخصص ${esc(plan.title)}: شجرة المواد ومتطلباتها" decoding="async"></a>
+      <a class="pimg" href="plans/${plan.id}.png" target="_blank" rel="noopener"><img src="plans/${plan.id}.webp" alt="الخطة الدراسية لتخصص ${esc(plan.title)}: شجرة المواد ومتطلباتها" decoding="async"></a>
     </div>
     <div id="vmine"${view === "mine" ? "" : " hidden"}>
       <p class="phint">أشّر على المواد اللي خلصتها، ونرتب لك باقي موادك فصل بفصل لين التخرج.</p>
