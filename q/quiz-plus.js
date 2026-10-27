@@ -144,3 +144,26 @@ function run(n) {
 timed.onclick = start;
 addEventListener("keydown", e => { if (e.key === "Escape" && box) close(); });
 })();
+
+/* مساعد الذكاء الاصطناعي: زر "ليش غلط؟" تحت كل سؤال غلطت فيه، يشرح لك السبب.
+   يشتغل بس لما يكون المساعد مفعّل (ai/config.js ينبني من CONFIG.ai في index.html). */
+(() => {
+const course = (typeof KEY !== "undefined" ? KEY : location.pathname.split("/").filter(Boolean).pop()).replace(/q$|-.*$/, "").toUpperCase();
+const add = (src, data) => new Promise(ok => { const s = Object.assign(document.createElement("script"), {src}); Object.assign(s.dataset, data || {}); s.onload = s.onerror = ok; document.body.append(s); });
+add("../../ai/config.js").then(() => {
+  if (!window.ASC_AI?.endpoint) return;
+  add("../../ai/chat.js", {course});
+  document.head.insertAdjacentHTML("beforeend", `<style>.why{margin-top:8px;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:99px;padding:4px 12px;font:inherit;font-size:13px;cursor:pointer}</style>`);
+  const L = "ABCDEFGHIJ";
+  const paint = () => document.querySelectorAll(".q.done").forEach(d => {
+    const s = d.closest("section"); if (!s || d.querySelector(".why")) return;
+    const ci = s.dataset.c, qi = d.dataset.i ?? [...s.querySelectorAll(".q")].indexOf(d), id = ci + "-" + qi, q = DATA[ci].qs[qi], k = picks[id];
+    if (k === undefined || k === q.k) return;
+    const b = Object.assign(document.createElement("button"), {className: "why", type: "button", textContent: "🤖 ليش جوابي غلط؟"});
+    const opt = i => q.t === "m" ? DATA[ci].defs[i] : q.o[i];
+    b.onclick = () => window.ascAI?.ask(`غلطت في هالسؤال من بنك أسئلة ${course}، وضّح لي ليش جوابي غلط وليش الصح صح:\n\nالسؤال: ${q.en}${q.ar ? `\n(${q.ar})` : ""}${q.o ? `\nالخيارات:\n${q.o.map((t, i) => `${L[i]}) ${t}`).join("\n")}` : ""}\n\nجوابي: ${opt(k)}\nالجواب الصحيح: ${opt(q.k)}${q.ans ? ` (${q.ans})` : ""}`, true);
+    d.querySelector(".res").after(b);
+  });
+  const t = tally; tally = function () { t(); paint(); }; paint();
+});
+})();

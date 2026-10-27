@@ -422,6 +422,10 @@ const CONFIG = {
     {title:"قناة الواتساب", url:"https://whatsapp.com/channel/0029VbAxGFTEQIav95ZJp22u"},
     {title:"تلقرام", url:""}
   ],
+  ai: { // مساعد الذكاء الاصطناعي (الصفحة الرئيسية وصفحات المواد وبنك الأسئلة). endpoint فاضي = المساعد ما يطلع
+    endpoint: "", // رابط الـ Worker على Cloudflare مثل https://asc-ai.xxxx.workers.dev
+    daily: 15 // كم سؤال باليوم لكل طالب
+  },
   analytics: "", // رقم Google Analytics 4 مثل G-XXXXXXXXXX، وفاضي = بدون إحصائيات
   whatsapp: [ // أرقام الواتساب بالصيغة الدولية بدون +
     {label:"واتساب ١", number:"96596050709"},
@@ -1023,6 +1027,13 @@ if (ann) {
 }
 const follows = CONFIG.follow.filter(f => f.url);
 if (follows.length) { $("follow").innerHTML = follows.map(f => `<a class="btn" href="${esc(f.url)}" target="_blank" rel="noopener">${esc(f.title)}</a>`).join(""); $("followbox").hidden = false; }
+
+/* ===== مساعد الطالب الأكاديمي (ذكاء اصطناعي) ===== */
+if (/^https:\/\//.test(CONFIG.ai?.endpoint || "")) {
+  const s = Object.assign(document.createElement("script"), {src: "ai/chat.js"});
+  Object.assign(s.dataset, {endpoint: CONFIG.ai.endpoint, daily: CONFIG.ai.daily || 15});
+  document.body.append(s);
+}
 
 /* ===== إحصائيات الزوار (Google Analytics 4) ===== */
 function track(name, params) { if (window.gtag) gtag("event", name, params); }
