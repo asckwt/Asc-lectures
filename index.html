@@ -86,6 +86,11 @@ h2{font-family:var(--display);font-weight:700;font-size:22px;margin:0 0 4px}
 .s .go{justify-self:start;margin-top:8px;display:inline-block;background:var(--navy);color:#fff;text-decoration:none;font-family:var(--display);font-weight:700;font-size:14px;padding:7px 14px;border-radius:9px}
 .s .go.chat{background:#25D366;margin-inline-start:6px}
 .s .lock{display:inline-block;margin-top:6px;font-size:13px;color:var(--muted)}
+/* أزرار البطاقات: صف مرتب بمسافات متساوية، والعنوان والوصف كل واحد بسطره */
+.s>div:last-child:has(.go){display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.s>div:last-child:has(.go)>:not(.go){flex-basis:100%}
+.s>div:last-child:has(.go) .go{margin:4px 0 0;flex:1 1 auto;text-align:center}
+@media (max-width:719px){.tiles>.tile:last-child:nth-child(odd){grid-column:1/-1;min-height:0}}
 .how{margin-top:26px;display:grid;gap:10px}
 .how div{display:flex;gap:12px;align-items:flex-start}
 .how i{flex:none;width:12px;height:12px;margin-top:8px;border-radius:3px;transform:rotate(45deg)}
@@ -133,7 +138,7 @@ footer .wrap{padding-block:18px;display:flex;flex-wrap:wrap;gap:8px 20px;justify
 .tile small{color:var(--muted);font-size:13px;line-height:1.5}
 .back{display:inline-block;margin-bottom:10px;color:var(--muted);text-decoration:none;font-weight:600;font-size:14px}
 .soon{border:1.5px dashed var(--line);border-radius:16px;padding:40px 16px;text-align:center;color:var(--muted);font-family:var(--display);font-weight:700}
-.contacts{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.contacts{display:flex;flex-wrap:wrap;gap:10px;align-items:center}.contacts .btn{min-width:170px;justify-content:center}
 .num{direction:ltr;font-variant-numeric:tabular-nums;color:var(--muted);font-size:14px}
 main .wrap{display:grid;grid-template-columns:1fr;gap:40px;padding-block:36px 56px}
 .gpa{display:grid;gap:18px}
@@ -150,6 +155,7 @@ main .wrap{display:grid;grid-template-columns:1fr;gap:40px;padding-block:36px 56
 .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .two label{margin-top:0}
 .res{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+@media (max-width:719px){.res>.stat:last-child:nth-child(odd){grid-column:1/-1}}
 .stat{background:var(--navy);color:#fff;border-radius:14px;padding:14px 16px}
 .stat small{display:block;color:#D9D7F3;font-size:13px}
 .stat b{display:block;font-family:var(--display);font-weight:800;font-size:30px;line-height:1.3;color:var(--yellow);font-variant-numeric:tabular-nums}
@@ -810,7 +816,7 @@ document.body.insertAdjacentHTML("beforeend", `<datalist id="codes">${COURSES.ma
 let rowN = 0;
 function addRow(hrs = 4, grade = "B") {
   const n = ++rowN, li = document.createElement("li");
-  li.innerHTML = `<div><label for="cc${n}">المادة</label><input id="cc${n}" list="codes" placeholder="مثلاً ACT111" dir="ltr" autocomplete="off"></div>
+  li.innerHTML = `<div><label for="cc${n}">المادة</label><input id="cc${n}" list="codes" placeholder="ACT111" dir="ltr" autocomplete="off"></div>
     <div><label for="ch${n}">الساعات</label><select id="ch${n}" class="h">${HOURS.map(h => `<option${h === hrs ? " selected" : ""}>${h}</option>`).join("")}</select></div>
     <div><label for="cg${n}">التقدير</label><select id="cg${n}" class="g" dir="ltr">${GRADES.map(([l, p]) => `<option value="${p}"${l === grade ? " selected" : ""}>${l}</option>`).join("")}</select></div>
     <button type="button" class="x" aria-label="احذف المادة">×</button>`;

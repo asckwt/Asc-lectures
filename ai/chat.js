@@ -82,7 +82,7 @@ document.head.insertAdjacentHTML("beforeend", `<style>
 .ai-top form{display:flex;gap:6px;background:#fff;border:2px solid var(--turq,#4FD1C0);border-radius:14px;padding:5px}
 .ai-top input{flex:1;min-width:0;width:auto;margin:0;border:0;background:none;color:#151238;font:inherit;font-size:16px;padding:9px 10px;outline:0}
 .ai-top button{flex:none;margin:0;width:auto;border:0;border-radius:10px;padding:0 18px;background:var(--navy,#07005E);color:#fff;font-family:var(--display);font-weight:700;font-size:15px;cursor:pointer}
-.ai-fab.ai-up{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+.ai-fab.ai-up{inset-inline-start:auto;inset-inline-end:16px}
 .ai-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .ai-chips button{margin:0;width:auto;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.08);color:inherit;border-radius:999px;padding:5px 12px;font:inherit;font-size:13px;cursor:pointer;transition:background .15s}
 .ai-chips button:hover{background:rgba(255,255,255,.18)}
@@ -106,7 +106,7 @@ ${EXAMS.length ? `<div class="ai-ex"><select aria-label="نموذج سابق"><o
 </div><input type="file" accept="image/*,application/pdf" hidden></form>
 <div class="ai-ft">ذكاء اصطناعي وممكن يغلط، تأكد من المعلومات المهمة. <span class="ai-left"></span></div>`;
 document.body.append(fab, box);
-// إذا فيه زر واتساب عايم بنفس المكان، زر المساعد يطلع فوقه
+// إذا فيه زر واتساب عايم بنفس المكان، زر المساعد ينتقل للجهة الثانية
 if (document.querySelector(".wafab")) fab.classList.add("ai-up");
 const log = box.querySelector(".ai-log"), ta = box.querySelector("textarea"), send = box.querySelector(".ai-ic.go"), att = box.querySelector(".ai-att"), picker = box.querySelector("input[type=file]"), left = box.querySelector(".ai-left");
 
