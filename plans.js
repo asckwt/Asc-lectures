@@ -418,14 +418,14 @@ function render(id, v) {
     <div class="pview" role="tablist">${VIEWS.map(([v, t]) => `<button type="button" role="tab" data-v="${v}" aria-selected="${view === v}">${t}</button>`).join("")}</div>
     <div id="vimg"${view === "img" ? "" : " hidden"}>
       <p class="phint">هذي خطة التخصص كاملة في صورة وحدة. احفظها عندك من زر «صورة للجوال» فوق، أو اضغط على الصورة مطولاً واختر حفظ.</p>
-      <a class="pimg" href="plans/${plan.id}.png" target="_blank" rel="noopener"><img src="plans/${plan.id}.png" alt="الخطة الدراسية لتخصص ${esc(plan.title)}: شجرة المواد ومتطلباتها" decoding="async"></a>
+      <a class="pimg" href="plans/${plan.id}.png" target="_blank" rel="noopener"><img src="plans/${plan.id}.webp" alt="الخطة الدراسية لتخصص ${esc(plan.title)}: شجرة المواد ومتطلباتها" decoding="async"></a>
     </div>
     <div id="vmine"${view === "mine" ? "" : " hidden"}>
       <p class="phint">أشّر على المواد اللي خلصتها، ونرتب لك باقي موادك فصل بفصل لين التخرج.</p>
       <div id="m-body">${mineHtml(plan)}</div>
     </div>
     <div id="vsem"${view === "sem" ? "" : " hidden"}>
-      <p class="phint">طريقك للتخرج فصل بفصل: سجّل مواد كل فصل بالترتيب، وتحت كل مادة مكتوب وش تحتاج قبلها.</p>
+      <p class="phint">طريقك للتخرج فصل بفصل: سجّل مواد كل فصل بالترتيب، وتحت كل مادة مكتوب شنو تحتاج قبلها.</p>
       <ol class="psem">${semHtml(plan)}</ol>
     </div>
     <div id="vchain"${view === "chain" ? "" : " hidden"}>

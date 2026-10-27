@@ -67,7 +67,8 @@ document.head.insertAdjacentHTML("beforeend", `<style>
 .ai-att span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ai-att button{border:0;background:none;color:var(--muted);font-size:16px;cursor:pointer;padding:0 4px}
 .ai-m .ai-img{display:block;max-width:100%;max-height:160px;width:auto;border-radius:10px;margin-bottom:6px}
-@media (max-width:520px){.ai-box{inset:0;width:100%;height:100dvh;border-radius:0;border:0}.ai-hd{padding-top:calc(10px + env(safe-area-inset-top,0px))}.ai-ft{padding-bottom:calc(8px + env(safe-area-inset-bottom,0px))}}
+@media (max-width:520px){.ai-box{inset:0;width:100%;height:100dvh;border-radius:0;border:0}.ai-hd{padding-top:calc(10px + env(safe-area-inset-top,0px))}.ai-ft a{color:inherit}
+.ai-ft{padding-bottom:calc(8px + env(safe-area-inset-bottom,0px))}}
 .ai-m .ai-fl{display:inline-block;background:rgba(255,255,255,.15);border-radius:8px;padding:2px 8px;margin-bottom:6px;font-size:13px}
 .ai-me{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:14px;display:grid;gap:8px;font-size:14px}
 .ai-me b{font-family:var(--display);font-size:15px}
@@ -104,7 +105,7 @@ ${EXAMS.length ? `<div class="ai-ex"><select aria-label="نموذج سابق"><o
 <textarea rows="1" dir="auto" enterkeyhint="send" placeholder="${D.course ? "اكتب سؤالك عن المادة…" : "اكتب سؤالك…"}" maxlength="1500"></textarea>
 <button class="ai-ic go" aria-label="إرسال"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12H5M11 5l-7 7 7 7"/></svg></button>
 </div><input type="file" accept="image/*,application/pdf" hidden></form>
-<div class="ai-ft">ذكاء اصطناعي وممكن يغلط، تأكد من المعلومات المهمة. <span class="ai-left"></span></div>`;
+<div class="ai-ft">ذكاء اصطناعي وممكن يغلط، تأكد من المعلومات المهمة. <span class="ai-left"></span> <a href="/privacy/" target="_blank">الخصوصية</a></div>`;
 document.body.append(fab, box);
 // إذا فيه زر واتساب عايم بنفس المكان، زر المساعد ينتقل للجهة الثانية
 if (document.querySelector(".wafab")) fab.classList.add("ai-up");

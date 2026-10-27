@@ -122,7 +122,7 @@ ${c.chat ? `<section><h2>قروب المادة</h2><div class="item"><b>قروب
   <div class="row">${wa ? `<a class="btn w" href="https://wa.me/${wa}?text=${msg}" target="_blank" rel="noopener">سجّل عن طريق الواتساب</a>` : ""}<a class="btn y" href="https://app.academic-student.com" target="_blank" rel="noopener">منصة الطالب الأكاديمي</a><a class="btn o" href="../../#calendar">مواعيد الاختبارات</a><a class="btn o" href="../../#gpa">حاسبة المعدل</a></div>
 </section>
 </main>
-<footer><div class="wrap">الطالب الأكاديمي · <a href="../../">asckwt.com</a></div></footer>
+<footer><div class="wrap">الطالب الأكاديمي · <a href="../../">asckwt.com</a> · <a href="../../privacy/">الخصوصية</a></div></footer>
 ${ai ? `<script src="../../ai/chat.js" data-endpoint="${esc(ai.endpoint)}" data-course="${c.code}" data-name="${esc(name)}" data-daily="${+ai.daily || 15}"${c.exams ? ` data-exams="${esc(JSON.stringify(c.exams.items.map(e => [e.file, `${EXT[e.type]} · ${SEM[e.sem]} ${e.year} (${e.ver})`])))}"` : ""} defer></script>
 ` : ""}<script>if("serviceWorker"in navigator&&location.protocol==="https:")navigator.serviceWorker.register("../../sw.js",{scope:"../../"});</script>
 </body></html>
@@ -141,6 +141,7 @@ fs.writeFileSync(path.join(root, "sitemap.xml"), `<?xml version="1.0" encoding="
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>${SITE}</loc><priority>1.0</priority></url>
 ${list.map(c => `  <url><loc>${SITE}c/${c.code.toLowerCase()}/</loc></url>`).join("\n")}
+  <url><loc>${SITE}privacy/</loc><priority>0.3</priority></url>
 </urlset>
 `);
 
