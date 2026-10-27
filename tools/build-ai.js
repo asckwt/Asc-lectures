@@ -106,6 +106,25 @@ const dir = path.join(root, "ai", "kb");
 fs.rmSync(dir, {recursive: true, force: true}); fs.mkdirSync(dir, {recursive: true});
 fs.writeFileSync(path.join(dir, "general.md"), g.join("\n") + "\n");
 
+// ===== بنك الأسئلة المعتمد (q/<المادة>/index.html) =====
+// الأسئلة وأجوبتها الصحيحة مراجعة، فالمساعد يعتمد عليها حرفياً بدل ما يجتهد
+const bank = {};
+for (const d of fs.readdirSync(path.join(root, "q"), {withFileTypes: true})) {
+  const f = path.join(root, "q", d.name, "index.html");
+  if (!d.isDirectory() || !fs.existsSync(f)) continue;
+  const h = fs.readFileSync(f, "utf8"), i = h.indexOf("const DATA="), c = (h.match(/<title>([A-Z]{2,4}\d{3}[A-Z]?)/) || [])[1];
+  if (i < 0 || !c) continue;
+  const D = vm.runInNewContext("(" + h.slice(i + 11, h.indexOf("\n", i)).replace(/;\s*$/, "") + ")");
+  const L = [`\n## بنك الأسئلة المعتمد للمادة (الأجوبة الصحيحة مراجعة ومعتمدة، صفحته: ${SITE}q/${d.name}/)`];
+  D.forEach(ch => {
+    L.push(`### ${ch.tag}: ${ch.title}`);
+    ch.qs.forEach(q => L.push(q.t === "m"
+      ? `- وصّل: ${q.en} (${q.ar}) = ${ch.defs[q.k]}`
+      : `- ${q.en}${q.o ? ` [${q.o.map((o, j) => String.fromCharCode(65 + j) + ") " + o).join(" ")}]` : ""} ✔ ${q.o ? String.fromCharCode(65 + q.k) + ") " + q.o[q.k] : ""} (${q.ans})`));
+  });
+  bank[c] = L.join("\n");
+}
+
 // ===== ملف لكل مادة =====
 const codes = new Set([...all, ...Object.keys(exams), ...Object.keys(lectures), ...Object.keys(slots)]);
 let n = 0;
@@ -130,6 +149,11 @@ for (const c of codes) {
   // كتاب المادة وفهرسه (اسم الكتاب والطبعة والشباتر) في ai/books/<المادة>.md
   const book = path.join(root, "ai", "books", c + ".md");
   if (fs.existsSync(book)) L.push("\n## كتاب المادة\n" + fs.readFileSync(book, "utf8").trim());
+  if (bank[c]) L.push(bank[c]);
+  // حلول معتمدة من الدكاترة أو المدرسين (نماذج اختبارات، كويزات، واجبات قديمة) في ai/solutions/<المادة>/*.md
+  const sol = path.join(root, "ai", "solutions", c);
+  if (fs.existsSync(sol)) fs.readdirSync(sol).filter(f => f.endsWith(".md")).sort().forEach(f =>
+    L.push(`\n## حل معتمد: ${f.slice(0, -3)}\n` + fs.readFileSync(path.join(sol, f), "utf8").trim()));
   fs.writeFileSync(path.join(dir, c + ".md"), L.join("\n") + "\n"); n++;
 }
 

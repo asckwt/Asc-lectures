@@ -16,7 +16,7 @@ let busy = false, me = load("ai-me", {}), file = null;
 
 document.head.insertAdjacentHTML("beforeend", `<style>
 .ai-fab,.ai-box button{margin:0;width:auto;transition:none}
-.ai-fab{position:fixed;inset-inline-start:16px;bottom:16px;z-index:30;display:flex;align-items:center;gap:8px;border:0;cursor:pointer;
+.ai-fab{position:fixed;inset-inline-start:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:30;display:flex;align-items:center;gap:8px;border:0;cursor:pointer;
  font-family:var(--display);font-weight:700;font-size:15px;padding:12px 18px;border-radius:999px;background:var(--yellow);color:#07005E;box-shadow:0 6px 24px rgba(7,0,94,.25)}
 .ai-box{position:fixed;inset-inline-start:16px;bottom:16px;z-index:31;width:min(400px,calc(100vw - 32px));height:min(600px,calc(100dvh - 32px));
  display:none;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 12px 40px rgba(7,0,94,.3)}
@@ -31,7 +31,7 @@ document.head.insertAdjacentHTML("beforeend", `<style>
 .ai-m{max-width:90%;padding:10px 14px;border-radius:16px;word-wrap:break-word;font-size:15px;line-height:1.75}
 .ai-m p{margin:0 0 6px}.ai-m p:last-child{margin:0}
 .ai-m ul,.ai-m ol{margin:4px 0 8px;padding-inline-start:20px}.ai-m li{margin:2px 0}
-.ai-m h4{margin:8px 0 4px;font-family:var(--display);font-size:15px;color:var(--navy)}
+.ai-m h4{margin:8px 0 4px;font-family:var(--display);font-size:15px;color:var(--accent-ink,var(--navy))}
 .ai-m hr{border:0;border-top:1px solid var(--line);margin:8px 0}
 .ai-m code{background:rgba(7,0,94,.07);border-radius:5px;padding:0 4px;font-size:.92em}
 .ai-m a{color:#2B6CB0;font-weight:700;text-decoration:underline;word-break:break-all}
@@ -73,6 +73,12 @@ document.head.insertAdjacentHTML("beforeend", `<style>
 .ai-top form{display:flex;gap:6px;background:#fff;border:2px solid var(--turq,#4FD1C0);border-radius:14px;padding:5px}
 .ai-top input{flex:1;min-width:0;width:auto;margin:0;border:0;background:none;color:#151238;font:inherit;font-size:16px;padding:9px 10px;outline:0}
 .ai-top button{flex:none;margin:0;width:auto;border:0;border-radius:10px;padding:0 18px;background:var(--navy,#07005E);color:#fff;font-family:var(--display);font-weight:700;font-size:15px;cursor:pointer}
+.ai-fab.ai-up{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+.ai-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.ai-chips button{margin:0;width:auto;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.08);color:inherit;border-radius:999px;padding:5px 12px;font:inherit;font-size:13px;cursor:pointer;transition:background .15s}
+.ai-chips button:hover{background:rgba(255,255,255,.18)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .ai-m.a a{color:#9FE8DC}:root:not([data-theme="light"]) .ai-m code{background:rgba(255,255,255,.1)}}
+:root[data-theme="dark"] .ai-m.a a{color:#9FE8DC}:root[data-theme="dark"] .ai-m code{background:rgba(255,255,255,.1)}
 .ai-ft{font-size:11px;color:var(--muted);text-align:center;padding:2px 10px 8px;background:var(--surface)}
 </style>`);
 
@@ -91,6 +97,8 @@ ${EXAMS.length ? `<div class="ai-ex"><select aria-label="نموذج سابق"><o
 </div><input type="file" accept="image/*,application/pdf" hidden></form>
 <div class="ai-ft">ذكاء اصطناعي وممكن يغلط، تأكد من المعلومات المهمة. <span class="ai-left"></span></div>`;
 document.body.append(fab, box);
+// إذا فيه زر واتساب عايم بنفس المكان، زر المساعد يطلع فوقه
+if (document.querySelector(".wafab")) fab.classList.add("ai-up");
 const log = box.querySelector(".ai-log"), ta = box.querySelector("textarea"), send = box.querySelector(".ai-ic.go"), att = box.querySelector(".ai-att"), picker = box.querySelector("input[type=file]"), left = box.querySelector(".ai-left");
 
 const esc = t => t.replace(/[&<>]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;"})[c]);
@@ -206,10 +214,11 @@ const spot = document.querySelector("[data-ai-top]") || document.querySelector("
 if (spot) {
   const top = document.createElement("div");
   top.className = "ai-top";
-  top.innerHTML = `<small>🤖 مساعد ذكي يعرف ${D.course ? "هالمادة ونماذجها ومواعيدها" : "موادك ومواعيدك وخططك ونماذج الاختبارات"}</small><form><input type="text" enterkeyhint="send" dir="auto" maxlength="1500" placeholder="${D.course ? "اسأل عن المادة… مثلاً متى الفاينل؟" : "اسأل أي شي عن الجامعة والمواد…"}" aria-label="اسأل المساعد"><button>اسأل</button></form>`;
+  top.innerHTML = `<small>🤖 مساعد ذكي يعرف ${D.course ? "هالمادة ونماذجها ومواعيدها" : "موادك ومواعيدك وخططك ونماذج الاختبارات"}</small><form><input type="text" enterkeyhint="send" dir="auto" maxlength="1500" placeholder="${D.course ? "اسأل عن المادة… مثلاً متى الفاينل؟" : "اسأل أي شي عن الجامعة والمواد…"}" aria-label="اسأل المساعد"><button>اسأل</button></form><div class="ai-chips">${(D.course ? ["متى الفاينل؟", "لخص لي أهم المواضيع", "حل لي نموذج سابق"] : ["متى اختباراتي؟", "كم رسوم الساعة؟", "كيف أأجل اختبار؟", "ساعدني بالـ TMA"]).map(s => `<button type="button">${s}</button>`).join("")}</div>`;
   spot.matches(".wrap") ? spot.append(top) : spot.after(top);
   const qi = top.querySelector("input");
   top.querySelector("form").onsubmit = e => { e.preventDefault(); const q = qi.value; qi.value = ""; qi.blur(); open(); ask(q); };
+  top.querySelectorAll(".ai-chips button").forEach(b => b.onclick = () => { open(); ask(b.textContent); });
   // الزر العايم يطلع بس لما تنزل وتختفي الخانة
   if ("IntersectionObserver" in window) new IntersectionObserver(([en]) => fab.classList.toggle("ai-off", en.isIntersecting)).observe(top);
 }

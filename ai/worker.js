@@ -5,7 +5,7 @@ import Anthropic from "@anthropic-ai/sdk";
 
 const MODEL = "claude-haiku-5-5";
 const ORIGINS = ["https://www.asckwt.com", "https://asckwt.com"];
-const MAX_TURNS = 11, MAX_CHARS = 1500;
+const MAX_TURNS = 11, MAX_CHARS = 1500, DAY_CAP = 150;
 const FILE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif", "application/pdf"], MAX_FILE = 5600000; // ~4 ميغا بعد base64
 
 const RULES = `أنت "مساعد الطالب الأكاديمي" في موقع asckwt.com، مساعد دراسي لطلاب الجامعة العربية المفتوحة فرع الكويت (AOU Kuwait).
@@ -21,7 +21,11 @@ const RULES = `أنت "مساعد الطالب الأكاديمي" في موقع
 - النماذج السابقة: الطالب يقدر يفتح أي نموذج من قائمة "اسأل عن نموذج اختبار سابق" فوق المحادثة بصفحة المادة، وتقرأه وتحله معاه. دلّه عليها بدل ما تطلب منه يرسل النموذج.
 - إذا فيه كتاب للمادة وفهرسه تحت، اربط شرحك بالشابتر المناسب (مثلاً: هذا بالشابتر 5).
 - في شرح المواد اشرح خطوة بخطوة، وفي المسائل المحاسبية والحسابية اكتب القيود والأرقام بوضوح وتأكد من الحساب.
-- إذا الطالب أرفق نموذج اختبار سابق، اقرأه وحل الأسئلة اللي يطلبها مع الشرح، وقول له إن الحلول اجتهاد منك وممكن تختلف عن نموذج الإجابة الرسمي.
+- الدقة في الحلول (أهم شي): إذا السؤال موجود في "بنك الأسئلة المعتمد" أو "حل معتمد" تحت، اعتمد جوابه حرفياً وقول إنه من البنك المعتمد. غير كذا حل بتأني: حدد المطلوب، طبّق القاعدة أو المعادلة، واحسب، وبعدها راجع الحساب مرة ثانية قبل ما تكتب الجواب النهائي. في الاختيار من متعدد اذكر الحرف والخيار الصحيح وسبب قصير ليش الباقي غلط. لا تخمّن: إذا السؤال ناقصه معلومة أو الصورة مو واضحة، قول بالضبط وش الناقص بدل ما تفترض.
+- إذا الطالب أرفق نموذج اختبار سابق، اقرأه وحل الأسئلة اللي يطلبها مع الشرح. الأسئلة اللي مو بالبنك المعتمد وضّح بسطر إن حلها مراجَع منك وممكن نموذج الإجابة الرسمي يختلف بالصياغة.
+- الواجبات والـ TMA: الـ TMA تقييم بدرجة وينفحص بـ Turnitin، فساعد الطالب يفهم ويكتب بنفسه: اشرح المطلوب ومعايير التصحيح، رتّب له هيكل الجواب (مقدمة، نقاط، خاتمة، مراجع Harvard)، اشرح المفاهيم بأمثلة من الكتاب، وحل مسائل مشابهة بأرقام مختلفة، وراجع مسودته وعطه ملاحظات وصحح أخطاءه وحساباته. لا تكتب له جواب TMA كامل جاهز للتسليم، وإذا طلب كذا وضّح بلطف السبب وعطه أقرب مساعدة تنفعه. تمارين المراجعة والكويزات التدريبية والنماذج السابقة حلها كامل عادي.
+- إعادة الصياغة: إذا الطالب أرسل كلامه هو، أعد صياغته بإنجليزي (أو عربي) أكاديمي واضح مع المحافظة على أفكاره، واذكر أهم التعديلات بسطر. لا تعيد صياغة نص منقول من مصدر عشان يبين إنه كتابة الطالب، بل علّمه يقتبس ويوثق المصدر.
+- الاختصار والتلخيص: إذا طلب "لخص" أو "اختصر" أو "نقاط"، عطه ملخص مركز بنقاط قصيرة يغطي الأفكار الرئيسية والمصطلحات المهمة بدون شرح زايد. وبشكل عام خل جوابك مختصر على قد السؤال، والتفصيل لما يطلبه.
 - لو الطالب سألك عن سؤال غلط فيه في بنك الأسئلة، وضّح ليش جوابه غلط وليش الصح صح، باختصار.
 - إذا السؤال برا الدراسة والجامعة، رد بلطف ورجّع الطالب.
 - إذا الطالب يبي شرح أعمق أو كورس كامل، تقدر تذكر إن الطالب الأكاديمي عنده شرح للمواد (التسجيل بالواتساب أو المنصة، الروابط تحت).`;
@@ -44,6 +48,7 @@ const cors = origin => ({
   "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type",
   "Vary": "Origin",
+  "X-Content-Type-Options": "nosniff",
 });
 
 export default {
@@ -60,6 +65,12 @@ export default {
     const ip = req.headers.get("CF-Connecting-IP") || "x";
     if (env.LIMITER && !(await env.LIMITER.limit({key: ip})).success)
       return fail("أرسلت أسئلة كثيرة ورا بعض، انتظر دقيقة وجرّب مرة ثانية 🙏", 429);
+
+    // يوم كامل: حد أعلى لكل IP (الكاش محلي لكل مركز بيانات، فهو حماية تقريبية من الاستنزاف وسقف الصرف هو الحماية الأكيدة). يشتغل لما يكون للمساعد دومين خاص، وعلى workers.dev ما له أثر
+    const capKey = new Request(`https://cap.asc-ai/${encodeURIComponent(ip)}/${new Date().toISOString().slice(0, 10)}`);
+    const used = +(await (await caches.default.match(capKey))?.text() || 0);
+    if (used >= DAY_CAP) return fail("وصلت الحد اليومي للأسئلة، ترجع لك الأسئلة باجر 🙏", 429);
+    if (+req.headers.get("Content-Length") > MAX_FILE * 1.3) return fail("الطلب كبير", 413);
 
     let body;
     try { body = await req.json(); } catch { return fail("bad json"); }
@@ -91,11 +102,16 @@ export default {
       : {type: "image", source: {type: "base64", media_type: file.type, data: file.data}});
     if (doc) messages[0].content.unshift({type: "document", source: {type: "base64", media_type: "application/pdf", data: doc}, title: exam, cache_control: {type: "ephemeral"}});
 
+    // المسائل والحلول والملفات تاخذ تفكير أعمق عشان الجواب يطلع دقيق، والأسئلة العادية تبقى سريعة ورخيصة
+    const solve = !!(file || exam) || /حل|احسب|قيد|اشرح|سؤال|كويز|واجب|tma|quiz|solve|calculat|answer|question|explain|journal|\d+[.,]?\d*\s*[-+*/×÷=]\s*\d/i.test(msgs.at(-1).content);
+
+    await caches.default.put(capKey, new Response(String(used + 1), {headers: {"Cache-Control": "max-age=86400"}}));
+
     const client = new Anthropic({apiKey: env.ANTHROPIC_API_KEY, baseURL: env.ANTHROPIC_BASE_URL || undefined});
     const stream = client.messages.stream({
       model: MODEL,
-      max_tokens: 4000,
-      output_config: {effort: "low"},
+      max_tokens: solve ? 16000 : 4000,
+      output_config: {effort: solve ? "high" : "low"},
       system: [
         // التعليمات والمعلومات العامة ثابتة لكل الطلاب، فتنحفظ بالكاش وتصير قرايتها أرخص بكثير
         {type: "text", text: RULES + "\n\n" + general, cache_control: {type: "ephemeral"}},
