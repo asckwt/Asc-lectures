@@ -37,6 +37,7 @@ for (const [type, x] of Object.entries(CONFIG.examSchedule || {})) {
   Object.entries(x.online || {}).forEach(([date, list]) => list.split(" ").forEach(c => (slots[c] ??= []).push({type, date, online: true, time: "محوسب، الوقت يتعلن بعدين"})));
 }
 const wa = (CONFIG.whatsapp.find(w => /^\d{8,15}$/.test(w.number)) || {}).number;
+const ai = /^https:\/\//.test(CONFIG.ai?.endpoint || "") ? CONFIG.ai : null;
 const ga = /^G-[A-Z0-9]+$/.test(CONFIG.analytics) ? CONFIG.analytics : "";
 
 function page(c) {
@@ -121,7 +122,8 @@ ${c.chat ? `<section><h2>قروب المادة</h2><div class="item"><b>قروب
 </section>
 </main>
 <footer><div class="wrap">الطالب الأكاديمي · <a href="../../">asckwt.com</a></div></footer>
-<script>if("serviceWorker"in navigator&&location.protocol==="https:")navigator.serviceWorker.register("../../sw.js",{scope:"../../"});</script>
+${ai ? `<script src="../../ai/chat.js" data-endpoint="${esc(ai.endpoint)}" data-course="${c.code}" data-name="${esc(name)}" data-daily="${+ai.daily || 15}"${c.exams ? ` data-exams="${esc(JSON.stringify(c.exams.items.map(e => [e.file, `${EXT[e.type]} · ${SEM[e.sem]} ${e.year} (${e.ver})`])))}"` : ""} defer></script>
+` : ""}<script>if("serviceWorker"in navigator&&location.protocol==="https:")navigator.serviceWorker.register("../../sw.js",{scope:"../../"});</script>
 </body></html>
 `;
 }

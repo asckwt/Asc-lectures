@@ -1,0 +1,37 @@
+# يرفع وسيط مساعد الذكاء الاصطناعي (ai/worker.js) على Cloudflare Workers كل ما تغيّر، ويحط مفتاح Claude فيه كـ secret.
+# يحتاج 3 أسرار في إعدادات المستودع (Settings > Secrets and variables > Actions):
+#   ANTHROPIC_API_KEY      مفتاح Claude من console.anthropic.com
+#   CLOUDFLARE_API_TOKEN   توكن من Cloudflare بصلاحية "Edit Cloudflare Workers"
+#   CLOUDFLARE_ACCOUNT_ID  رقم حساب Cloudflare
+name: Deploy AI assistant
+on:
+  push:
+    branches: [main]
+    paths: [ai/worker.js, ai/wrangler.toml, ai/package.json, ai/package-lock.json]
+  workflow_dispatch:
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      READY: ${{ secrets.CLOUDFLARE_API_TOKEN != '' && secrets.ANTHROPIC_API_KEY != '' }}
+    steps:
+      - if: env.READY != 'true'
+        run: echo "::notice::أسرار Cloudflare و Claude مو محطوطة للحين، فما انرفع المساعد."
+      - if: env.READY == 'true'
+        uses: actions/checkout@v4
+      - if: env.READY == 'true'
+        uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - if: env.READY == 'true'
+        run: npm ci
+        working-directory: ai
+      - if: env.READY == 'true'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: ai
+          secrets: |
+            ANTHROPIC_API_KEY
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
