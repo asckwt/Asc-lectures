@@ -870,7 +870,7 @@ function target(rows, h, H, Q) {
   const name = p => GRADES.find(g => g[1] === p)[0];
   const mix = rows.map((r, i) => `<li><span dir="ltr">${[...$("crs").children][i].querySelector("input").value.trim() || "مادة " + (i + 1)}</span> (${r.h} س): <b dir="ltr">${name(pts[lvl[i]])}</b></li>`).join("");
   const near = GRADES.find(g => g[1] >= req - 1e-9 && !GRADES.some(x => x[1] >= req - 1e-9 && x[1] < g[1]));
-  box.innerHTML = `تحتاج معدل فصلي <b>${(Math.ceil(req * 100 - 1e-9) / 100).toFixed(2)}</b> على الأقل. لو نفس التقدير في كل المواد تحتاج <b dir="ltr">${near[0]}</b>، أو تقدر توزعها كذا:<ul class="mix">${mix}</ul>`;
+  box.innerHTML = `تحتاج معدل فصلي <b>${(Math.ceil(req * 100 - 1e-9) / 100).toFixed(2)}</b> على الأقل. لو نفس التقدير في كل المواد تحتاج <b dir="ltr">${near[0]}</b>، أو تقدر توزعها جذي:<ul class="mix">${mix}</ul>`;
 }
 $("addc").onclick = () => { addRow(); calc(); };
 document.querySelector("#gpa .gpa").addEventListener("input", calc);

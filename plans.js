@@ -425,7 +425,7 @@ function render(id, v) {
       <div id="m-body">${mineHtml(plan)}</div>
     </div>
     <div id="vsem"${view === "sem" ? "" : " hidden"}>
-      <p class="phint">طريقك للتخرج فصل بفصل: سجّل مواد كل فصل بالترتيب، وتحت كل مادة مكتوب وش تحتاج قبلها.</p>
+      <p class="phint">طريقك للتخرج فصل بفصل: سجّل مواد كل فصل بالترتيب، وتحت كل مادة مكتوب شنو تحتاج قبلها.</p>
       <ol class="psem">${semHtml(plan)}</ol>
     </div>
     <div id="vchain"${view === "chain" ? "" : " hidden"}>
