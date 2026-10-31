@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://www.asckwt.com/</loc><priority>1.0</priority></url>
+  <url><loc>https://www.asckwt.com/c/a112a/</loc></url>
+  <url><loc>https://www.asckwt.com/c/a112b/</loc></url>
+  <url><loc>https://www.asckwt.com/c/a112t/</loc></url>
+  <url><loc>https://www.asckwt.com/c/a215a/</loc></url>
+  <url><loc>https://www.asckwt.com/c/a215b/</loc></url>
+  <url><loc>https://www.asckwt.com/c/a230a/</loc></url>
+  <url><loc>https://www.asckwt.com/c/a230b/</loc></url>
+  <url><loc>https://www.asckwt.com/c/a805n/</loc></url>
+  <url><loc>https://www.asckwt.com/c/aa100b/</loc></url>
   <url><loc>https://www.asckwt.com/c/acc204/</loc></url>
   <url><loc>https://www.asckwt.com/c/acc300/</loc></url>
   <url><loc>https://www.asckwt.com/c/acc302/</loc></url>
@@ -11,6 +20,7 @@
   <url><loc>https://www.asckwt.com/c/b124/</loc></url>
   <url><loc>https://www.asckwt.com/c/b205a/</loc></url>
   <url><loc>https://www.asckwt.com/c/b205b/</loc></url>
+  <url><loc>https://www.asckwt.com/c/b206/</loc></url>
   <url><loc>https://www.asckwt.com/c/b207a/</loc></url>
   <url><loc>https://www.asckwt.com/c/b207b/</loc></url>
   <url><loc>https://www.asckwt.com/c/b291/</loc></url>
@@ -20,6 +30,8 @@
   <url><loc>https://www.asckwt.com/c/b325/</loc></url>
   <url><loc>https://www.asckwt.com/c/b326/</loc></url>
   <url><loc>https://www.asckwt.com/c/b327/</loc></url>
+  <url><loc>https://www.asckwt.com/c/b328/</loc></url>
+  <url><loc>https://www.asckwt.com/c/b329/</loc></url>
   <url><loc>https://www.asckwt.com/c/b391/</loc></url>
   <url><loc>https://www.asckwt.com/c/b392/</loc></url>
   <url><loc>https://www.asckwt.com/c/b628/</loc></url>
@@ -31,12 +43,18 @@
   <url><loc>https://www.asckwt.com/c/bus102/</loc></url>
   <url><loc>https://www.asckwt.com/c/bus110/</loc></url>
   <url><loc>https://www.asckwt.com/c/bus115/</loc></url>
+  <url><loc>https://www.asckwt.com/c/bus208/</loc></url>
   <url><loc>https://www.asckwt.com/c/bus310/</loc></url>
   <url><loc>https://www.asckwt.com/c/bus629/</loc></url>
   <url><loc>https://www.asckwt.com/c/dd209a/</loc></url>
   <url><loc>https://www.asckwt.com/c/dd209b/</loc></url>
   <url><loc>https://www.asckwt.com/c/dd309a/</loc></url>
   <url><loc>https://www.asckwt.com/c/dd309b/</loc></url>
+  <url><loc>https://www.asckwt.com/c/e304a/</loc></url>
+  <url><loc>https://www.asckwt.com/c/e304b/</loc></url>
+  <url><loc>https://www.asckwt.com/c/ea300a/</loc></url>
+  <url><loc>https://www.asckwt.com/c/ea300b/</loc></url>
+  <url><loc>https://www.asckwt.com/c/ea400b/</loc></url>
   <url><loc>https://www.asckwt.com/c/eco101/</loc></url>
   <url><loc>https://www.asckwt.com/c/eco102/</loc></url>
   <url><loc>https://www.asckwt.com/c/el096/</loc></url>
@@ -45,19 +63,104 @@
   <url><loc>https://www.asckwt.com/c/el099/</loc></url>
   <url><loc>https://www.asckwt.com/c/el111/</loc></url>
   <url><loc>https://www.asckwt.com/c/el112/</loc></url>
+  <url><loc>https://www.asckwt.com/c/el117/</loc></url>
+  <url><loc>https://www.asckwt.com/c/el119/</loc></url>
+  <url><loc>https://www.asckwt.com/c/el121/</loc></url>
+  <url><loc>https://www.asckwt.com/c/el121n/</loc></url>
+  <url><loc>https://www.asckwt.com/c/el122/</loc></url>
+  <url><loc>https://www.asckwt.com/c/el330/</loc></url>
+  <url><loc>https://www.asckwt.com/c/fin240/</loc></url>
+  <url><loc>https://www.asckwt.com/c/fin241/</loc></url>
+  <url><loc>https://www.asckwt.com/c/fin242/</loc></url>
+  <url><loc>https://www.asckwt.com/c/fin301/</loc></url>
+  <url><loc>https://www.asckwt.com/c/fin302/</loc></url>
+  <url><loc>https://www.asckwt.com/c/fin340/</loc></url>
+  <url><loc>https://www.asckwt.com/c/fin341/</loc></url>
+  <url><loc>https://www.asckwt.com/c/fin342/</loc></url>
+  <url><loc>https://www.asckwt.com/c/fr101/</loc></url>
+  <url><loc>https://www.asckwt.com/c/hrm205/</loc></url>
+  <url><loc>https://www.asckwt.com/c/hrm206/</loc></url>
+  <url><loc>https://www.asckwt.com/c/hrm215/</loc></url>
+  <url><loc>https://www.asckwt.com/c/hrm320/</loc></url>
+  <url><loc>https://www.asckwt.com/c/l201a/</loc></url>
+  <url><loc>https://www.asckwt.com/c/l201b/</loc></url>
   <url><loc>https://www.asckwt.com/c/lb170/</loc></url>
+  <url><loc>https://www.asckwt.com/c/m109/</loc></url>
+  <url><loc>https://www.asckwt.com/c/m110/</loc></url>
+  <url><loc>https://www.asckwt.com/c/m140/</loc></url>
+  <url><loc>https://www.asckwt.com/c/m218/</loc></url>
+  <url><loc>https://www.asckwt.com/c/m238/</loc></url>
+  <url><loc>https://www.asckwt.com/c/m251/</loc></url>
+  <url><loc>https://www.asckwt.com/c/m252/</loc></url>
+  <url><loc>https://www.asckwt.com/c/m269/</loc></url>
+  <url><loc>https://www.asckwt.com/c/m348/</loc></url>
   <url><loc>https://www.asckwt.com/c/mgt111/</loc></url>
   <url><loc>https://www.asckwt.com/c/mgt112/</loc></url>
   <url><loc>https://www.asckwt.com/c/mis111/</loc></url>
   <url><loc>https://www.asckwt.com/c/mis112/</loc></url>
   <url><loc>https://www.asckwt.com/c/mis200/</loc></url>
+  <url><loc>https://www.asckwt.com/c/mis201/</loc></url>
+  <url><loc>https://www.asckwt.com/c/mis300/</loc></url>
+  <url><loc>https://www.asckwt.com/c/mis330/</loc></url>
   <url><loc>https://www.asckwt.com/c/mkt111/</loc></url>
   <url><loc>https://www.asckwt.com/c/mkt112/</loc></url>
   <url><loc>https://www.asckwt.com/c/mkt331/</loc></url>
   <url><loc>https://www.asckwt.com/c/mkt332/</loc></url>
+  <url><loc>https://www.asckwt.com/c/ms102/</loc></url>
+  <url><loc>https://www.asckwt.com/c/mst129/</loc></url>
+  <url><loc>https://www.asckwt.com/c/mst224/</loc></url>
+  <url><loc>https://www.asckwt.com/c/mt101/</loc></url>
+  <url><loc>https://www.asckwt.com/c/mt131/</loc></url>
+  <url><loc>https://www.asckwt.com/c/mt132/</loc></url>
+  <url><loc>https://www.asckwt.com/c/mt141/</loc></url>
+  <url><loc>https://www.asckwt.com/c/mt248/</loc></url>
+  <url><loc>https://www.asckwt.com/c/mt249/</loc></url>
+  <url><loc>https://www.asckwt.com/c/mt294/</loc></url>
+  <url><loc>https://www.asckwt.com/c/mt395/</loc></url>
   <url><loc>https://www.asckwt.com/c/sys111/</loc></url>
   <url><loc>https://www.asckwt.com/c/sys210/</loc></url>
   <url><loc>https://www.asckwt.com/c/sys280/</loc></url>
   <url><loc>https://www.asckwt.com/c/sys380/</loc></url>
+  <url><loc>https://www.asckwt.com/c/t103/</loc></url>
+  <url><loc>https://www.asckwt.com/c/t216a/</loc></url>
+  <url><loc>https://www.asckwt.com/c/t216b/</loc></url>
+  <url><loc>https://www.asckwt.com/c/t227/</loc></url>
+  <url><loc>https://www.asckwt.com/c/t316/</loc></url>
+  <url><loc>https://www.asckwt.com/c/t318/</loc></url>
+  <url><loc>https://www.asckwt.com/c/tm103/</loc></url>
+  <url><loc>https://www.asckwt.com/c/tm105/</loc></url>
+  <url><loc>https://www.asckwt.com/c/tm112/</loc></url>
+  <url><loc>https://www.asckwt.com/c/tm129/</loc></url>
+  <url><loc>https://www.asckwt.com/c/tm240/</loc></url>
+  <url><loc>https://www.asckwt.com/c/tm254/</loc></url>
+  <url><loc>https://www.asckwt.com/c/tm256/</loc></url>
+  <url><loc>https://www.asckwt.com/c/tm260/</loc></url>
+  <url><loc>https://www.asckwt.com/c/tm270/</loc></url>
+  <url><loc>https://www.asckwt.com/c/tm271/</loc></url>
+  <url><loc>https://www.asckwt.com/c/tm275/</loc></url>
+  <url><loc>https://www.asckwt.com/c/tm276/</loc></url>
+  <url><loc>https://www.asckwt.com/c/tm291/</loc></url>
+  <url><loc>https://www.asckwt.com/c/tm298/</loc></url>
+  <url><loc>https://www.asckwt.com/c/tm311/</loc></url>
+  <url><loc>https://www.asckwt.com/c/tm340/</loc></url>
+  <url><loc>https://www.asckwt.com/c/tm341/</loc></url>
+  <url><loc>https://www.asckwt.com/c/tm351/</loc></url>
+  <url><loc>https://www.asckwt.com/c/tm352/</loc></url>
+  <url><loc>https://www.asckwt.com/c/tm354/</loc></url>
+  <url><loc>https://www.asckwt.com/c/tm355/</loc></url>
+  <url><loc>https://www.asckwt.com/c/tm356/</loc></url>
+  <url><loc>https://www.asckwt.com/c/tm358/</loc></url>
+  <url><loc>https://www.asckwt.com/c/tm359/</loc></url>
+  <url><loc>https://www.asckwt.com/c/tr102/</loc></url>
+  <url><loc>https://www.asckwt.com/c/tr103/</loc></url>
+  <url><loc>https://www.asckwt.com/c/tr301n/</loc></url>
+  <url><loc>https://www.asckwt.com/c/tr302/</loc></url>
+  <url><loc>https://www.asckwt.com/c/tr303/</loc></url>
+  <url><loc>https://www.asckwt.com/c/tr304/</loc></url>
+  <url><loc>https://www.asckwt.com/c/tr305/</loc></url>
+  <url><loc>https://www.asckwt.com/c/tr306/</loc></url>
+  <url><loc>https://www.asckwt.com/c/tr307/</loc></url>
+  <url><loc>https://www.asckwt.com/c/tr308/</loc></url>
+  <url><loc>https://www.asckwt.com/c/tt284/</loc></url>
   <url><loc>https://www.asckwt.com/privacy/</loc><priority>0.3</priority></url>
 </urlset>
