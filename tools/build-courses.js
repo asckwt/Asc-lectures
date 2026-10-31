@@ -114,7 +114,7 @@ footer a{color:inherit}
 <main class="wrap">
 ${ex.length ? `<section><h2>مواعيد الاختبارات</h2><ul class="list">${ex.map(e => `<li class="item"><b>${esc(CONFIG.examSchedule[e.type].title)}</b><span>${fmt(e.date)}</span><small>${e.time}</small></li>`).join("")}</ul><p class="pass" style="margin-top:10px">التعويضي بس للي عنده عذر وقدّم طلب تأجيل من SIS. <a class="btn o" href="../../ics/${c.code}.ics" style="margin:6px 0">📅 أضف مواعيدها لتقويم جوالك</a><br>حط كل موادك في <a href="../../#calendar/${c.code}" style="color:var(--accent-ink)">جدول اختباراتي</a> وتطلع لك مواعيدك كلها مع تذكير على جوالك.</p></section>` : ""}
 ${c.lectures.length ? `<section><h2>المحاضرات المجانية</h2><ul class="list">${c.lectures.map(l => `<li class="item"><b>${esc(l.title)}</b><small>مسجلة على الزوم</small><a class="btn" href="${esc(l.url)}" target="_blank" rel="noopener">شاهد المحاضرة</a>${l.pass ? `<span class="pass">الباسكود: <b dir="ltr">${esc(l.pass)}</b></span>` : ""}</li>`).join("")}</ul></section>` : ""}
-${c.exams ? `<section><h2>نماذج الاختبارات السابقة</h2>${years.map(y => `<h3>${y}</h3><ul class="list">${c.exams.items.filter(e => e.year === y).map(e => `<li class="item"><b>${EXT[e.type]}</b><small>${SEM[e.sem]} ${e.year} · نسخة ${esc(e.ver)} · ${e.pages} صفحات</small><a class="btn" href="../../exams/${c.code}/${e.file}.pdf" target="_blank" rel="noopener">افتح النموذج PDF</a></li>`).join("")}</ul>`).join("")}</section>` : ""}
+${c.exams ? `<section><h2>نماذج الاختبارات السابقة</h2>${years.map(y => `<h3>${y}</h3><ul class="list">${c.exams.items.filter(e => e.year === y).map(e => `<li class="item"><b>${EXT[e.type]}</b><small>${SEM[e.sem]} ${e.year}${e.ver ? ` · نسخة ${esc(e.ver)}` : ""} · ${e.pages} صفحات</small><a class="btn" href="../../exams/${c.code}/${e.file}.pdf" target="_blank" rel="noopener">افتح النموذج PDF</a></li>`).join("")}</ul>`).join("")}</section>` : ""}
 ${c.chat ? `<section><h2>قروب المادة</h2><div class="item"><b>قروب واتساب لطلاب ${c.code}</b><small>أسئلة ومساعدة وأخبار المادة من الطلاب.</small><a class="btn w" href="${c.chat}" target="_blank" rel="noopener">انضم للقروب</a></div></section>` : ""}
 <section class="cta">
   <h2 style="margin:0">تبي تكمّل <bdi dir="ltr">${c.code}</bdi> معانا؟</h2>
@@ -123,7 +123,7 @@ ${c.chat ? `<section><h2>قروب المادة</h2><div class="item"><b>قروب
 </section>
 </main>
 <footer><div class="wrap">الطالب الأكاديمي · <a href="../../">asckwt.com</a> · <a href="../../privacy/">الخصوصية</a></div></footer>
-${ai ? `<script src="../../ai/chat.js" data-endpoint="${esc(ai.endpoint)}" data-course="${c.code}" data-name="${esc(name)}" data-daily="${+ai.daily || 15}"${c.exams ? ` data-exams="${esc(JSON.stringify(c.exams.items.map(e => [e.file, `${EXT[e.type]} · ${SEM[e.sem]} ${e.year} (${e.ver})`])))}"` : ""} defer></script>
+${ai ? `<script src="../../ai/chat.js" data-endpoint="${esc(ai.endpoint)}" data-course="${c.code}" data-name="${esc(name)}" data-daily="${+ai.daily || 15}"${c.exams ? ` data-exams="${esc(JSON.stringify(c.exams.items.map(e => [e.file, `${EXT[e.type]} · ${SEM[e.sem]} ${e.year}${e.ver ? ` (${e.ver})` : ""}`])))}"` : ""} defer></script>
 ` : ""}<script>if("serviceWorker"in navigator&&location.protocol==="https:")navigator.serviceWorker.register("../../sw.js",{scope:"../../"});</script>
 </body></html>
 `;

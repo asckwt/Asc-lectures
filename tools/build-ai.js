@@ -142,7 +142,7 @@ for (const c of codes) {
   if (slots[c]) { L.push("\n## مواعيد اختبارات الفصل الحالي"); slots[c].forEach(s => L.push("- " + s)); }
   if (exams[c]) {
     L.push("\n## النماذج السابقة الموجودة في الموقع (PDF)");
-    exams[c].items.forEach(e => L.push(`- ${EXT[e.type]} ${SEMN[e.sem]} ${e.year}، نسخة ${e.ver}، ${e.pages} صفحات: ${SITE}exams/${c}/${e.file}.pdf`));
+    exams[c].items.forEach(e => L.push(`- ${EXT[e.type]} ${SEMN[e.sem]} ${e.year}${e.ver ? `، نسخة ${e.ver}` : ""}، ${e.pages} صفحات: ${SITE}exams/${c}/${e.file}.pdf`));
   }
   if (lectures[c]) { L.push("\n## محاضرات مجانية مسجلة"); lectures[c].forEach(l => L.push(`- ${l.title}: ${l.url}${l.pass ? ` (الباسكود ${l.pass})` : ""}`)); }
   if (chats[c]) L.push(`\nقروب واتساب المادة: ${chats[c]}`);

@@ -127,6 +127,7 @@ footer .wrap{padding-block:18px;display:flex;flex-wrap:wrap;gap:8px 20px;justify
 .feats b{display:block;font-family:var(--display);font-weight:700}
 .feats span{color:var(--muted);font-size:15px}
 .chatlist{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}.chatlist a{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;text-decoration:none;color:inherit}.chatlist a svg{width:28px;height:28px;flex:none;color:#25D366}.chatlist b{display:block;font-family:var(--display);font-size:15px}.chatlist small{color:var(--muted);font-size:13px}
+.excourses{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}.excourses a{display:flex;flex-direction:column;align-items:flex-start;gap:2px;height:100%;box-sizing:border-box;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;text-decoration:none;color:inherit}.excourses b{font-family:var(--display);font-size:16px;color:var(--accent-ink)}.excourses span{font-size:12.5px;color:var(--muted);line-height:1.35;text-align:start;width:100%;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}.excourses small{font-size:12px;margin-top:auto;padding-top:4px;font-family:var(--display);font-weight:700}.excourses .none{grid-column:1/-1;color:var(--muted);font-size:14px}.exfac{grid-template-columns:repeat(auto-fit,minmax(80px,1fr))}#exhome .search{margin:6px 0 12px}#exhome .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 .cc-h{font-family:var(--display);font-weight:700;font-size:18px;margin:26px 0 12px}.cclist{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}.cclist a{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;text-decoration:none;color:inherit;font-family:var(--display);font-weight:700;font-size:14px;direction:ltr;justify-content:flex-end}.cclist a svg{width:20px;height:20px;flex:none;color:#25D366}
 .tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}@media (min-width:720px){.tiles{grid-template-columns:repeat(3,1fr);gap:16px}}
 .tile{position:relative;display:flex;flex-direction:column;gap:4px;min-height:150px;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px;text-decoration:none;color:inherit;overflow:hidden;transition:transform .15s,border-color .15s}
@@ -298,8 +299,13 @@ main .wrap{display:grid;grid-template-columns:1fr;gap:40px;padding-block:36px 56
     <section id="exams" class="view" hidden>
       <a class="back" href="#home">→ الرئيسية</a>
       <h2>نماذج الاختبارات</h2>
-      <p class="sub">نماذج اختبارات سابقة لكل مادة، مرتبة حسب السنة والفصل (الأول، الثاني، الصيفي). اضغط على النموذج ويفتح لك PDF تقدر تحفظه.</p>
-      <div id="examlist"></div>
+      <p class="sub">نماذج الميد والفاينل لسنة ٢٠٢٥ و٢٠٢٦ لمواد البزنس والآي تي والآداب. دوّر على مادتك واضغط على النموذج ويفتح لك PDF تقدر تحفظه.</p>
+      <div id="exhome">
+        <div class="search"><label for="exq" class="sr">ابحث عن مادة</label><input id="exq" type="search" dir="auto" placeholder="ابحث برمز المادة أو اسمها، مثل ACC204" autocomplete="off"></div>
+        <div class="tabs exfac" role="tablist" id="exfac"></div>
+        <ul class="excourses" id="excourses"></ul>
+      </div>
+      <div id="examlist" hidden></div>
     </section>
 
     <section id="plans" class="view pp" hidden>
@@ -606,78 +612,1088 @@ const CONFIG = {
     {name:"أسامة", major:"ACC300", text:"الله يعطيكم ألف عافية نجحت، شكراً على مجهودكم."},
     {name:"حليمة", major:"EL099", text:"يعطيج العافية أ. أنفال، الحمدلله نجحت 💖"}
   ],
-  exams: [ // نماذج الاختبارات: ملفاتها في exams/رمز المادة/، type = final أو mta أو makeup، sem = 1 أو 2 أو summer
-    {code:"ACC204", name:"Intermediate Financial Accounting", items:[
+  exams: [ // نماذج الاختبارات: ملفاتها في exams/رمز المادة/، type = final أو mta أو makeup، sem = 1 أو 2 أو summer، fac = bus (بزنس) أو it (آي تي) أو art (آداب)
+    {code:"ACC204", name:"Intermediate Financial Accounting", fac:"bus", items:[
       {year:"2025/2026", sem:"2", type:"final", ver:"B", pages:3, file:"ACC204-Final-Second-2025-2026-B"},
       {year:"2025/2026", sem:"1", type:"final", ver:"B", pages:3, file:"ACC204-Final-First-2025-2026-B"},
+      {year:"2025/2026", sem:"1", type:"final", ver:"", pages:3, file:"ACC204-Final-First-2025-2026"},
       {year:"2025/2026", sem:"1", type:"makeup", ver:"C", pages:3, file:"ACC204-MTA-Makeup-First-2025-2026-C"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"", pages:3, file:"ACC204-MTA-Makeup-First-2025-2026"},
       {year:"2025/2026", sem:"1", type:"mta", ver:"B", pages:2, file:"ACC204-MTA-First-2025-2026-B"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:2, file:"ACC204-MTA-First-2025-2026"},
       {year:"2024/2025", sem:"2", type:"final", ver:"A", pages:3, file:"ACC204-Final-Second-2024-2025-A"},
       {year:"2024/2025", sem:"2", type:"makeup", ver:"A", pages:3, file:"ACC204-MTA-Makeup-Second-2024-2025-A"}
     ]},
-    {code:"ACC300", name:"Accounting Information Systems", items:[
+    {code:"ACC300", name:"Accounting Information Systems", fac:"bus", items:[
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:2, file:"ACC300-Final-Second-2025-2026"},
       {year:"2025/2026", sem:"2", type:"mta", ver:"B", pages:2, file:"ACC300-MTA-Second-2025-2026-B"},
       {year:"2025/2026", sem:"1", type:"mta", ver:"B", pages:2, file:"ACC300-MTA-First-2025-2026-B"},
-      {year:"2024/2025", sem:"2", type:"mta", ver:"C", pages:2, file:"ACC300-MTA-Second-2024-2025-C"}
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:2, file:"ACC300-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"C", pages:2, file:"ACC300-MTA-Second-2024-2025-C"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:2, file:"ACC300-MTA-Second-2024-2025"}
     ]},
-    {code:"ACC302", name:"Auditing Theory and Practice", items:[
+    {code:"ACC302", name:"Auditing Theory and Practice", fac:"bus", items:[
       {year:"2025/2026", sem:"summer", type:"mta", ver:"C", pages:2, file:"ACC302-MTA-Summer-2025-2026-C"},
       {year:"2025/2026", sem:"2", type:"final", ver:"B", pages:2, file:"ACC302-Final-Second-2025-2026-B"},
       {year:"2025/2026", sem:"2", type:"mta", ver:"B", pages:2, file:"ACC302-MTA-Second-2025-2026-B"},
       {year:"2025/2026", sem:"1", type:"final", ver:"B", pages:2, file:"ACC302-Final-First-2025-2026-B"},
       {year:"2025/2026", sem:"1", type:"mta", ver:"B", pages:2, file:"ACC302-MTA-First-2025-2026-B"}
     ]},
-    {code:"BUS101", name:"Introduction to Math for Business", items:[
+    {code:"ACT111", name:"Financial Accounting", fac:"bus", items:[
+      {year:"2025/2026", sem:"summer", type:"mta", ver:"C", pages:4, file:"ACT111-MTA-Summer-2025-2026-C"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"B", pages:4, file:"ACT111-MTA-Second-2025-2026-B"},
+      {year:"2025/2026", sem:"1", type:"final", ver:"B", pages:4, file:"ACT111-Final-First-2025-2026-B"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"B", pages:4, file:"ACT111-MTA-First-2025-2026-B"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"B", pages:3, file:"ACT111-Final-First-2024-2025-B"}
+    ]},
+    {code:"ACT112", name:"Managerial Accounting", fac:"bus", items:[
+      {year:"2025/2026", sem:"2", type:"final", ver:"B", pages:3, file:"ACT112-Final-Second-2025-2026-B"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"B", pages:3, file:"ACT112-MTA-Second-2025-2026-B"},
+      {year:"2025/2026", sem:"1", type:"final", ver:"B", pages:3, file:"ACT112-Final-First-2025-2026-B"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"B", pages:3, file:"ACT112-MTA-First-2025-2026-B"}
+    ]},
+    {code:"B122", name:"Retail Management and Marketing", fac:"bus", items:[
+      {year:"2025/2026", sem:"1", type:"final", ver:"B", pages:2, file:"B122-Final-First-2025-2026-B"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"A", pages:2, file:"B122-MTA-Makeup-Second-2024-2025-A"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"B", pages:2, file:"B122-Final-First-2024-2025-B"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"B", pages:2, file:"B122-Final-First-2024-2025-B-2"}
+    ]},
+    {code:"B123", name:"Management Practice", fac:"bus", items:[
+      {year:"2024/2025", sem:"2", type:"final", ver:"A", pages:5, file:"B123-Final-Second-2024-2025-A"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"B", pages:6, file:"B123-Final-First-2024-2025-B"}
+    ]},
+    {code:"B124", name:"Fundamentals of Accounting", fac:"bus", items:[
+      {year:"2024/2025", sem:"summer", type:"final", ver:"B", pages:5, file:"B124-Final-Summer-2024-2025-B"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"A", pages:5, file:"B124-Final-Second-2024-2025-A"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"A", pages:4, file:"B124-MTA-Makeup-Second-2024-2025-A"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"C", pages:4, file:"B124-MTA-Second-2024-2025-C"}
+    ]},
+    {code:"B205A", name:"Exploring Innovation and Entrepreneurship A", fac:"bus", items:[
+      {year:"2025/2026", sem:"2", type:"final", ver:"B", pages:2, file:"B205A-Final-Second-2025-2026-B"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"B", pages:3, file:"B205A-MTA-Second-2025-2026-B"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"C", pages:3, file:"B205A-MTA-Makeup-First-2025-2026-C"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"B", pages:3, file:"B205A-MTA-First-2025-2026-B"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"", pages:2, file:"B205A-Final-Second-2024-2025"}
+    ]},
+    {code:"B205B", name:"Exploring Innovation and Entrepreneurship B", fac:"bus", items:[
+      {year:"2025/2026", sem:"summer", type:"mta", ver:"C", pages:2, file:"B205B-MTA-Summer-2025-2026-C"},
+      {year:"2025/2026", sem:"2", type:"final", ver:"B", pages:2, file:"B205B-Final-Second-2025-2026-B"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"B", pages:2, file:"B205B-MTA-Second-2025-2026-B"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"C", pages:2, file:"B205B-MTA-Makeup-First-2025-2026-C"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"", pages:2, file:"B205B-Final-Second-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:2, file:"B205B-MTA-Second-2024-2025"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"", pages:2, file:"B205B-Final-First-2024-2025"}
+    ]},
+    {code:"B206", name:"Understanding Customers", fac:"bus", items:[
+      {year:"2025/2026", sem:"2", type:"final", ver:"B", pages:2, file:"B206-Final-Second-2025-2026-B"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"C", pages:2, file:"B206-MTA-Makeup-First-2025-2026-C"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:2, file:"B206-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"C", pages:2, file:"B206-MTA-Second-2024-2025-C"}
+    ]},
+    {code:"B207A", name:"Shaping Business Opportunities I", fac:"bus", items:[
+      {year:"2025/2026", sem:"summer", type:"final", ver:"B", pages:6, file:"B207A-Final-Summer-2025-2026-B"},
+      {year:"2025/2026", sem:"summer", type:"mta", ver:"C", pages:6, file:"B207A-MTA-Summer-2025-2026-C"},
+      {year:"2025/2026", sem:"2", type:"final", ver:"B", pages:10, file:"B207A-Final-Second-2025-2026-B"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"B", pages:6, file:"B207A-MTA-Second-2025-2026-B"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"C", pages:6, file:"B207A-MTA-Makeup-First-2025-2026-C"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"B", pages:6, file:"B207A-MTA-First-2025-2026-B"},
+      {year:"2024/2025", sem:"summer", type:"final", ver:"B", pages:7, file:"B207A-Final-Summer-2024-2025-B"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"A", pages:6, file:"B207A-MTA-Makeup-Second-2024-2025-A"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"C", pages:5, file:"B207A-MTA-Second-2024-2025-C"}
+    ]},
+    {code:"B207B", name:"Shaping Business Opportunities II", fac:"bus", items:[
+      {year:"2025/2026", sem:"summer", type:"final", ver:"B", pages:6, file:"B207B-Final-Summer-2025-2026-B"},
+      {year:"2025/2026", sem:"summer", type:"mta", ver:"C", pages:6, file:"B207B-MTA-Summer-2025-2026-C"},
+      {year:"2025/2026", sem:"2", type:"final", ver:"B", pages:10, file:"B207B-Final-Second-2025-2026-B"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"B", pages:6, file:"B207B-MTA-Second-2025-2026-B"},
+      {year:"2025/2026", sem:"1", type:"final", ver:"B", pages:6, file:"B207B-Final-First-2025-2026-B"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"C", pages:6, file:"B207B-MTA-Makeup-First-2025-2026-C"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"B", pages:6, file:"B207B-MTA-First-2025-2026-B"},
+      {year:"2024/2025", sem:"summer", type:"final", ver:"B", pages:6, file:"B207B-Final-Summer-2024-2025-B"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"C", pages:5, file:"B207B-MTA-Second-2024-2025-C"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"A", pages:8, file:"B207B-MTA-Second-2024-2025-A"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"B", pages:2, file:"B207B-Final-First-2024-2025-B"}
+    ]},
+    {code:"B291", name:"Financial Accounting", fac:"bus", items:[
+      {year:"2024/2025", sem:"2", type:"final", ver:"A", pages:6, file:"B291-Final-Second-2024-2025-A"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"A", pages:3, file:"B291-MTA-Makeup-Second-2024-2025-A"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"C", pages:3, file:"B291-MTA-Second-2024-2025-C"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"", pages:5, file:"B291-Final-First-2024-2025"}
+    ]},
+    {code:"B292", name:"Management Accounting", fac:"bus", items:[
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"D", pages:3, file:"B292-MTA-Makeup-Second-2024-2025-D"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"C", pages:3, file:"B292-MTA-Second-2024-2025-C"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"B", pages:3, file:"B292-Final-First-2024-2025-B"}
+    ]},
+    {code:"B294", name:"Financial Analysis and Decision Making", fac:"bus", items:[
+      {year:"2025/2026", sem:"summer", type:"mta", ver:"C", pages:3, file:"B294-MTA-Summer-2025-2026-C"},
+      {year:"2025/2026", sem:"2", type:"final", ver:"B", pages:3, file:"B294-Final-Second-2025-2026-B"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"C", pages:3, file:"B294-MTA-Makeup-First-2025-2026-C"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"B", pages:3, file:"B294-MTA-First-2025-2026-B"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"B", pages:3, file:"B294-Final-First-2024-2025-B"}
+    ]},
+    {code:"B324", name:"Marketing and Society", fac:"bus", items:[
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"C", pages:2, file:"B324-MTA-Makeup-First-2025-2026-C"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"B", pages:2, file:"B324-MTA-First-2025-2026-B"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"A", pages:2, file:"B324-MTA-Makeup-Second-2024-2025-A"}
+    ]},
+    {code:"B325", name:"Managing across Boundaries", fac:"bus", items:[
+      {year:"2025/2026", sem:"1", type:"mta", ver:"A", pages:3, file:"B325-MTA-First-2025-2026-A"},
+      {year:"2024/2025", sem:"summer", type:"final", ver:"B", pages:6, file:"B325-Final-Summer-2024-2025-B"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"A", pages:5, file:"B325-MTA-Makeup-Second-2024-2025-A"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"C", pages:5, file:"B325-MTA-Second-2024-2025-C"}
+    ]},
+    {code:"B326", name:"Advanced Financial Accounting", fac:"bus", items:[
+      {year:"2025/2026", sem:"summer", type:"final", ver:"", pages:4, file:"B326-Final-Summer-2025-2026"},
+      {year:"2025/2026", sem:"summer", type:"makeup", ver:"", pages:3, file:"B326-MTA-Makeup-Summer-2025-2026"},
+      {year:"2025/2026", sem:"summer", type:"mta", ver:"", pages:3, file:"B326-MTA-Summer-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:3, file:"B326-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:4, file:"B326-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"summer", type:"mta", ver:"", pages:3, file:"B326-MTA-Summer-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"A", pages:3, file:"B326-MTA-Makeup-Second-2024-2025-A"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:3, file:"B326-MTA-Second-2024-2025"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"B", pages:4, file:"B326-Final-First-2024-2025-B"}
+    ]},
+    {code:"B327", name:"Sustainable Enterprise and Innovation", fac:"bus", items:[
+      {year:"2025/2026", sem:"summer", type:"final", ver:"B", pages:2, file:"B327-Final-Summer-2025-2026-B"},
+      {year:"2025/2026", sem:"summer", type:"makeup", ver:"D", pages:2, file:"B327-MTA-Makeup-Summer-2025-2026-D"},
+      {year:"2025/2026", sem:"summer", type:"mta", ver:"C", pages:2, file:"B327-MTA-Summer-2025-2026-C"},
+      {year:"2025/2026", sem:"2", type:"final", ver:"B", pages:2, file:"B327-Final-Second-2025-2026-B"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:2, file:"B327-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"final", ver:"B", pages:2, file:"B327-Final-First-2025-2026-B"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"B", pages:2, file:"B327-MTA-First-2025-2026-B"},
+      {year:"2024/2025", sem:"summer", type:"final", ver:"B", pages:2, file:"B327-Final-Summer-2024-2025-B"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"A", pages:2, file:"B327-Final-Second-2024-2025-A"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"A", pages:2, file:"B327-MTA-Makeup-Second-2024-2025-A"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"C", pages:2, file:"B327-MTA-Second-2024-2025-C"}
+    ]},
+    {code:"B328", name:"Marketing in Action", fac:"bus", items:[
+      {year:"2025/2026", sem:"2", type:"final", ver:"B", pages:3, file:"B328-Final-Second-2025-2026-B"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"B", pages:2, file:"B328-MTA-Second-2025-2026-B"}
+    ]},
+    {code:"B329", name:"Leadership in a Changing World", fac:"bus", items:[
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"C", pages:3, file:"B329-MTA-Makeup-First-2025-2026-C"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:2, file:"B329-MTA-First-2025-2026"}
+    ]},
+    {code:"B391", name:"Management Accounting and Finance", fac:"bus", items:[
+      {year:"2025/2026", sem:"summer", type:"final", ver:"B", pages:3, file:"B391-Final-Summer-2025-2026-B"},
+      {year:"2025/2026", sem:"summer", type:"makeup", ver:"D", pages:3, file:"B391-MTA-Makeup-Summer-2025-2026-D"},
+      {year:"2025/2026", sem:"2", type:"final", ver:"B", pages:3, file:"B391-Final-Second-2025-2026-B"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"A", pages:3, file:"B391-MTA-Second-2025-2026-A"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"C", pages:3, file:"B391-MTA-Makeup-First-2025-2026-C"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"B", pages:3, file:"B391-MTA-First-2025-2026-B"}
+    ]},
+    {code:"B628", name:"Managing 1", fac:"bus", items:[
+      {year:"2025/2026", sem:"1", type:"final", ver:"", pages:5, file:"B628-Final-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"A", pages:3, file:"B628-MTA-Makeup-Second-2024-2025-A"}
+    ]},
+    {code:"B629", name:"Managing 2", fac:"bus", items:[
+      {year:"2024/2025", sem:"2", type:"final", ver:"C", pages:4, file:"B629-Final-Second-2024-2025-C"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"C", pages:3, file:"B629-MTA-Second-2024-2025-C"}
+    ]},
+    {code:"BB293", name:"Financial Accounting in Context", fac:"bus", items:[
+      {year:"2025/2026", sem:"summer", type:"final", ver:"B", pages:6, file:"BB293-Final-Summer-2025-2026-B"},
+      {year:"2025/2026", sem:"summer", type:"makeup", ver:"", pages:4, file:"BB293-MTA-Makeup-Summer-2025-2026"},
+      {year:"2025/2026", sem:"summer", type:"mta", ver:"C", pages:4, file:"BB293-MTA-Summer-2025-2026-C"},
+      {year:"2025/2026", sem:"2", type:"final", ver:"B", pages:6, file:"BB293-Final-Second-2025-2026-B"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"C", pages:3, file:"BB293-MTA-Makeup-First-2025-2026-C"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:3, file:"BB293-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"A", pages:5, file:"BB293-Final-Second-2024-2025-A"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"A", pages:3, file:"BB293-MTA-Makeup-Second-2024-2025-A"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"C", pages:5, file:"BB293-MTA-Second-2024-2025-C"}
+    ]},
+    {code:"BUC111", name:"Business Communication 1", fac:"bus", items:[
+      {year:"2025/2026", sem:"summer", type:"final", ver:"B", pages:4, file:"BUC111-Final-Summer-2025-2026-B"},
+      {year:"2025/2026", sem:"summer", type:"makeup", ver:"D", pages:3, file:"BUC111-MTA-Makeup-Summer-2025-2026-D"},
+      {year:"2025/2026", sem:"summer", type:"mta", ver:"C", pages:4, file:"BUC111-MTA-Summer-2025-2026-C"},
+      {year:"2025/2026", sem:"2", type:"final", ver:"B", pages:5, file:"BUC111-Final-Second-2025-2026-B"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"B", pages:4, file:"BUC111-MTA-Second-2025-2026-B"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"C", pages:4, file:"BUC111-MTA-Makeup-First-2025-2026-C"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"B", pages:4, file:"BUC111-MTA-First-2025-2026-B"},
+      {year:"2024/2025", sem:"summer", type:"final", ver:"B", pages:5, file:"BUC111-Final-Summer-2024-2025-B"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"A", pages:5, file:"BUC111-Final-Second-2024-2025-A"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"A", pages:5, file:"BUC111-MTA-Makeup-Second-2024-2025-A"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"C", pages:4, file:"BUC111-MTA-Second-2024-2025-C"}
+    ]},
+    {code:"BUC112", name:"Business Communication 2", fac:"bus", items:[
+      {year:"2025/2026", sem:"summer", type:"final", ver:"B", pages:6, file:"BUC112-Final-Summer-2025-2026-B"},
+      {year:"2025/2026", sem:"summer", type:"makeup", ver:"D", pages:4, file:"BUC112-MTA-Makeup-Summer-2025-2026-D"},
+      {year:"2025/2026", sem:"summer", type:"mta", ver:"C", pages:4, file:"BUC112-MTA-Summer-2025-2026-C"},
+      {year:"2025/2026", sem:"2", type:"final", ver:"B", pages:6, file:"BUC112-Final-Second-2025-2026-B"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"B", pages:4, file:"BUC112-MTA-Second-2025-2026-B"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"C", pages:4, file:"BUC112-MTA-Makeup-First-2025-2026-C"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"B", pages:4, file:"BUC112-MTA-First-2025-2026-B"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"A", pages:6, file:"BUC112-Final-Second-2024-2025-A"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"A", pages:5, file:"BUC112-MTA-Makeup-Second-2024-2025-A"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"C", pages:5, file:"BUC112-MTA-Second-2024-2025-C"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"B", pages:4, file:"BUC112-Final-First-2024-2025-B"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"B", pages:4, file:"BUC112-Final-First-2024-2025-B-2"}
+    ]},
+    {code:"BUS101", name:"Introduction to Math for Business", fac:"bus", items:[
       {year:"2025/2026", sem:"2", type:"final", ver:"B", pages:5, file:"BUS101-Final-Second-2025-2026-B"},
       {year:"2025/2026", sem:"2", type:"mta", ver:"B", pages:4, file:"BUS101-MTA-Second-2025-2026-B"},
       {year:"2025/2026", sem:"1", type:"final", ver:"B", pages:6, file:"BUS101-Final-First-2025-2026-B"},
-      {year:"2025/2026", sem:"1", type:"mta", ver:"B", pages:4, file:"BUS101-MTA-First-2025-2026-B"}
+      {year:"2025/2026", sem:"1", type:"mta", ver:"B", pages:4, file:"BUS101-MTA-First-2025-2026-B"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:4, file:"BUS101-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"A", pages:9, file:"BUS101-Final-Second-2024-2025-A"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"B", pages:9, file:"BUS101-Final-First-2024-2025-B"}
     ]},
-    {code:"BUS102", name:"Introduction to Statistics", items:[
+    {code:"BUS102", name:"Introduction to Statistics", fac:"bus", items:[
       {year:"2025/2026", sem:"2", type:"final", ver:"B", pages:8, file:"BUS102-Final-Second-2025-2026-B"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"C", pages:6, file:"BUS102-MTA-Makeup-First-2025-2026-C"},
       {year:"2025/2026", sem:"1", type:"mta", ver:"B", pages:6, file:"BUS102-MTA-First-2025-2026-B"},
-      {year:"2025/2026", sem:"1", type:"makeup", ver:"C", pages:6, file:"BUS102-MTA-Makeup-First-2025-2026-C"}
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:6, file:"BUS102-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"A", pages:5, file:"BUS102-MTA-Makeup-Second-2024-2025-A"}
     ]},
-    {code:"BUS310", name:"Strategic Management", items:[
+    {code:"BUS110", name:"Introduction to Business", fac:"bus", items:[
+      {year:"2025/2026", sem:"2", type:"mta", ver:"B", pages:8, file:"BUS110-MTA-Second-2025-2026-B"},
+      {year:"2024/2025", sem:"summer", type:"final", ver:"B", pages:9, file:"BUS110-Final-Summer-2024-2025-B"},
+      {year:"2024/2025", sem:"summer", type:"final", ver:"B", pages:5, file:"BUS110-Final-Summer-2024-2025-B-2"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"A", pages:6, file:"BUS110-Final-Second-2024-2025-A"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"A", pages:6, file:"BUS110-MTA-Makeup-Second-2024-2025-A"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"C", pages:6, file:"BUS110-MTA-Second-2024-2025-C"}
+    ]},
+    {code:"BUS115", name:"Small Business Management", fac:"bus", items:[
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"C", pages:4, file:"BUS115-MTA-Makeup-First-2025-2026-C"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:4, file:"BUS115-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"", pages:4, file:"BUS115-MTA-Makeup-Second-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:4, file:"BUS115-MTA-Second-2024-2025"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"B", pages:7, file:"BUS115-Final-First-2024-2025-B"}
+    ]},
+    {code:"BUS208", name:"Contemporary Issues in Marketing", fac:"bus", items:[
+      {year:"2025/2026", sem:"1", type:"mta", ver:"B", pages:3, file:"BUS208-MTA-First-2025-2026-B"}
+    ]},
+    {code:"BUS310", name:"Strategic Management", fac:"bus", items:[
       {year:"2025/2026", sem:"summer", type:"makeup", ver:"D", pages:2, file:"BUS310-MTA-Makeup-Summer-2025-2026-D"},
       {year:"2025/2026", sem:"2", type:"final", ver:"B", pages:2, file:"BUS310-Final-Second-2025-2026-B"},
       {year:"2025/2026", sem:"2", type:"mta", ver:"B", pages:2, file:"BUS310-MTA-Second-2025-2026-B"},
-      {year:"2025/2026", sem:"1", type:"final", ver:"B", pages:2, file:"BUS310-Final-First-2025-2026-B"}
+      {year:"2025/2026", sem:"1", type:"final", ver:"B", pages:2, file:"BUS310-Final-First-2025-2026-B"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:2, file:"BUS310-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"summer", type:"mta", ver:"", pages:2, file:"BUS310-MTA-Summer-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"B", pages:2, file:"BUS310-Final-Second-2024-2025-B"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"A", pages:6, file:"BUS310-Final-Second-2024-2025-A"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"A", pages:2, file:"BUS310-Final-Second-2024-2025-A-2"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"A", pages:2, file:"BUS310-MTA-Makeup-Second-2024-2025-A"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"C", pages:2, file:"BUS310-MTA-Second-2024-2025-C"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"B", pages:2, file:"BUS310-Final-First-2024-2025-B"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"B", pages:2, file:"BUS310-Final-First-2024-2025-B-2"}
     ]},
-    {code:"BUS629", name:"International Business", items:[
-      {year:"2025/2026", sem:"1", type:"final", ver:"B", pages:3, file:"BUS629-Final-First-2025-2026-B"}
+    {code:"BUS629", name:"International Business", fac:"bus", items:[
+      {year:"2025/2026", sem:"summer", type:"mta", ver:"C", pages:3, file:"BUS629-MTA-Summer-2025-2026-C"},
+      {year:"2025/2026", sem:"2", type:"final", ver:"B", pages:3, file:"BUS629-Final-Second-2025-2026-B"},
+      {year:"2025/2026", sem:"1", type:"final", ver:"B", pages:3, file:"BUS629-Final-First-2025-2026-B"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"B", pages:3, file:"BUS629-MTA-First-2025-2026-B"}
     ]},
-    {code:"ECO101", name:"Principles of Microeconomics", items:[
-      {year:"2025/2026", sem:"2", type:"mta", ver:"B", pages:3, file:"ECO101-MTA-Second-2025-2026-B"}
+    {code:"ECO101", name:"Principles of Microeconomics", fac:"bus", items:[
+      {year:"2025/2026", sem:"2", type:"final", ver:"B", pages:3, file:"ECO101-Final-Second-2025-2026-B"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"B", pages:3, file:"ECO101-MTA-Second-2025-2026-B"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"B", pages:3, file:"ECO101-MTA-First-2025-2026-B"},
+      {year:"2024/2025", sem:"summer", type:"mta", ver:"B", pages:5, file:"ECO101-MTA-Summer-2024-2025-B"},
+      {year:"2024/2025", sem:"summer", type:"mta", ver:"", pages:6, file:"ECO101-MTA-Summer-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"C", pages:4, file:"ECO101-MTA-Second-2024-2025-C"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"B", pages:4, file:"ECO101-Final-First-2024-2025-B"}
     ]},
-    {code:"ECO102", name:"Principles of Macroeconomics", items:[
+    {code:"ECO102", name:"Principles of Macroeconomics", fac:"bus", items:[
       {year:"2025/2026", sem:"summer", type:"mta", ver:"C", pages:3, file:"ECO102-MTA-Summer-2025-2026-C"},
       {year:"2025/2026", sem:"2", type:"final", ver:"B", pages:3, file:"ECO102-Final-Second-2025-2026-B"},
-      {year:"2025/2026", sem:"1", type:"final", ver:"B", pages:4, file:"ECO102-Final-First-2025-2026-B"}
+      {year:"2025/2026", sem:"1", type:"final", ver:"B", pages:4, file:"ECO102-Final-First-2025-2026-B"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"B", pages:4, file:"ECO102-MTA-First-2025-2026-B"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"A", pages:5, file:"ECO102-Final-Second-2024-2025-A"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"A", pages:4, file:"ECO102-MTA-Makeup-Second-2024-2025-A"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"C", pages:4, file:"ECO102-MTA-Second-2024-2025-C"}
     ]},
-    {code:"MGT111", name:"Principles of Management I", items:[
+    {code:"FIN240", name:"", fac:"bus", items:[
+      {year:"2024/2025", sem:"2", type:"final", ver:"", pages:5, file:"FIN240-Final-Second-2024-2025"}
+    ]},
+    {code:"FIN241", name:"Microfinance", fac:"bus", items:[
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:5, file:"FIN241-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"final", ver:"", pages:6, file:"FIN241-Final-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"", pages:5, file:"FIN241-MTA-Makeup-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:5, file:"FIN241-MTA-Second-2024-2025"}
+    ]},
+    {code:"FIN242", name:"FinTech", fac:"bus", items:[
+      {year:"2025/2026", sem:"2", type:"final", ver:"B", pages:2, file:"FIN242-Final-Second-2025-2026-B"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"B", pages:2, file:"FIN242-MTA-Second-2025-2026-B"},
+      {year:"2025/2026", sem:"1", type:"final", ver:"", pages:2, file:"FIN242-Final-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"A", pages:2, file:"FIN242-Final-Second-2024-2025-A"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"C", pages:2, file:"FIN242-MTA-Second-2024-2025-C"}
+    ]},
+    {code:"FIN301", name:"Financial & Securities Markets", fac:"bus", items:[
+      {year:"2025/2026", sem:"2", type:"final", ver:"B", pages:3, file:"FIN301-Final-Second-2025-2026-B"},
+      {year:"2025/2026", sem:"1", type:"final", ver:"B", pages:3, file:"FIN301-Final-First-2025-2026-B"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"C", pages:3, file:"FIN301-MTA-Makeup-First-2025-2026-C"}
+    ]},
+    {code:"FIN302", name:"Portfolio Theory", fac:"bus", items:[
+      {year:"2025/2026", sem:"summer", type:"final", ver:"B", pages:3, file:"FIN302-Final-Summer-2025-2026-B"},
+      {year:"2025/2026", sem:"summer", type:"mta", ver:"C", pages:3, file:"FIN302-MTA-Summer-2025-2026-C"},
+      {year:"2025/2026", sem:"2", type:"final", ver:"B", pages:3, file:"FIN302-Final-Second-2025-2026-B"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"C", pages:3, file:"FIN302-MTA-Makeup-First-2025-2026-C"}
+    ]},
+    {code:"FIN340", name:"Asset Pricing and Corporate Finance", fac:"bus", items:[
+      {year:"2025/2026", sem:"2", type:"final", ver:"B", pages:3, file:"FIN340-Final-Second-2025-2026-B"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:6, file:"FIN340-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"C", pages:7, file:"FIN340-MTA-Makeup-First-2025-2026-C"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"A", pages:4, file:"FIN340-Final-Second-2024-2025-A"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"C", pages:7, file:"FIN340-MTA-Second-2024-2025-C"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"C", pages:3, file:"FIN340-MTA-Second-2024-2025-C-2"}
+    ]},
+    {code:"FIN341", name:"Islamic Finance", fac:"bus", items:[
+      {year:"2025/2026", sem:"summer", type:"mta", ver:"A", pages:2, file:"FIN341-MTA-Summer-2025-2026-A"},
+      {year:"2025/2026", sem:"2", type:"final", ver:"B", pages:2, file:"FIN341-Final-Second-2025-2026-B"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"B", pages:2, file:"FIN341-MTA-Second-2025-2026-B"},
+      {year:"2025/2026", sem:"1", type:"final", ver:"B", pages:2, file:"FIN341-Final-First-2025-2026-B"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"B", pages:3, file:"FIN341-Final-First-2024-2025-B"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"B", pages:3, file:"FIN341-Final-First-2024-2025-B-2"}
+    ]},
+    {code:"FIN342", name:"", fac:"bus", items:[
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"A", pages:3, file:"FIN342-MTA-Makeup-Second-2024-2025-A"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"C", pages:4, file:"FIN342-MTA-Second-2024-2025-C"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"B", pages:3, file:"FIN342-Final-First-2024-2025-B"}
+    ]},
+    {code:"HRM205", name:"Employment Law", fac:"bus", items:[
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:3, file:"HRM205-Final-Second-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"", pages:2, file:"HRM205-Final-Second-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:2, file:"HRM205-MTA-Second-2024-2025"}
+    ]},
+    {code:"HRM206", name:"Staffing Organization", fac:"bus", items:[
+      {year:"2025/2026", sem:"1", type:"final", ver:"B", pages:5, file:"HRM206-Final-First-2025-2026-B"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"A", pages:4, file:"HRM206-MTA-Makeup-First-2025-2026-A"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"", pages:2, file:"HRM206-MTA-Makeup-Second-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:2, file:"HRM206-MTA-Second-2024-2025"}
+    ]},
+    {code:"HRM215", name:"Compensation and Benefits", fac:"bus", items:[
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:3, file:"HRM215-Final-Second-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"B", pages:2, file:"HRM215-MTA-Second-2025-2026-B"}
+    ]},
+    {code:"HRM320", name:"Workplace Health and Safety", fac:"bus", items:[
+      {year:"2025/2026", sem:"2", type:"final", ver:"B", pages:2, file:"HRM320-Final-Second-2025-2026-B"}
+    ]},
+    {code:"LB170", name:"Professional Communication Skills", fac:"bus", items:[
+      {year:"2025/2026", sem:"1", type:"final", ver:"B", pages:6, file:"LB170-Final-First-2025-2026-B"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"B", pages:6, file:"LB170-Final-First-2024-2025-B"}
+    ]},
+    {code:"MGT111", name:"Principles of Management I", fac:"bus", items:[
       {year:"2025/2026", sem:"2", type:"mta", ver:"B", pages:4, file:"MGT111-MTA-Second-2025-2026-B"},
       {year:"2025/2026", sem:"1", type:"final", ver:"B", pages:5, file:"MGT111-Final-First-2025-2026-B"},
-      {year:"2025/2026", sem:"1", type:"mta", ver:"B", pages:4, file:"MGT111-MTA-First-2025-2026-B"}
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"C", pages:4, file:"MGT111-MTA-Makeup-First-2025-2026-C"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"B", pages:4, file:"MGT111-MTA-First-2025-2026-B"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:4, file:"MGT111-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"A", pages:5, file:"MGT111-Final-Second-2024-2025-A"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"B", pages:5, file:"MGT111-Final-First-2024-2025-B"}
     ]},
-    {code:"MGT112", name:"Principles of Management II", items:[
+    {code:"MGT112", name:"Principles of Management II", fac:"bus", items:[
       {year:"2025/2026", sem:"2", type:"mta", ver:"B", pages:4, file:"MGT112-MTA-Second-2025-2026-B"},
       {year:"2025/2026", sem:"1", type:"final", ver:"B", pages:5, file:"MGT112-Final-First-2025-2026-B"},
-      {year:"2025/2026", sem:"1", type:"mta", ver:"B", pages:4, file:"MGT112-MTA-First-2025-2026-B"}
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"C", pages:4, file:"MGT112-MTA-Makeup-First-2025-2026-C"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"B", pages:4, file:"MGT112-MTA-First-2025-2026-B"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"A", pages:5, file:"MGT112-Final-Second-2024-2025-A"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"A", pages:4, file:"MGT112-MTA-Makeup-Second-2024-2025-A"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"B", pages:4, file:"MGT112-MTA-Second-2024-2025-B"}
     ]},
-    {code:"MIS111", name:"Introduction to Management Information Systems", items:[
+    {code:"MIS111", name:"Introduction to Management Information Systems", fac:"bus", items:[
       {year:"2025/2026", sem:"summer", type:"mta", ver:"A", pages:5, file:"MIS111-MTA-Summer-2025-2026-A"},
       {year:"2025/2026", sem:"2", type:"mta", ver:"B", pages:5, file:"MIS111-MTA-Second-2025-2026-B"},
-      {year:"2025/2026", sem:"1", type:"mta", ver:"B", pages:6, file:"MIS111-MTA-First-2025-2026-B"}
+      {year:"2025/2026", sem:"1", type:"mta", ver:"B", pages:6, file:"MIS111-MTA-First-2025-2026-B"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:6, file:"MIS111-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"C", pages:6, file:"MIS111-MTA-Second-2024-2025-C"}
     ]},
-    {code:"MIS112", name:"Introduction to Management Information Systems II", items:[
+    {code:"MIS112", name:"Introduction to Management Information Systems II", fac:"bus", items:[
       {year:"2025/2026", sem:"2", type:"final", ver:"B", pages:9, file:"MIS112-Final-Second-2025-2026-B"},
       {year:"2025/2026", sem:"2", type:"mta", ver:"B", pages:5, file:"MIS112-MTA-Second-2025-2026-B"},
-      {year:"2025/2026", sem:"1", type:"mta", ver:"B", pages:5, file:"MIS112-MTA-First-2025-2026-B"}
+      {year:"2025/2026", sem:"1", type:"mta", ver:"B", pages:5, file:"MIS112-MTA-First-2025-2026-B"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:5, file:"MIS112-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"A", pages:5, file:"MIS112-MTA-Makeup-Second-2024-2025-A"}
     ]},
-    {code:"MIS200", name:"Relational Database Management Systems", items:[
+    {code:"MIS200", name:"Relational Database Management Systems", fac:"bus", items:[
+      {year:"2025/2026", sem:"summer", type:"final", ver:"B", pages:3, file:"MIS200-Final-Summer-2025-2026-B"},
+      {year:"2025/2026", sem:"2", type:"final", ver:"B", pages:3, file:"MIS200-Final-Second-2025-2026-B"},
       {year:"2025/2026", sem:"2", type:"mta", ver:"B", pages:3, file:"MIS200-MTA-Second-2025-2026-B"},
+      {year:"2025/2026", sem:"1", type:"final", ver:"B", pages:2, file:"MIS200-Final-First-2025-2026-B"},
       {year:"2025/2026", sem:"1", type:"mta", ver:"B", pages:2, file:"MIS200-MTA-First-2025-2026-B"}
+    ]},
+    {code:"MIS201", name:"Programming for Business Studies", fac:"bus", items:[
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:4, file:"MIS201-Final-Second-2025-2026"}
+    ]},
+    {code:"MIS300", name:"Project Management", fac:"bus", items:[
+      {year:"2025/2026", sem:"2", type:"final", ver:"B", pages:2, file:"MIS300-Final-Second-2025-2026-B"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"B", pages:2, file:"MIS300-MTA-Second-2025-2026-B"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"B", pages:2, file:"MIS300-MTA-First-2025-2026-B"}
+    ]},
+    {code:"MIS330", name:"Business Data Management", fac:"bus", items:[
+      {year:"2025/2026", sem:"2", type:"final", ver:"B", pages:2, file:"MIS330-Final-Second-2025-2026-B"}
+    ]},
+    {code:"MKT111", name:"Principles of Marketing I", fac:"bus", items:[
+      {year:"2025/2026", sem:"summer", type:"final", ver:"B", pages:6, file:"MKT111-Final-Summer-2025-2026-B"},
+      {year:"2025/2026", sem:"summer", type:"makeup", ver:"D", pages:5, file:"MKT111-MTA-Makeup-Summer-2025-2026-D"},
+      {year:"2025/2026", sem:"2", type:"final", ver:"B", pages:6, file:"MKT111-Final-Second-2025-2026-B"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"B", pages:5, file:"MKT111-MTA-Second-2025-2026-B"},
+      {year:"2025/2026", sem:"1", type:"final", ver:"B", pages:6, file:"MKT111-Final-First-2025-2026-B"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"C", pages:6, file:"MKT111-MTA-Makeup-First-2025-2026-C"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"B", pages:6, file:"MKT111-MTA-First-2025-2026-B"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"A", pages:5, file:"MKT111-Final-Second-2024-2025-A"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"A", pages:5, file:"MKT111-MTA-Makeup-Second-2024-2025-A"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"C", pages:2, file:"MKT111-MTA-Second-2024-2025-C"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"B", pages:6, file:"MKT111-Final-First-2024-2025-B"}
+    ]},
+    {code:"MKT112", name:"Principles of Marketing II", fac:"bus", items:[
+      {year:"2025/2026", sem:"summer", type:"mta", ver:"C", pages:6, file:"MKT112-MTA-Summer-2025-2026-C"},
+      {year:"2025/2026", sem:"2", type:"final", ver:"B", pages:6, file:"MKT112-Final-Second-2025-2026-B"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"B", pages:6, file:"MKT112-MTA-Second-2025-2026-B"},
+      {year:"2025/2026", sem:"1", type:"final", ver:"B", pages:6, file:"MKT112-Final-First-2025-2026-B"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"C", pages:6, file:"MKT112-MTA-Makeup-First-2025-2026-C"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"B", pages:6, file:"MKT112-MTA-First-2025-2026-B"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"C", pages:5, file:"MKT112-MTA-Second-2024-2025-C"}
+    ]},
+    {code:"MKT331", name:"Services Marketing", fac:"bus", items:[
+      {year:"2025/2026", sem:"2", type:"final", ver:"B", pages:2, file:"MKT331-Final-Second-2025-2026-B"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"B", pages:2, file:"MKT331-MTA-Second-2025-2026-B"},
+      {year:"2025/2026", sem:"1", type:"final", ver:"B", pages:2, file:"MKT331-Final-First-2025-2026-B"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"C", pages:2, file:"MKT331-MTA-Makeup-First-2025-2026-C"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:2, file:"MKT331-MTA-First-2025-2026"}
+    ]},
+    {code:"MKT332", name:"Digital Marketing", fac:"bus", items:[
+      {year:"2025/2026", sem:"2", type:"final", ver:"B", pages:2, file:"MKT332-Final-Second-2025-2026-B"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"B", pages:2, file:"MKT332-MTA-Second-2025-2026-B"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"B", pages:2, file:"MKT332-MTA-First-2025-2026-B"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"C", pages:2, file:"MKT332-MTA-Second-2024-2025-C"}
+    ]},
+    {code:"MT294", name:"", fac:"bus", items:[
+      {year:"2024/2025", sem:"1", type:"final", ver:"", pages:5, file:"MT294-Final-First-2024-2025"}
+    ]},
+    {code:"SYS111", name:"Principles of Technology Ventures", fac:"bus", items:[
+      {year:"2025/2026", sem:"summer", type:"mta", ver:"C", pages:5, file:"SYS111-MTA-Summer-2025-2026-C"},
+      {year:"2025/2026", sem:"2", type:"final", ver:"B", pages:9, file:"SYS111-Final-Second-2025-2026-B"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"B", pages:5, file:"SYS111-MTA-Second-2025-2026-B"},
+      {year:"2025/2026", sem:"1", type:"final", ver:"B", pages:6, file:"SYS111-Final-First-2025-2026-B"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"B", pages:5, file:"SYS111-MTA-First-2025-2026-B"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"A", pages:5, file:"SYS111-Final-Second-2024-2025-A"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"C", pages:5, file:"SYS111-MTA-Second-2024-2025-C"}
+    ]},
+    {code:"SYS210", name:"Managing Technology and Innovation", fac:"bus", items:[
+      {year:"2025/2026", sem:"2", type:"final", ver:"B", pages:2, file:"SYS210-Final-Second-2025-2026-B"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"B", pages:2, file:"SYS210-MTA-Second-2025-2026-B"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"C", pages:2, file:"SYS210-MTA-Makeup-First-2025-2026-C"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"B", pages:2, file:"SYS210-MTA-First-2025-2026-B"}
+    ]},
+    {code:"M109", name:".NET Programming", fac:"it", items:[
+      {year:"2025/2026", sem:"summer", type:"final", ver:"", pages:4, file:"M109-Final-Summer-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:5, file:"M109-Final-Second-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:5, file:"M109-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"final", ver:"", pages:4, file:"M109-Final-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"", pages:5, file:"M109-MTA-Makeup-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:4, file:"M109-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"", pages:4, file:"M109-MTA-Makeup-Second-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:5, file:"M109-MTA-Second-2024-2025"}
+    ]},
+    {code:"M110", name:"Python Programming", fac:"it", items:[
+      {year:"2025/2026", sem:"summer", type:"makeup", ver:"", pages:3, file:"M110-MTA-Makeup-Summer-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:5, file:"M110-Final-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:3, file:"M110-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:4, file:"M110-MTA-Second-2024-2025"}
+    ]},
+    {code:"M140", name:"Introducing Statistics", fac:"it", items:[
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:3, file:"M140-Final-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"final", ver:"", pages:3, file:"M140-Final-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:3, file:"M140-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:3, file:"M140-MTA-Second-2024-2025"}
+    ]},
+    {code:"M218", name:"Relational Databases", fac:"it", items:[
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:4, file:"M218-Final-Second-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:4, file:"M218-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"", pages:4, file:"M218-MTA-Makeup-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:4, file:"M218-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"", pages:5, file:"M218-Final-Second-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"", pages:3, file:"M218-MTA-Makeup-Second-2024-2025"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"", pages:3, file:"M218-Final-First-2024-2025"}
+    ]},
+    {code:"M238", name:"Data Visualization", fac:"it", items:[
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:3, file:"M238-Final-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:2, file:"M238-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"", pages:3, file:"M238-Final-Second-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:2, file:"M238-MTA-Second-2024-2025"}
+    ]},
+    {code:"M251", name:"Object Oriented Programming using Java", fac:"it", items:[
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:4, file:"M251-Final-Second-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:3, file:"M251-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:3, file:"M251-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"", pages:4, file:"M251-Final-Second-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"", pages:3, file:"M251-MTA-Makeup-Second-2024-2025"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"", pages:4, file:"M251-Final-First-2024-2025"}
+    ]},
+    {code:"M252", name:"Internet Programming", fac:"it", items:[
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:4, file:"M252-Final-Second-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:3, file:"M252-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"final", ver:"", pages:4, file:"M252-Final-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:3, file:"M252-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"", pages:4, file:"M252-Final-Second-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:3, file:"M252-MTA-Second-2024-2025"}
+    ]},
+    {code:"M269", name:"Algorithms, Data Structures and Computability", fac:"it", items:[
+      {year:"2025/2026", sem:"summer", type:"mta", ver:"", pages:4, file:"M269-MTA-Summer-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:4, file:"M269-Final-Second-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:4, file:"M269-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"", pages:4, file:"M269-MTA-Makeup-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:4, file:"M269-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"", pages:4, file:"M269-Final-Second-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:4, file:"M269-MTA-Second-2024-2025"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"", pages:4, file:"M269-Final-First-2024-2025"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"", pages:4, file:"M269-Final-First-2024-2025-2"}
+    ]},
+    {code:"M348", name:"Applied Statistical Modelling", fac:"it", items:[
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:7, file:"M348-Final-Second-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"A", pages:6, file:"M348-MTA-Second-2025-2026-A"},
+      {year:"2025/2026", sem:"1", type:"final", ver:"", pages:7, file:"M348-Final-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"", pages:5, file:"M348-MTA-Makeup-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:4, file:"M348-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"", pages:7, file:"M348-Final-Second-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"", pages:4, file:"M348-MTA-Makeup-Second-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:5, file:"M348-MTA-Second-2024-2025"}
+    ]},
+    {code:"MS102", name:"Physics", fac:"it", items:[
+      {year:"2025/2026", sem:"summer", type:"final", ver:"", pages:4, file:"MS102-Final-Summer-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:4, file:"MS102-Final-Second-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:4, file:"MS102-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"final", ver:"", pages:4, file:"MS102-Final-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"", pages:4, file:"MS102-MTA-Makeup-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:4, file:"MS102-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"", pages:5, file:"MS102-Final-Second-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:5, file:"MS102-MTA-Second-2024-2025"},
+      {year:"2024/2025", sem:"1", type:"makeup", ver:"", pages:5, file:"MS102-MTA-Makeup-First-2024-2025"}
+    ]},
+    {code:"MST129", name:"Applied Calculus", fac:"it", items:[
+      {year:"2025/2026", sem:"summer", type:"final", ver:"", pages:2, file:"MST129-Final-Summer-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:3, file:"MST129-Final-Second-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:3, file:"MST129-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"final", ver:"", pages:3, file:"MST129-Final-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:3, file:"MST129-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:3, file:"MST129-MTA-Second-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:3, file:"MST129-MTA-Second-2024-2025-2"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"", pages:2, file:"MST129-Final-First-2024-2025"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"", pages:2, file:"MST129-Final-First-2024-2025-2"}
+    ]},
+    {code:"MST224", name:"Mathematical Methods", fac:"it", items:[
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:3, file:"MST224-Final-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"final", ver:"", pages:3, file:"MST224-Final-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"", pages:3, file:"MST224-MTA-Makeup-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"", pages:3, file:"MST224-MTA-Makeup-Second-2024-2025"}
+    ]},
+    {code:"MT101", name:"General Mathematics", fac:"it", items:[
+      {year:"2025/2026", sem:"summer", type:"final", ver:"", pages:2, file:"MT101-Final-Summer-2025-2026"},
+      {year:"2025/2026", sem:"summer", type:"makeup", ver:"", pages:2, file:"MT101-MTA-Makeup-Summer-2025-2026"},
+      {year:"2025/2026", sem:"summer", type:"mta", ver:"", pages:2, file:"MT101-MTA-Summer-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:2, file:"MT101-Final-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"final", ver:"", pages:3, file:"MT101-Final-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"", pages:2, file:"MT101-MTA-Makeup-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:2, file:"MT101-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"", pages:2, file:"MT101-MTA-Makeup-Second-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:2, file:"MT101-MTA-Second-2024-2025"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"", pages:3, file:"MT101-Final-First-2024-2025"}
+    ]},
+    {code:"MT131", name:"Discrete Mathematics", fac:"it", items:[
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:3, file:"MT131-Final-Second-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:3, file:"MT131-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"final", ver:"", pages:3, file:"MT131-Final-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:3, file:"MT131-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"summer", type:"final", ver:"", pages:3, file:"MT131-Final-Summer-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"", pages:4, file:"MT131-Final-Second-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:3, file:"MT131-MTA-Second-2024-2025"}
+    ]},
+    {code:"MT132", name:"Linear Algebra", fac:"it", items:[
+      {year:"2025/2026", sem:"summer", type:"final", ver:"", pages:3, file:"MT132-Final-Summer-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:3, file:"MT132-Final-Second-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:3, file:"MT132-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"final", ver:"", pages:3, file:"MT132-Final-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"", pages:3, file:"MT132-MTA-Makeup-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:2, file:"MT132-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"", pages:3, file:"MT132-Final-Second-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"", pages:3, file:"MT132-MTA-Makeup-Second-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:3, file:"MT132-MTA-Second-2024-2025"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"", pages:3, file:"MT132-Final-First-2024-2025"}
+    ]},
+    {code:"MT141", name:"Introduction to Probability and Statistics", fac:"it", items:[
+      {year:"2025/2026", sem:"summer", type:"final", ver:"", pages:3, file:"MT141-Final-Summer-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:3, file:"MT141-Final-Second-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:3, file:"MT141-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"final", ver:"", pages:3, file:"MT141-Final-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:3, file:"MT141-MTA-First-2025-2026"}
+    ]},
+    {code:"MT248", name:"Analyzing Data", fac:"it", items:[
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:6, file:"MT248-Final-Second-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:6, file:"MT248-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"", pages:4, file:"MT248-MTA-Makeup-First-2025-2026"}
+    ]},
+    {code:"MT249", name:"Practical Modern Statistics", fac:"it", items:[
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:6, file:"MT249-Final-Second-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:4, file:"MT249-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"final", ver:"", pages:6, file:"MT249-Final-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"", pages:5, file:"MT249-MTA-Makeup-First-2025-2026"}
+    ]},
+    {code:"MT395", name:"Applied Cybersecurity", fac:"it", items:[
+      {year:"2025/2026", sem:"summer", type:"final", ver:"", pages:4, file:"MT395-Final-Summer-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:4, file:"MT395-Final-Second-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:2, file:"MT395-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"final", ver:"", pages:4, file:"MT395-Final-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"", pages:3, file:"MT395-MTA-Makeup-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:3, file:"MT395-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:3, file:"MT395-MTA-Second-2024-2025"}
+    ]},
+    {code:"T103", name:"Computer Organization and Architecture", fac:"it", items:[
+      {year:"2025/2026", sem:"summer", type:"final", ver:"", pages:4, file:"T103-Final-Summer-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:2, file:"T103-MTA-Second-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"", pages:4, file:"T103-Final-Second-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"", pages:2, file:"T103-MTA-Makeup-Second-2024-2025"}
+    ]},
+    {code:"T216A", name:"Cisco Networking (CCNA) Part A", fac:"it", items:[
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:5, file:"T216A-Final-Second-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:4, file:"T216A-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"final", ver:"", pages:5, file:"T216A-Final-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"", pages:4, file:"T216A-MTA-Makeup-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"", pages:5, file:"T216A-Final-Second-2024-2025"}
+    ]},
+    {code:"T216B", name:"Cisco Networking (CCNA) Part B", fac:"it", items:[
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:5, file:"T216B-Final-Second-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:5, file:"T216B-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"", pages:6, file:"T216B-MTA-Makeup-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:6, file:"T216B-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"", pages:5, file:"T216B-Final-Second-2024-2025"}
+    ]},
+    {code:"T227", name:"Change, Strategy and Projects at Work", fac:"it", items:[
+      {year:"2025/2026", sem:"1", type:"final", ver:"", pages:5, file:"T227-Final-First-2025-2026"}
+    ]},
+    {code:"T316", name:"Advanced Networking", fac:"it", items:[
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:3, file:"T316-Final-Second-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:3, file:"T316-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"", pages:2, file:"T316-MTA-Makeup-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:3, file:"T316-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"", pages:4, file:"T316-Final-First-2024-2025"}
+    ]},
+    {code:"T318", name:"Applied Network Security", fac:"it", items:[
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:4, file:"T318-Final-Second-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:4, file:"T318-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"final", ver:"", pages:6, file:"T318-Final-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"", pages:4, file:"T318-MTA-Makeup-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:3, file:"T318-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"A", pages:5, file:"T318-Final-Second-2024-2025-A"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"", pages:3, file:"T318-MTA-Makeup-Second-2024-2025"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"", pages:4, file:"T318-Final-First-2024-2025"}
+    ]},
+    {code:"TM103", name:"Computer Organization and Architecture", fac:"it", items:[
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:4, file:"TM103-Final-Second-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"makeup", ver:"", pages:3, file:"TM103-MTA-Makeup-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:3, file:"TM103-MTA-First-2025-2026"}
+    ]},
+    {code:"TM105", name:"Introduction to Programming", fac:"it", items:[
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:5, file:"TM105-Final-Second-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:4, file:"TM105-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"final", ver:"", pages:5, file:"TM105-Final-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"", pages:4, file:"TM105-MTA-Makeup-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:4, file:"TM105-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"", pages:5, file:"TM105-Final-Second-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"", pages:5, file:"TM105-Final-Second-2024-2025-2"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"", pages:4, file:"TM105-MTA-Makeup-Second-2024-2025"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"", pages:5, file:"TM105-Final-First-2024-2025"}
+    ]},
+    {code:"TM112", name:"Introduction to Computing and IT", fac:"it", items:[
+      {year:"2025/2026", sem:"summer", type:"final", ver:"", pages:3, file:"TM112-Final-Summer-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:3, file:"TM112-Final-Second-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:3, file:"TM112-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"", pages:3, file:"TM112-MTA-Makeup-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:2, file:"TM112-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:3, file:"TM112-MTA-Second-2024-2025"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"", pages:3, file:"TM112-Final-First-2024-2025"}
+    ]},
+    {code:"TM129", name:"Technologies in Practice", fac:"it", items:[
+      {year:"2025/2026", sem:"summer", type:"mta", ver:"", pages:4, file:"TM129-MTA-Summer-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:4, file:"TM129-Final-Second-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:4, file:"TM129-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"", pages:3, file:"TM129-MTA-Makeup-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:3, file:"TM129-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"", pages:4, file:"TM129-Final-Second-2024-2025"},
+      {year:"2024/2025", sem:"1", type:"makeup", ver:"", pages:3, file:"TM129-MTA-Makeup-First-2024-2025"}
+    ]},
+    {code:"TM240", name:"Introduction to Computer Graphics", fac:"it", items:[
+      {year:"2025/2026", sem:"summer", type:"final", ver:"", pages:3, file:"TM240-Final-Summer-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:4, file:"TM240-Final-Second-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"makeup", ver:"", pages:3, file:"TM240-MTA-Makeup-Second-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:4, file:"TM240-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"final", ver:"", pages:3, file:"TM240-Final-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:3, file:"TM240-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"", pages:4, file:"TM240-Final-Second-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:3, file:"TM240-MTA-Second-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:3, file:"TM240-MTA-Second-2024-2025-2"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"", pages:4, file:"TM240-Final-First-2024-2025"}
+    ]},
+    {code:"TM254", name:"Managing IT: the why, the what and the how", fac:"it", items:[
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:5, file:"TM254-Final-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"final", ver:"", pages:5, file:"TM254-Final-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:4, file:"TM254-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:4, file:"TM254-MTA-Second-2024-2025"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"", pages:5, file:"TM254-Final-First-2024-2025"}
+    ]},
+    {code:"TM256", name:"Cyber Security", fac:"it", items:[
+      {year:"2025/2026", sem:"summer", type:"final", ver:"", pages:4, file:"TM256-Final-Summer-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:5, file:"TM256-Final-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"final", ver:"", pages:4, file:"TM256-Final-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:3, file:"TM256-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"", pages:3, file:"TM256-MTA-Makeup-Second-2024-2025"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"", pages:5, file:"TM256-Final-First-2024-2025"}
+    ]},
+    {code:"TM260", name:"Ethics in Information Technology", fac:"it", items:[
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:3, file:"TM260-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"final", ver:"", pages:4, file:"TM260-Final-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:3, file:"TM260-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:3, file:"TM260-MTA-Second-2024-2025"}
+    ]},
+    {code:"TM270", name:"Artificial Intelligence", fac:"it", items:[
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:6, file:"TM270-Final-Second-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:4, file:"TM270-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:3, file:"TM270-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"", pages:3, file:"TM270-MTA-Makeup-Second-2024-2025"}
+    ]},
+    {code:"TM271", name:"Machine Learning and Deep Learning", fac:"it", items:[
+      {year:"2025/2026", sem:"summer", type:"final", ver:"", pages:3, file:"TM271-Final-Summer-2025-2026"},
+      {year:"2025/2026", sem:"summer", type:"mta", ver:"", pages:2, file:"TM271-MTA-Summer-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:3, file:"TM271-Final-Second-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:2, file:"TM271-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"final", ver:"", pages:3, file:"TM271-Final-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"", pages:2, file:"TM271-MTA-Makeup-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:3, file:"TM271-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"summer", type:"final", ver:"", pages:3, file:"TM271-Final-Summer-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"", pages:3, file:"TM271-Final-Second-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"", pages:2, file:"TM271-MTA-Makeup-Second-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:2, file:"TM271-MTA-Second-2024-2025"}
+    ]},
+    {code:"TM275", name:"Parallel and Distributed Systems", fac:"it", items:[
+      {year:"2025/2026", sem:"summer", type:"final", ver:"", pages:2, file:"TM275-Final-Summer-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:2, file:"TM275-Final-Second-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:3, file:"TM275-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"final", ver:"", pages:3, file:"TM275-Final-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"", pages:2, file:"TM275-Final-Second-2024-2025"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"", pages:3, file:"TM275-Final-First-2024-2025"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"", pages:3, file:"TM275-Final-First-2024-2025-2"}
+    ]},
+    {code:"TM276", name:"Software Development Processes", fac:"it", items:[
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:3, file:"TM276-Final-Second-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:3, file:"TM276-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"final", ver:"", pages:3, file:"TM276-Final-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:3, file:"TM276-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"", pages:3, file:"TM276-MTA-Makeup-Second-2024-2025"}
+    ]},
+    {code:"TM291", name:"Management Information Systems", fac:"it", items:[
+      {year:"2025/2026", sem:"summer", type:"final", ver:"", pages:3, file:"TM291-Final-Summer-2025-2026"},
+      {year:"2025/2026", sem:"summer", type:"mta", ver:"", pages:3, file:"TM291-MTA-Summer-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:3, file:"TM291-Final-Second-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:3, file:"TM291-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:2, file:"TM291-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"", pages:2, file:"TM291-Final-Second-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:2, file:"TM291-MTA-Second-2024-2025"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"", pages:4, file:"TM291-Final-First-2024-2025"}
+    ]},
+    {code:"TM298", name:"Operating Systems", fac:"it", items:[
+      {year:"2025/2026", sem:"summer", type:"final", ver:"", pages:4, file:"TM298-Final-Summer-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:4, file:"TM298-Final-Second-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"makeup", ver:"", pages:3, file:"TM298-MTA-Makeup-Second-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:3, file:"TM298-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"final", ver:"", pages:3, file:"TM298-Final-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"", pages:3, file:"TM298-MTA-Makeup-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:3, file:"TM298-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"summer", type:"final", ver:"", pages:4, file:"TM298-Final-Summer-2024-2025"},
+      {year:"2024/2025", sem:"summer", type:"final", ver:"", pages:4, file:"TM298-Final-Summer-2024-2025-2"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"", pages:4, file:"TM298-Final-Second-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"", pages:3, file:"TM298-MTA-Makeup-Second-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:3, file:"TM298-MTA-Second-2024-2025"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"", pages:4, file:"TM298-Final-First-2024-2025"}
+    ]},
+    {code:"TM311", name:"Information Security", fac:"it", items:[
+      {year:"2025/2026", sem:"summer", type:"final", ver:"", pages:4, file:"TM311-Final-Summer-2025-2026"},
+      {year:"2025/2026", sem:"summer", type:"makeup", ver:"", pages:4, file:"TM311-MTA-Makeup-Summer-2025-2026"},
+      {year:"2025/2026", sem:"summer", type:"mta", ver:"", pages:4, file:"TM311-MTA-Summer-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:4, file:"TM311-Final-Second-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:4, file:"TM311-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"", pages:3, file:"TM311-MTA-Makeup-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:4, file:"TM311-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"", pages:5, file:"TM311-Final-Second-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:3, file:"TM311-MTA-Second-2024-2025"}
+    ]},
+    {code:"TM340", name:"Natural Language Processing", fac:"it", items:[
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:4, file:"TM340-Final-Second-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:4, file:"TM340-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:5, file:"TM340-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"summer", type:"final", ver:"", pages:5, file:"TM340-Final-Summer-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"", pages:4, file:"TM340-MTA-Makeup-Second-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:4, file:"TM340-MTA-Second-2024-2025"}
+    ]},
+    {code:"TM341", name:"Computer Vision", fac:"it", items:[
+      {year:"2025/2026", sem:"summer", type:"final", ver:"", pages:3, file:"TM341-Final-Summer-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:4, file:"TM341-Final-Second-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:3, file:"TM341-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"", pages:3, file:"TM341-MTA-Makeup-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:4, file:"TM341-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"", pages:3, file:"TM341-MTA-Makeup-Second-2024-2025"}
+    ]},
+    {code:"TM351", name:"Data Management and Analysis", fac:"it", items:[
+      {year:"2025/2026", sem:"summer", type:"mta", ver:"", pages:5, file:"TM351-MTA-Summer-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:4, file:"TM351-Final-Second-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"D", pages:4, file:"TM351-MTA-Second-2025-2026-D"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"", pages:4, file:"TM351-MTA-Makeup-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"", pages:4, file:"TM351-Final-Second-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"D", pages:4, file:"TM351-MTA-Makeup-Second-2024-2025-D"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:5, file:"TM351-MTA-Second-2024-2025"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"", pages:4, file:"TM351-Final-First-2024-2025"}
+    ]},
+    {code:"TM352", name:"Web, Mobile and Cloud Technologies", fac:"it", items:[
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:5, file:"TM352-Final-Second-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:3, file:"TM352-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"", pages:3, file:"TM352-MTA-Makeup-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:3, file:"TM352-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"", pages:4, file:"TM352-MTA-Makeup-Second-2024-2025"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"", pages:4, file:"TM352-Final-First-2024-2025"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"", pages:4, file:"TM352-Final-First-2024-2025-2"},
+      {year:"2023/2024", sem:"summer", type:"final", ver:"", pages:5, file:"TM352-Final-Summer-2023-2024"}
+    ]},
+    {code:"TM354", name:"Software Engineering", fac:"it", items:[
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:3, file:"TM354-Final-Second-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:3, file:"TM354-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"", pages:3, file:"TM354-MTA-Makeup-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:3, file:"TM354-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"", pages:3, file:"TM354-MTA-Makeup-Second-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:3, file:"TM354-MTA-Second-2024-2025"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"", pages:4, file:"TM354-Final-First-2024-2025"}
+    ]},
+    {code:"TM355", name:"Communications Technology", fac:"it", items:[
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:4, file:"TM355-Final-Second-2025-2026"}
+    ]},
+    {code:"TM356", name:"Interaction Design and User Experience", fac:"it", items:[
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:4, file:"TM356-Final-Second-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:3, file:"TM356-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"", pages:3, file:"TM356-MTA-Makeup-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:3, file:"TM356-MTA-First-2025-2026"}
+    ]},
+    {code:"TM358", name:"Machine Learning & Artificial Intelligence", fac:"it", items:[
+      {year:"2025/2026", sem:"summer", type:"mta", ver:"", pages:4, file:"TM358-MTA-Summer-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:5, file:"TM358-Final-Second-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:4, file:"TM358-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"", pages:4, file:"TM358-MTA-Makeup-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:3, file:"TM358-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"summer", type:"mta", ver:"", pages:3, file:"TM358-MTA-Summer-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:4, file:"TM358-MTA-Second-2024-2025"}
+    ]},
+    {code:"TM359", name:"Systems Penetration Testing", fac:"it", items:[
+      {year:"2025/2026", sem:"2", type:"final", ver:"A", pages:3, file:"TM359-Final-Second-2025-2026-A"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:3, file:"TM359-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"", pages:3, file:"TM359-MTA-Makeup-First-2025-2026"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"", pages:2, file:"TM359-Final-First-2024-2025"}
+    ]},
+    {code:"TT284", name:"Web Technologies", fac:"it", items:[
+      {year:"2025/2026", sem:"summer", type:"final", ver:"", pages:4, file:"TT284-Final-Summer-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"final", ver:"", pages:4, file:"TT284-Final-Second-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"makeup", ver:"", pages:5, file:"TT284-MTA-Makeup-Second-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:5, file:"TT284-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"final", ver:"", pages:5, file:"TT284-Final-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:5, file:"TT284-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"", pages:5, file:"TT284-MTA-Makeup-Second-2024-2025"}
+    ]},
+    {code:"A112A", name:"Cultures I", fac:"art", items:[
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:3, file:"A112A-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:3, file:"A112A-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"", pages:4, file:"A112A-Final-First-2024-2025"}
+    ]},
+    {code:"A112B", name:"Cultures II", fac:"art", items:[
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:3, file:"A112B-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:3, file:"A112B-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:3, file:"A112B-MTA-Second-2024-2025"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"", pages:3, file:"A112B-Final-First-2024-2025"}
+    ]},
+    {code:"A112T", name:"Cultures", fac:"art", items:[
+      {year:"2025/2026", sem:"summer", type:"final", ver:"", pages:3, file:"A112T-Final-Summer-2025-2026"},
+      {year:"2025/2026", sem:"summer", type:"mta", ver:"", pages:3, file:"A112T-MTA-Summer-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:3, file:"A112T-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:3, file:"A112T-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"", pages:3, file:"A112T-Final-Second-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:3, file:"A112T-MTA-Second-2024-2025"}
+    ]},
+    {code:"A215A", name:"Creative Writing", fac:"art", items:[
+      {year:"2025/2026", sem:"summer", type:"makeup", ver:"", pages:3, file:"A215A-MTA-Makeup-Summer-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:3, file:"A215A-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"", pages:4, file:"A215A-Final-Second-2024-2025"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"", pages:4, file:"A215A-Final-First-2024-2025"}
+    ]},
+    {code:"A215B", name:"Creative Writing", fac:"art", items:[
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:2, file:"A215B-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"", pages:3, file:"A215B-Final-Second-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"", pages:3, file:"A215B-MTA-Makeup-Second-2024-2025"}
+    ]},
+    {code:"A230A", name:"Reading and Studying Literature I", fac:"art", items:[
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:3, file:"A230A-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"", pages:4, file:"A230A-Final-First-2024-2025"}
+    ]},
+    {code:"A230B", name:"Reading and Studying Literature II", fac:"art", items:[
+      {year:"2025/2026", sem:"1", type:"final", ver:"", pages:3, file:"A230B-Final-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"", pages:3, file:"A230B-MTA-Makeup-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"", pages:3, file:"A230B-MTA-Makeup-Second-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:3, file:"A230B-MTA-Second-2024-2025"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"", pages:3, file:"A230B-Final-First-2024-2025"}
+    ]},
+    {code:"A805N", name:"Dramatic Dialogues", fac:"art", items:[
+      {year:"2024/2025", sem:"2", type:"final", ver:"", pages:2, file:"A805N-Final-Second-2024-2025"}
+    ]},
+    {code:"AA100B", name:"The Arts Past and Present II", fac:"art", items:[
+      {year:"2024/2025", sem:"1", type:"final", ver:"", pages:3, file:"AA100B-Final-First-2024-2025"}
+    ]},
+    {code:"E304A", name:"Exploring English Grammar I", fac:"art", items:[
+      {year:"2025/2026", sem:"1", type:"final", ver:"B", pages:7, file:"E304A-Final-First-2025-2026-B"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"", pages:6, file:"E304A-MTA-Makeup-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"", pages:6, file:"E304A-MTA-Makeup-First-2025-2026-2"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"", pages:7, file:"E304A-Final-Second-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"", pages:6, file:"E304A-Final-Second-2024-2025-2"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"", pages:9, file:"E304A-Final-First-2024-2025"}
+    ]},
+    {code:"E304B", name:"Exploring English Grammar II", fac:"art", items:[
+      {year:"2025/2026", sem:"2", type:"makeup", ver:"", pages:7, file:"E304B-MTA-Makeup-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"", pages:7, file:"E304B-MTA-Makeup-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:7, file:"E304B-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:6, file:"E304B-MTA-Second-2024-2025"}
+    ]},
+    {code:"EA300A", name:"Children's Literature A", fac:"art", items:[
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:3, file:"EA300A-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"", pages:3, file:"EA300A-MTA-Makeup-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"", pages:3, file:"EA300A-MTA-Makeup-First-2025-2026-2"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"", pages:7, file:"EA300A-Final-Second-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:3, file:"EA300A-MTA-Second-2024-2025"},
+      {year:"2024/2025", sem:"1", type:"makeup", ver:"", pages:3, file:"EA300A-MTA-Makeup-First-2024-2025"}
+    ]},
+    {code:"EA300B", name:"Children's Literature B", fac:"art", items:[
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:3, file:"EA300B-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"", pages:3, file:"EA300B-MTA-Makeup-Second-2024-2025"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"", pages:3, file:"EA300B-Final-First-2024-2025"}
+    ]},
+    {code:"EA400B", name:"", fac:"art", items:[
+      {year:"2024/2025", sem:"1", type:"final", ver:"", pages:3, file:"EA400B-Final-First-2024-2025"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"", pages:3, file:"EA400B-Final-First-2024-2025-2"}
+    ]},
+    {code:"EL112", name:"English Communication Skills II", fac:"art", items:[
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:7, file:"EL112-MTA-Second-2024-2025"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"", pages:10, file:"EL112-Final-First-2024-2025"}
+    ]},
+    {code:"EL117", name:"Academic Writing", fac:"art", items:[
+      {year:"2025/2026", sem:"summer", type:"mta", ver:"", pages:5, file:"EL117-MTA-Summer-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:6, file:"EL117-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"", pages:5, file:"EL117-MTA-Makeup-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"", pages:8, file:"EL117-Final-Second-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:5, file:"EL117-MTA-Second-2024-2025"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"", pages:7, file:"EL117-Final-First-2024-2025"}
+    ]},
+    {code:"EL119", name:"Oral & Presentation Skills", fac:"art", items:[
+      {year:"2025/2026", sem:"1", type:"final", ver:"", pages:3, file:"EL119-Final-First-2025-2026"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"", pages:3, file:"EL119-Final-First-2024-2025"}
+    ]},
+    {code:"EL121", name:"", fac:"art", items:[
+      {year:"2024/2025", sem:"2", type:"final", ver:"", pages:3, file:"EL121-Final-Second-2024-2025"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"", pages:3, file:"EL121-Final-First-2024-2025"}
+    ]},
+    {code:"EL121N", name:"", fac:"art", items:[
+      {year:"2025/2026", sem:"1", type:"final", ver:"", pages:4, file:"EL121N-Final-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:2, file:"EL121N-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:2, file:"EL121N-MTA-Second-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:2, file:"EL121N-MTA-Second-2024-2025-2"}
+    ]},
+    {code:"EL122", name:"Writing Research", fac:"art", items:[
+      {year:"2025/2026", sem:"summer", type:"makeup", ver:"", pages:8, file:"EL122-MTA-Makeup-Summer-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:7, file:"EL122-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"final", ver:"", pages:9, file:"EL122-Final-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"", pages:6, file:"EL122-MTA-Makeup-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"", pages:6, file:"EL122-MTA-Makeup-First-2025-2026-2"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"", pages:7, file:"EL122-MTA-Makeup-Second-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:7, file:"EL122-MTA-Second-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:7, file:"EL122-MTA-Second-2024-2025-2"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"", pages:10, file:"EL122-Final-First-2024-2025"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"", pages:10, file:"EL122-Final-First-2024-2025-2"}
+    ]},
+    {code:"EL330", name:"Teaching English as a Foreign Language (TEFL)", fac:"art", items:[
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:3, file:"EL330-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:3, file:"EL330-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"", pages:3, file:"EL330-MTA-Makeup-Second-2024-2025"},
+      {year:"2023/2024", sem:"1", type:"final", ver:"", pages:5, file:"EL330-Final-First-2023-2024"}
+    ]},
+    {code:"FR101", name:"French for Beginners", fac:"art", items:[
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:4, file:"FR101-MTA-Second-2024-2025"}
+    ]},
+    {code:"L201A", name:"English in the World I", fac:"art", items:[
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:4, file:"L201A-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"final", ver:"", pages:4, file:"L201A-Final-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"", pages:4, file:"L201A-MTA-Makeup-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:3, file:"L201A-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"", pages:5, file:"L201A-Final-Second-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:4, file:"L201A-MTA-Second-2024-2025"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"", pages:6, file:"L201A-Final-First-2024-2025"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"", pages:5, file:"L201A-Final-First-2024-2025-2"}
+    ]},
+    {code:"L201B", name:"English in the World II", fac:"art", items:[
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:4, file:"L201B-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:4, file:"L201B-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:4, file:"L201B-MTA-Second-2024-2025"}
+    ]},
+    {code:"TR102", name:"Introduction to Translation", fac:"art", items:[
+      {year:"2025/2026", sem:"1", type:"final", ver:"", pages:5, file:"TR102-Final-First-2025-2026"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"", pages:5, file:"TR102-Final-First-2024-2025"}
+    ]},
+    {code:"TR103", name:"Contrastive Analysis", fac:"art", items:[
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:5, file:"TR103-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"", pages:3, file:"TR103-MTA-Makeup-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:3, file:"TR103-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"", pages:4, file:"TR103-Final-Second-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:3, file:"TR103-MTA-Second-2024-2025"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"", pages:5, file:"TR103-Final-First-2024-2025"}
+    ]},
+    {code:"TR301N", name:"", fac:"art", items:[
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:4, file:"TR301N-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:4, file:"TR301N-MTA-First-2025-2026"}
+    ]},
+    {code:"TR302", name:"Computer-Aided Translation Technology", fac:"art", items:[
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:4, file:"TR302-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:3, file:"TR302-MTA-Second-2025-2026-2"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:4, file:"TR302-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"", pages:4, file:"TR302-Final-Second-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:4, file:"TR302-MTA-Second-2024-2025"}
+    ]},
+    {code:"TR303", name:"Translation of Business Texts", fac:"art", items:[
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:3, file:"TR303-MTA-First-2025-2026"}
+    ]},
+    {code:"TR304", name:"Translation of Official and Legal Documents", fac:"art", items:[
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:3, file:"TR304-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"final", ver:"", pages:3, file:"TR304-Final-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"", pages:4, file:"TR304-MTA-Makeup-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:4, file:"TR304-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"", pages:3, file:"TR304-Final-Second-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"", pages:3, file:"TR304-MTA-Makeup-Second-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:3, file:"TR304-MTA-Second-2024-2025"}
+    ]},
+    {code:"TR305", name:"Translation of Media Texts", fac:"art", items:[
+      {year:"2025/2026", sem:"summer", type:"mta", ver:"", pages:3, file:"TR305-MTA-Summer-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:3, file:"TR305-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"final", ver:"", pages:4, file:"TR305-Final-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:3, file:"TR305-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"", pages:3, file:"TR305-Final-Second-2024-2025"}
+    ]},
+    {code:"TR306", name:"Consecutive and Simultaneous Interpreting", fac:"art", items:[
+      {year:"2025/2026", sem:"summer", type:"makeup", ver:"", pages:3, file:"TR306-MTA-Makeup-Summer-2025-2026"},
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:3, file:"TR306-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"final", ver:"", pages:4, file:"TR306-Final-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"", pages:4, file:"TR306-MTA-Makeup-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"", pages:3, file:"TR306-Final-Second-2024-2025"},
+      {year:"2024/2025", sem:"1", type:"final", ver:"", pages:3, file:"TR306-Final-First-2024-2025"}
+    ]},
+    {code:"TR307", name:"Political and Diplomatic Translation", fac:"art", items:[
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:3, file:"TR307-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"", pages:4, file:"TR307-Final-Second-2024-2025"}
+    ]},
+    {code:"TR308", name:"Translation of Special Topics", fac:"art", items:[
+      {year:"2025/2026", sem:"2", type:"mta", ver:"", pages:5, file:"TR308-MTA-Second-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"makeup", ver:"", pages:3, file:"TR308-MTA-Makeup-First-2025-2026"},
+      {year:"2025/2026", sem:"1", type:"mta", ver:"", pages:3, file:"TR308-MTA-First-2025-2026"},
+      {year:"2024/2025", sem:"2", type:"final", ver:"", pages:4, file:"TR308-Final-Second-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"makeup", ver:"", pages:3, file:"TR308-MTA-Makeup-Second-2024-2025"},
+      {year:"2024/2025", sem:"2", type:"mta", ver:"", pages:3, file:"TR308-MTA-Second-2024-2025"}
     ]}
   ],
   groups: [ // الأقسام بالترتيب، والقسم اللي ما فيه محاضرات ما يطلع
@@ -730,20 +1746,47 @@ document.querySelectorAll("#groups .tab").forEach(t => t.onclick = () => {
   document.querySelectorAll("#groups .tab").forEach(x => x.setAttribute("aria-selected", x === t));
   document.querySelectorAll(".grp").forEach(p => p.hidden = p.dataset.g !== t.dataset.g);
 });
-/* نماذج الاختبارات */
+/* نماذج الاختبارات: بحث + تصفية حسب الكلية + صفحة لكل مادة (#exams/ACC204) */
 const EXT = {final:["فاينل","الاختبار النهائي"], mta:["ميد","اختبار منتصف الفصل"], makeup:["تعويضي","اختبار الميد التعويضي"]};
 const SEM = {"1":"الفصل الأول", "2":"الفصل الثاني", summer:"الفصل الصيفي"};
+const FAC = {all:"الكل", mine:"موادي", bus:"بزنس", it:"آي تي", art:"آداب"};
+const exByCode = Object.fromEntries(CONFIG.exams.map(c => [c.code, c]));
 const examCard = (c, e) =>
   `<li class="s"><div class="date"><div class="d">${EXT[e.type][0]}</div><div class="m">${SEM[e.sem].replace("الفصل ", "")}</div></div>
-   <div><h3>${EXT[e.type][1]}</h3><p>${SEM[e.sem]} ${e.year} · نسخة <bdi>${e.ver}</bdi> · ${e.pages} صفحات</p><a class="go" href="exams/${c.code}/${e.file}.pdf" target="_blank" rel="noopener">افتح النموذج</a></div></li>`;
-$("examlist").innerHTML = `<div class="tabs" role="tablist">${CONFIG.exams.map((c, i) =>
-  `<button type="button" role="tab" class="tab ex" data-x="${c.code}" aria-selected="${i === 0}"><span dir="ltr">${c.code}</span> <small>${c.items.length}</small></button>`).join("")}</div>` +
-  CONFIG.exams.map((c, i) => `<div class="exgrp" role="tabpanel" data-x="${c.code}"${i ? " hidden" : ""}><p class="sub"><span dir="ltr">${c.name}</span> · <a href="${coursePage(c.code)}" style="color:var(--accent-ink)">كل شي عن المادة</a></p>${
-    [...new Set(c.items.map(e => e.year))].map(y => `<h3 class="cc-h">${y}</h3><ul class="sessions cols">${c.items.filter(e => e.year === y).map(e => examCard(c, e)).join("")}</ul>`).join("")}</div>`).join("");
-document.querySelectorAll(".tab.ex").forEach(t => t.onclick = () => {
-  document.querySelectorAll(".tab.ex").forEach(x => x.setAttribute("aria-selected", x === t));
-  document.querySelectorAll(".exgrp").forEach(p => p.hidden = p.dataset.x !== t.dataset.x);
-});
+   <div><h3>${EXT[e.type][1]}</h3><p>${SEM[e.sem]} ${e.year}${e.ver ? ` · نسخة <bdi>${e.ver}</bdi>` : ""} · ${e.pages} صفحات</p><a class="go" href="exams/${c.code}/${e.file}.pdf" target="_blank" rel="noopener">افتح النموذج</a></div></li>`;
+const exState = {fac: "all", q: "", type: "all"};
+const myCodes = () => { try { return JSON.parse(localStorage.getItem("my-courses") || "[]"); } catch { return []; } };
+const exNorm = s => s.toUpperCase().replace(/\s+/g, "");
+function drawExFac() {
+  const mineN = CONFIG.exams.filter(c => myCodes().includes(c.code)).length;
+  $("exfac").innerHTML = Object.entries(FAC).filter(([k]) => k !== "mine" || mineN).map(([k, t]) => {
+    const n = k === "all" ? CONFIG.exams.length : k === "mine" ? mineN : CONFIG.exams.filter(c => c.fac === k).length;
+    return `<button type="button" role="tab" class="tab" data-f="${k}" aria-selected="${exState.fac === k}">${t} <small>${n}</small></button>`;
+  }).join("");
+  $("exfac").querySelectorAll(".tab").forEach(b => b.onclick = () => { exState.fac = b.dataset.f; drawExFac(); drawExCourses(); });
+}
+function drawExCourses() {
+  const q = exNorm(exState.q), mine = myCodes();
+  const list = CONFIG.exams.filter(c => (exState.fac === "all" || (exState.fac === "mine" ? mine.includes(c.code) : c.fac === exState.fac))
+    && (!q || c.code.includes(q) || exNorm(c.name).includes(q)));
+  $("excourses").innerHTML = list.map(c => `<li><a href="#exams/${c.code}"><b dir="ltr">${c.code}</b><span dir="ltr">${c.name || "&nbsp;"}</span><small>${c.items.length} نموذج</small></a></li>`).join("")
+    || `<li class="none">ما لقينا مادة بهالاسم. جرب رمز المادة مثل ACC204.</li>`;
+}
+function drawExCourse(code) {
+  const c = exByCode[code];
+  $("exhome").hidden = !!c; $("examlist").hidden = !c;
+  if (!c) return;
+  const types = Object.keys(EXT).filter(t => c.items.some(e => e.type === t));
+  if (exState.type !== "all" && !types.includes(exState.type)) exState.type = "all";
+  const items = c.items.filter(e => exState.type === "all" || e.type === exState.type);
+  $("examlist").innerHTML = `<a class="back" href="#exams">→ كل المواد</a><h3 class="cc-h" style="margin-top:6px"><span dir="ltr">${c.code}</span>${c.name ? ` · <span dir="ltr">${c.name}</span>` : ""}</h3>
+    <p class="sub">${c.items.length} نموذج · <a href="${coursePage(c.code)}" style="color:var(--accent-ink)">كل شي عن المادة</a></p>
+    ${types.length > 1 ? `<div class="tabs" role="tablist" id="extype">${["all", ...types].map(t => `<button type="button" role="tab" class="tab" data-t="${t}" aria-selected="${exState.type === t}">${t === "all" ? "الكل" : EXT[t][0]} <small>${t === "all" ? c.items.length : c.items.filter(e => e.type === t).length}</small></button>`).join("")}</div>` : ""}
+    ${[...new Set(items.map(e => e.year))].map(y => `<h3 class="cc-h">${y}</h3><ul class="sessions cols">${items.filter(e => e.year === y).map(e => examCard(c, e)).join("")}</ul>`).join("")}`;
+  $("examlist").querySelectorAll("#extype .tab").forEach(b => b.onclick = () => { exState.type = b.dataset.t; drawExCourse(code); });
+}
+$("exq").addEventListener("input", e => { exState.q = e.target.value; drawExCourses(); });
+drawExFac(); drawExCourses(); drawExCourse(null);
 /* تقويم الجامعة */
 const MON = ["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
 const DAY = ["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
@@ -780,7 +1823,7 @@ function route() {
   const id = views.some(x => x.id === v) ? v : "home";
   views.forEach(x => x.hidden = x.id !== id);
   if (id === "lectures" && sub) document.querySelector(`#groups .tab[data-g="${sub}"]`)?.click();
-  if (id === "exams" && sub) document.querySelector(`.tab.ex[data-x="${sub.toUpperCase()}"]`)?.click();
+  if (id === "exams") { exState.type = "all"; drawExCourse(sub && sub.toUpperCase()); if (!sub) { drawExFac(); drawExCourses(); } }
   if (location.hash) document.querySelector("main").scrollIntoView();
 }
 addEventListener("hashchange", route); route();
