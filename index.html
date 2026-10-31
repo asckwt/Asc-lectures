@@ -127,7 +127,7 @@ footer .wrap{padding-block:18px;display:flex;flex-wrap:wrap;gap:8px 20px;justify
 .feats b{display:block;font-family:var(--display);font-weight:700}
 .feats span{color:var(--muted);font-size:15px}
 .chatlist{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}.chatlist a{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;text-decoration:none;color:inherit}.chatlist a svg{width:28px;height:28px;flex:none;color:#25D366}.chatlist b{display:block;font-family:var(--display);font-size:15px}.chatlist small{color:var(--muted);font-size:13px}
-.excourses{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}.excourses a{display:flex;flex-direction:column;align-items:flex-start;gap:2px;height:100%;box-sizing:border-box;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;text-decoration:none;color:inherit}.excourses b{font-family:var(--display);font-size:16px;color:var(--accent-ink)}.excourses span{font-size:12.5px;color:var(--muted);line-height:1.35;text-align:start;width:100%;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}.excourses small{font-size:12px;margin-top:auto;padding-top:4px;font-family:var(--display);font-weight:700}.excourses .none{grid-column:1/-1;color:var(--muted);font-size:14px}.exfac{grid-template-columns:repeat(auto-fit,minmax(80px,1fr))}#exhome .search{margin:6px 0 12px}#exhome .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.exlist{list-style:none;margin:0 0 8px;padding:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}.exlist li+li{border-top:1px solid var(--line)}.exrow{display:flex;align-items:center;gap:12px;padding:12px 14px;text-decoration:none;color:inherit}.exrow:hover{background:color-mix(in srgb,var(--line) 35%,transparent)}.exic{flex:none;width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:color-mix(in srgb,var(--yellow) 35%,transparent);color:var(--accent-ink)}.exic svg{width:22px;height:22px}.exic.pdf{background:color-mix(in srgb,var(--pink) 30%,transparent)}.ext{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.ext b{font-family:var(--display);font-size:16px}.ext b[dir="ltr"]{color:var(--accent-ink);text-align:right}.ext small{font-size:13px;color:var(--muted);line-height:1.4}.exn{flex:none;font-family:var(--display);font-weight:700;font-size:13px;color:var(--muted)}.exn.go{background:var(--navy);color:#fff;padding:6px 14px;border-radius:9px}.exfacs .exic{width:46px;height:46px}.exfacs .exic svg{width:28px;height:28px}.exfacs .ext b{font-size:19px}.excrumb{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-family:var(--display);font-weight:700;font-size:14px;margin:4px 0 14px}.excrumb a{color:var(--accent-ink)}.excrumb span{color:var(--muted)}.exh{font-family:var(--display);font-size:20px;margin:0 0 4px}.exg{display:flex;align-items:center;gap:10px;font-family:var(--display);font-size:17px;margin:22px 0 10px}.exg .exic{width:30px;height:30px}.exg .exic svg{width:18px;height:18px}.exg small{color:var(--muted);font-size:13px}#exsearch{margin:6px 0 16px}#exsearch .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}@media (max-width:480px){.exfacs .exn{display:none}}
 .cc-h{font-family:var(--display);font-weight:700;font-size:18px;margin:26px 0 12px}.cclist{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}.cclist a{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;text-decoration:none;color:inherit;font-family:var(--display);font-weight:700;font-size:14px;direction:ltr;justify-content:flex-end}.cclist a svg{width:20px;height:20px;flex:none;color:#25D366}
 .tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}@media (min-width:720px){.tiles{grid-template-columns:repeat(3,1fr);gap:16px}}
 .tile{position:relative;display:flex;flex-direction:column;gap:4px;min-height:150px;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px;text-decoration:none;color:inherit;overflow:hidden;transition:transform .15s,border-color .15s}
@@ -299,13 +299,9 @@ main .wrap{display:grid;grid-template-columns:1fr;gap:40px;padding-block:36px 56
     <section id="exams" class="view" hidden>
       <a class="back" href="#home">→ الرئيسية</a>
       <h2>نماذج الاختبارات</h2>
-      <p class="sub">نماذج الميد والفاينل لسنة ٢٠٢٥ و٢٠٢٦ لمواد البزنس والآي تي والآداب. دوّر على مادتك واضغط على النموذج ويفتح لك PDF تقدر تحفظه.</p>
-      <div id="exhome">
-        <div class="search"><label for="exq" class="sr">ابحث عن مادة</label><input id="exq" type="search" dir="auto" placeholder="ابحث برمز المادة أو اسمها، مثل ACC204" autocomplete="off"></div>
-        <div class="tabs exfac" role="tablist" id="exfac"></div>
-        <ul class="excourses" id="excourses"></ul>
-      </div>
-      <div id="examlist" hidden></div>
+      <p class="sub">نماذج الميد والفاينل لسنة ٢٠٢٥ و٢٠٢٦. اختار الكلية، بعدها مادتك، واضغط على النموذج ويفتح لك PDF تقدر تحفظه.</p>
+      <div class="search" id="exsearch"><label for="exq" class="sr">ابحث عن مادة</label><input id="exq" type="search" dir="auto" placeholder="ابحث برمز المادة أو اسمها، مثل ACC204" autocomplete="off"></div>
+      <div id="examlist"></div>
     </section>
 
     <section id="plans" class="view pp" hidden>
@@ -1746,47 +1742,52 @@ document.querySelectorAll("#groups .tab").forEach(t => t.onclick = () => {
   document.querySelectorAll("#groups .tab").forEach(x => x.setAttribute("aria-selected", x === t));
   document.querySelectorAll(".grp").forEach(p => p.hidden = p.dataset.g !== t.dataset.g);
 });
-/* نماذج الاختبارات: بحث + تصفية حسب الكلية + صفحة لكل مادة (#exams/ACC204) */
+/* نماذج الاختبارات: مثل مجلدات الدرايف — الكلية ← المادة ← النماذج (#exams ، #exams/bus ، #exams/ACC204) */
 const EXT = {final:["فاينل","الاختبار النهائي"], mta:["ميد","اختبار منتصف الفصل"], makeup:["تعويضي","اختبار الميد التعويضي"]};
 const SEM = {"1":"الفصل الأول", "2":"الفصل الثاني", summer:"الفصل الصيفي"};
-const FAC = {all:"الكل", mine:"موادي", bus:"بزنس", it:"آي تي", art:"آداب"};
+const FACS = {bus:["الإدارة","كلية الدراسات التجارية: المحاسبة، التسويق، الإدارة، الاقتصاد، نظم المعلومات وغيرها"], it:["IT","كلية دراسات الحاسوب: البرمجة، الشبكات، الأمن، البيانات والرياضيات"], art:["الآداب","كلية الدراسات اللغوية: الأدب الإنجليزي، اللغويات والترجمة"]};
 const exByCode = Object.fromEntries(CONFIG.exams.map(c => [c.code, c]));
-const examCard = (c, e) =>
-  `<li class="s"><div class="date"><div class="d">${EXT[e.type][0]}</div><div class="m">${SEM[e.sem].replace("الفصل ", "")}</div></div>
-   <div><h3>${EXT[e.type][1]}</h3><p>${SEM[e.sem]} ${e.year}${e.ver ? ` · نسخة <bdi>${e.ver}</bdi>` : ""} · ${e.pages} صفحات</p><a class="go" href="exams/${c.code}/${e.file}.pdf" target="_blank" rel="noopener">افتح النموذج</a></div></li>`;
-const exState = {fac: "all", q: "", type: "all"};
-const myCodes = () => { try { return JSON.parse(localStorage.getItem("my-courses") || "[]"); } catch { return []; } };
+const exSort = (a, b) => a.code.localeCompare(b.code, "en", {numeric: true});
 const exNorm = s => s.toUpperCase().replace(/\s+/g, "");
-function drawExFac() {
-  const mineN = CONFIG.exams.filter(c => myCodes().includes(c.code)).length;
-  $("exfac").innerHTML = Object.entries(FAC).filter(([k]) => k !== "mine" || mineN).map(([k, t]) => {
-    const n = k === "all" ? CONFIG.exams.length : k === "mine" ? mineN : CONFIG.exams.filter(c => c.fac === k).length;
-    return `<button type="button" role="tab" class="tab" data-f="${k}" aria-selected="${exState.fac === k}">${t} <small>${n}</small></button>`;
-  }).join("");
-  $("exfac").querySelectorAll(".tab").forEach(b => b.onclick = () => { exState.fac = b.dataset.f; drawExFac(); drawExCourses(); });
+const exAr = code => window.ASC_PLANS?.C?.[code]?.[1] || "";
+const exFolder = `<svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M3 6.5A2.5 2.5 0 0 1 5.5 4h4l2 2.5h7A2.5 2.5 0 0 1 21 9v8.5a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/></svg>`;
+const exPdf = `<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>`;
+const exCrumbs = parts => `<nav class="excrumb">${parts.map(([t, h]) => h ? `<a href="${h}">${t}</a>` : `<b>${t}</b>`).join(`<span>‹</span>`)}</nav>`;
+const exCourseRow = c => `<li><a class="exrow" href="#exams/${c.code}"><span class="exic">${exFolder}</span><span class="ext"><b dir="ltr">${c.code}</b><small>${exAr(c.code) || `<bdi>${c.name}</bdi>`}</small></span><span class="exn">${c.items.length} نموذج</span></a></li>`;
+const exFileRow = (c, e) => `<li><a class="exrow" href="exams/${c.code}/${e.file}.pdf" target="_blank" rel="noopener"><span class="exic pdf">${exPdf}</span><span class="ext"><b>${EXT[e.type][1]}${e.ver ? ` · نسخة <bdi>${e.ver}</bdi>` : ""}</b><small>${SEM[e.sem]} ${e.year} · ${e.pages} صفحات</small></span><span class="exn go">افتح</span></a></li>`;
+const SO = {"2": 2, summer: 3, "1": 1};
+function drawExams(sub) {
+  const q = exNorm($("exq").value);
+  const box = $("examlist");
+  $("exsearch").hidden = !!(sub && exByCode[sub.toUpperCase()]);
+  if (q) {
+    const hits = CONFIG.exams.filter(c => c.code.includes(q) || exNorm(c.name).includes(q) || exAr(c.code).includes($("exq").value.trim())).sort(exSort);
+    box.innerHTML = exCrumbs([["النماذج", "#exams"], ["نتائج البحث"]]) + (hits.length ? `<ul class="exlist">${hits.map(exCourseRow).join("")}</ul>` : `<p class="sub">ما لقينا مادة بهالاسم. جرب رمز المادة مثل ACC204.</p>`);
+    return;
+  }
+  const code = sub && sub.toUpperCase(), c = exByCode[code], fac = sub && FACS[sub.toLowerCase()] ? sub.toLowerCase() : null;
+  if (c) {
+    const groups = [["mta", "الميد"], ["makeup", "الميد التعويضي"], ["final", "الفاينل"]].map(([t, title]) => [title, c.items.filter(e => e.type === t)
+      .sort((a, b) => b.year.localeCompare(a.year) || SO[b.sem] - SO[a.sem] || a.ver.localeCompare(b.ver))]).filter(g => g[1].length);
+    box.innerHTML = exCrumbs([["النماذج", "#exams"], [FACS[c.fac][0], `#exams/${c.fac}`], [`<bdi>${c.code}</bdi>`]]) +
+      `<h3 class="exh"><span dir="ltr">${c.code}</span> ${exAr(c.code) || `<bdi>${c.name}</bdi>`}</h3><p class="sub">${c.items.length} نموذج · <a href="${coursePage(c.code)}" style="color:var(--accent-ink)">كل شي عن المادة</a></p>` +
+      groups.map(([title, list]) => `<h4 class="exg"><span class="exic">${exFolder}</span>${title} <small>${list.length}</small></h4><ul class="exlist">${list.map(e => exFileRow(c, e)).join("")}</ul>`).join("");
+    return;
+  }
+  if (fac) {
+    const list = CONFIG.exams.filter(x => x.fac === fac).sort(exSort);
+    box.innerHTML = exCrumbs([["النماذج", "#exams"], [FACS[fac][0]]]) + `<ul class="exlist">${list.map(exCourseRow).join("")}</ul>`;
+    return;
+  }
+  const mine = (() => { try { return JSON.parse(localStorage.getItem("my-courses") || "[]"); } catch { return []; } })().filter(x => exByCode[x]);
+  box.innerHTML = `<ul class="exlist exfacs">${Object.entries(FACS).map(([k, [t, d]]) => {
+    const cs = CONFIG.exams.filter(x => x.fac === k);
+    return `<li><a class="exrow" href="#exams/${k}"><span class="exic">${exFolder}</span><span class="ext"><b>${t}</b><small>${d}</small></span><span class="exn">${cs.length} مادة · ${cs.reduce((n, x) => n + x.items.length, 0)} نموذج</span></a></li>`;
+  }).join("")}</ul>` + (mine.length ? `<h4 class="exg">موادي</h4><ul class="exlist">${mine.map(x => exCourseRow(exByCode[x])).join("")}</ul>` : "");
 }
-function drawExCourses() {
-  const q = exNorm(exState.q), mine = myCodes();
-  const list = CONFIG.exams.filter(c => (exState.fac === "all" || (exState.fac === "mine" ? mine.includes(c.code) : c.fac === exState.fac))
-    && (!q || c.code.includes(q) || exNorm(c.name).includes(q)));
-  $("excourses").innerHTML = list.map(c => `<li><a href="#exams/${c.code}"><b dir="ltr">${c.code}</b><span dir="ltr">${c.name || "&nbsp;"}</span><small>${c.items.length} نموذج</small></a></li>`).join("")
-    || `<li class="none">ما لقينا مادة بهالاسم. جرب رمز المادة مثل ACC204.</li>`;
-}
-function drawExCourse(code) {
-  const c = exByCode[code];
-  $("exhome").hidden = !!c; $("examlist").hidden = !c;
-  if (!c) return;
-  const types = Object.keys(EXT).filter(t => c.items.some(e => e.type === t));
-  if (exState.type !== "all" && !types.includes(exState.type)) exState.type = "all";
-  const items = c.items.filter(e => exState.type === "all" || e.type === exState.type);
-  $("examlist").innerHTML = `<a class="back" href="#exams">→ كل المواد</a><h3 class="cc-h" style="margin-top:6px"><span dir="ltr">${c.code}</span>${c.name ? ` · <span dir="ltr">${c.name}</span>` : ""}</h3>
-    <p class="sub">${c.items.length} نموذج · <a href="${coursePage(c.code)}" style="color:var(--accent-ink)">كل شي عن المادة</a></p>
-    ${types.length > 1 ? `<div class="tabs" role="tablist" id="extype">${["all", ...types].map(t => `<button type="button" role="tab" class="tab" data-t="${t}" aria-selected="${exState.type === t}">${t === "all" ? "الكل" : EXT[t][0]} <small>${t === "all" ? c.items.length : c.items.filter(e => e.type === t).length}</small></button>`).join("")}</div>` : ""}
-    ${[...new Set(items.map(e => e.year))].map(y => `<h3 class="cc-h">${y}</h3><ul class="sessions cols">${items.filter(e => e.year === y).map(e => examCard(c, e)).join("")}</ul>`).join("")}`;
-  $("examlist").querySelectorAll("#extype .tab").forEach(b => b.onclick = () => { exState.type = b.dataset.t; drawExCourse(code); });
-}
-$("exq").addEventListener("input", e => { exState.q = e.target.value; drawExCourses(); });
-drawExFac(); drawExCourses(); drawExCourse(null);
+$("exq").addEventListener("input", () => drawExams(location.hash.split("/")[1]));
+addEventListener("load", () => { if (location.hash.startsWith("#exams")) drawExams(location.hash.split("/")[1]); });
+drawExams(null);
 /* تقويم الجامعة */
 const MON = ["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
 const DAY = ["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
@@ -1823,7 +1824,7 @@ function route() {
   const id = views.some(x => x.id === v) ? v : "home";
   views.forEach(x => x.hidden = x.id !== id);
   if (id === "lectures" && sub) document.querySelector(`#groups .tab[data-g="${sub}"]`)?.click();
-  if (id === "exams") { exState.type = "all"; drawExCourse(sub && sub.toUpperCase()); if (!sub) { drawExFac(); drawExCourses(); } }
+  if (id === "exams") { $("exq").value = ""; drawExams(sub); }
   if (location.hash) document.querySelector("main").scrollIntoView();
 }
 addEventListener("hashchange", route); route();
