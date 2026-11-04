@@ -240,6 +240,7 @@ main .wrap{display:grid;grid-template-columns:1fr;gap:40px;padding-block:36px 56
 .mine-cal p{flex-basis:100%;margin:0;font-size:14px;color:var(--muted)}
 .mine-cal .btn{background:var(--yellow);color:#07005E;font-size:15px;padding:9px 16px}
 .mine-acts .w{background:#25D366;color:#06301A}
+.seat{margin:16px 0 0}
 .wafab{position:fixed;inset-inline-start:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:5;box-shadow:0 10px 24px -10px rgba(0,0,0,.4)}
 </style></head><body>
 
@@ -324,6 +325,7 @@ main .wrap{display:grid;grid-template-columns:1fr;gap:40px;padding-block:36px 56
         <div class="chips" id="mine-chips"></div>
         <div id="mine-list"></div>
         <div class="mine-acts" id="mine-acts" hidden><div id="mine-cal" class="mine-cal"></div><button type="button" id="mine-share" class="w">أرسل جدولي واتساب</button></div>
+        <ul class="exlist seat"><li><a class="exrow" id="seatlink" href="https://vsrv2.aou.edu.kw/pt" target="_blank" rel="noopener"><span class="exic"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 11V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v5"/><path d="M4 11h16v4H4z"/><path d="M6 15v5M18 15v5"/></svg></span><span class="ext"><b>رقم جلوسك وقاعة الاختبار</b><small>اكتب رقمك الجامعي بصفحة الجامعة ويطلع لك رقم الجلوس والقاعة</small></span><span class="exn go">افتح</span></a></li></ul>
         <p class="src">من جداول الجامعة الرسمية (UPD2): <span id="schedpdf"></span>. لو صار تغيير، المعتمد جدول الجامعة.</p>
       </div>
       <div id="callist"></div>
@@ -2046,7 +2048,7 @@ CONFIG.lectures.forEach(l => addTo(l.code, "محاضرة مجانية"));
 CONFIG.exams.forEach(c => addTo(c.code, `${c.items.length} نماذج اختبارات`));
 CONFIG.courseChats.forEach(g => g.items.forEach(([code]) => code.split(" / ").forEach(x => addTo(x, "قروب المادة"))));
 const PAGES = [
-  ["حاسبة المعدل", "#gpa", "معدل gpa تراكمي فصلي درجات"], ["تقويم الجامعة", "#calendar", "تقويم مواعيد ميد فاينل سحب اضافة تسجيل اختبارات"],
+  ["حاسبة المعدل", "#gpa", "معدل gpa تراكمي فصلي درجات"], ["تقويم الجامعة", "#calendar", "تقويم مواعيد ميد فاينل سحب اضافة تسجيل اختبارات رقم الجلوس القاعه قاعة"],
   ["الخطط الدراسية", "#plans", "خطة خطط تخصص مواد متطلبات"], ["نماذج الاختبارات", "#exams", "نماذج اختبارات سابقة ميد فاينل"],
   ["القروبات", "#chats", "قروب قروبات واتساب"], ["المحاضرات المجانية", "#lectures", "محاضرات مجانية مسجلة زوم"], ["آراء الطلاب", "#reviews", "اراء آراء تقييم"]
 ];
@@ -2100,6 +2102,7 @@ document.addEventListener("click", e => {
   const h = a.href, code = a.closest("[data-x]")?.dataset.x || a.closest(".s")?.querySelector(".code")?.textContent;
   if (/zoom\.us/.test(h)) track("lecture_open", {course: code});
   else if (/\/exams\/.+\.pdf$/.test(h)) track("exam_open", {course: h.split("/exams/")[1].split("/")[0], file: h.split("/").pop()});
+  else if (/vsrv2\.aou\.edu\.kw\/pt/.test(h)) track("seat_lookup", {from: a.closest("section")?.id || "page"});
   else if (/chat\.whatsapp\.com/.test(h)) track("group_join", {group: a.textContent.trim()});
   else if (/wa\.me\//.test(h)) track("whatsapp_contact", {from: a.id || a.closest("section")?.id || "page"});
   else if (/\/c\/[a-z0-9]+\/$/.test(h)) track("course_page", {course: h.split("/c/")[1].replace("/", "").toUpperCase()});
