@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>إحصائيات الطالب الأكاديمي</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
+<style>
+/* Layout: navy header band, KPI row, then a grid of chart panels that stacks on phones */
+:root{
+  --navy:#07005E; --yellow:#F7DC6B; --turq:#7DE6D5; --pink:#E980C2;
+  --bg:#F6F5FB; --surface:#FFFFFF; --fg:#151238; --muted:#5B5878; --line:#E2E0EE; --grid:#ECEBF4;
+  --mark:#3B33C4; --mark-2:#C2408F; --mark-soft:#D9D6F7;
+  --display:"Alexandria","IBM Plex Sans Arabic",Tahoma,sans-serif;
+  --body:"IBM Plex Sans Arabic",Tahoma,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0B0930; --surface:#141142; --fg:#F1F0FA; --muted:#B4B1D3; --line:#2A2663; --grid:#211D57;
+  --mark:#7DE6D5; --mark-2:#F2A3D3; --mark-soft:#24506A; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0B0930; --surface:#141142; --fg:#F1F0FA; --muted:#B4B1D3; --line:#2A2663; --grid:#211D57;
+  --mark:#7DE6D5; --mark-2:#F2A3D3; --mark-soft:#24506A; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.6}
+[hidden]{display:none!important}
+.wrap{max-width:1080px;margin:0 auto;padding-inline:16px}
+header{background:var(--navy);color:#fff;padding-block:22px 26px}
+header .wrap{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between}
+h1{font-family:var(--display);font-weight:800;font-size:24px;margin:0;text-wrap:balance}
+h1 small{display:block;font-family:var(--body);font-weight:500;font-size:13px;color:#C9C6EE}
+.ctrl{display:flex;gap:8px;flex-wrap:wrap}
+.ctrl button{font:600 14px var(--body);border:1.5px solid rgba(255,255,255,.3);background:transparent;color:#fff;border-radius:999px;padding:5px 14px;cursor:pointer}
+.ctrl button[aria-pressed="true"]{background:var(--yellow);border-color:var(--yellow);color:var(--navy)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--yellow);outline-offset:2px}
+main{padding-block:20px 40px;display:grid;gap:16px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px;min-width:0}
+.panel h2{font-family:var(--display);font-weight:700;font-size:17px;margin:0 0 2px}
+.panel .sub{color:var(--muted);font-size:13px;margin:0 0 12px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.kpi span{color:var(--muted);font-size:13px}
+.kpi b{display:block;font-family:var(--display);font-weight:800;font-size:30px;line-height:1.2;font-variant-numeric:tabular-nums}
+.kpi small{color:var(--muted);font-size:12px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.chart{position:relative}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.chart text{fill:var(--muted);font:12px var(--body)}
+.tip{position:absolute;pointer-events:none;background:var(--fg);color:var(--bg);font-size:13px;border-radius:8px;padding:6px 10px;white-space:nowrap;transform:translate(-50%,-110%)}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-top:6px}
+.legend i{display:inline-block;width:18px;height:0;border-top:2px solid var(--mark);vertical-align:middle;margin-inline-end:6px}
+.legend i.p{border-top:2px dashed var(--mark-2)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.tabs button{font:600 13px var(--body);border:1px solid var(--line);background:transparent;color:var(--fg);border-radius:999px;padding:4px 12px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.bars{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.bars li{display:grid;grid-template-columns:minmax(80px,38%) 1fr 44px;gap:10px;align-items:center;font-size:14px}
+.bars .n{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bars .t{height:12px;background:var(--grid);border-radius:4px;overflow:hidden}
+.bars .t i{display:block;height:100%;background:var(--mark);border-radius:4px}
+.bars .v{text-align:left;font-variant-numeric:tabular-nums;color:var(--muted)}
+.empty{color:var(--muted);font-size:14px;padding:8px 0}
+.insights{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.insights li{border-inline-start:4px solid var(--yellow);padding:4px 12px;background:var(--bg);border-radius:6px}
+.gate{max-width:420px;margin:40px auto;text-align:center}
+.gate input{width:100%;font:16px var(--body);padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface);color:var(--fg);margin:10px 0}
+.gate button,.btn{font:700 15px var(--display);background:var(--navy);color:#fff;border:0;border-radius:10px;padding:10px 18px;cursor:pointer}
+.err{color:var(--mark-2);font-size:14px}
+details{font-size:14px}
+summary{cursor:pointer;color:var(--muted)}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13px;font-variant-numeric:tabular-nums;margin-top:8px}
+th,td{padding:5px 8px;border-bottom:1px solid var(--line);text-align:right}
+.note{color:var(--muted);font-size:12px}
+@media (max-width:760px){.kpis{grid-template-columns:1fr 1fr}.two{grid-template-columns:1fr}.kpi b{font-size:24px}}
+</style></head><body>
+<header><div class="wrap">
+  <h1>إحصائيات الموقع<small id="updated">asckwt.com</small></h1>
+  <div class="ctrl" id="range" role="group" aria-label="الفترة">
+    <button type="button" data-d="7" aria-pressed="false">7 أيام</button>
+    <button type="button" data-d="30" aria-pressed="true">30 يوم</button>
+    <button type="button" data-d="90" aria-pressed="false">90 يوم</button>
+  </div>
+</div></header>
+
+<div class="wrap">
+  <section class="gate panel" id="setup" hidden>
+    <h2>لسا ما انربطت الإحصائيات</h2>
+    <p class="sub">حط رابط Google Apps Script في ملفي analytics.js و stats.html (الخطوات في tools/analytics-collector.gs).</p>
+  </section>
+  <form class="gate panel" id="gate" hidden>
+    <h2>كلمة السر</h2>
+    <p class="sub">نفس كلمة السر اللي حطيتها في Apps Script. تنحفظ في هالجهاز بس.</p>
+    <input id="key" type="password" autocomplete="current-password" aria-label="كلمة السر">
+    <button type="submit">ادخل</button>
+    <p class="err" id="gerr" hidden>كلمة السر غلط، جرّب مرة ثانية.</p>
+  </form>
+  <p class="err" id="neterr" hidden></p>
+
+  <main id="dash" hidden>
+    <div class="kpis" id="kpis"></div>
+
+    <section class="panel">
+      <h2>الزوار يومياً</h2>
+      <p class="sub">عدد الأشخاص المختلفين اللي فتحوا الموقع كل يوم، مع توقع الأسبوع الجاي.</p>
+      <div class="chart" id="daily"></div>
+      <div class="legend"><span><i></i>الزوار</span><span><i class="p"></i>التوقع للأيام السبعة الجاية</span></div>
+      <details><summary>عرض الأرقام كجدول</summary><div class="tw" id="dailyTable"></div></details>
+    </section>
+
+    <section class="panel">
+      <h2>الاحتمالات والتوصيات</h2>
+      <p class="sub">قراءة تلقائية للأرقام. التوقعات تقريبية ومبنية على آخر أسبوعين.</p>
+      <ul class="insights" id="insights"></ul>
+    </section>
+
+    <section class="panel">
+      <h2>أكثر شي يضغط عليه الطلاب</h2>
+      <div class="tabs" id="topTabs" role="tablist"></div>
+      <ul class="bars" id="topList"></ul>
+    </section>
+
+    <div class="two">
+      <section class="panel"><h2>أوقات الذروة</h2><p class="sub">الزيارات حسب الساعة (توقيت الكويت).</p><div class="chart" id="hours"></div></section>
+      <section class="panel"><h2>أيام الأسبوع</h2><p class="sub">مجموع الزيارات لكل يوم.</p><ul class="bars" id="weekdays"></ul></section>
+    </div>
+    <div class="two">
+      <section class="panel"><h2>من وين يجون</h2><p class="sub">مصدر الزيارة.</p><ul class="bars" id="sources"></ul></section>
+      <section class="panel"><h2>الأجهزة</h2><p class="sub">نوع الجهاز.</p><ul class="bars" id="devices"></ul></section>
+    </div>
+  </main>
+</div>
+
+<script>
+/* ضع هني نفس رابط الـ Web App */
+const ENDPOINT = "";
+
+const $ = id => document.getElementById(id);
+const esc = t => String(t).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[c]);
+const nf = new Intl.NumberFormat("en-US");
+const DAYS = ["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
+const MON = ["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
+const SECTIONS = {home:"الرئيسية", lectures:"المحاضرات المجانية", groups:"قروبات الطلاب", chats:"قروبات الطلاب", exams:"نماذج الاختبارات", plans:"الخطط الدراسية", calendar:"تقويم الجامعة", gpa:"حاسبة المعدل", reviews:"آراء الطلاب"};
+const PLANS = {acc:"المحاسبة", eco:"الاقتصاد", ell:"الأدب الإنجليزي", itc:"تقنية المعلومات", mgt:"الإدارة", mis:"نظم المعلومات الإدارية", mkt:"التسويق", sys:"النظم"};
+const TOPS = [["lecture","المحاضرات"],["group","القروبات"],["plan_download","تحميل الخطط"],["view","الأقسام"],["platform","المنصة"],["outbound","روابط خارجية"]];
+const prettyLabel = (type, l) => {
+  if (type === "view") { const [s, sub] = l.split("/"); return (SECTIONS[s] || s) + (sub ? ` · ${PLANS[sub] || sub}` : ""); }
+  if (type === "plan_download") { const [p, f] = l.split(" · "); return `${PLANS[p] || p} · ${f || ""}`; }
+  if (type === "platform" || type === "contact") return "من " + (SECTIONS[l] || l);
+  return l || "بدون اسم";
+};
+const dayName = d => { const x = new Date(d + "T00:00:00Z"); return `${x.getUTCDate()} ${MON[x.getUTCMonth()]}`; };
+
+let days = 30, data = null, topType = "lecture";
+const getKey = () => { try { return localStorage.getItem("asc_stats_key") || ""; } catch { return ""; } };
+const setKey = k => { try { k ? localStorage.setItem("asc_stats_key", k) : localStorage.removeItem("asc_stats_key"); } catch {} };
+let key = getKey();
+
+async function load() {
+  $("neterr").hidden = true;
+  if (!ENDPOINT) { $("setup").hidden = false; return; }
+  if (!key) { $("gate").hidden = false; $("dash").hidden = true; return; }
+  $("updated").textContent = "جاري التحميل…";
+  try {
+    const r = await fetch(`${ENDPOINT}?key=${encodeURIComponent(key)}&days=${days}`);
+    const j = await r.json();
+    if (j.error === "key") { setKey(""); key = ""; $("gate").hidden = false; $("gerr").hidden = false; $("dash").hidden = true; $("updated").textContent = "asckwt.com"; return; }
+    data = j; $("gate").hidden = true; render();
+  } catch (e) {
+    $("neterr").textContent = "ما قدرنا نجيب الأرقام. تأكد من الإنترنت والرابط، وجرّب مرة ثانية.";
+    $("neterr").hidden = false; $("updated").textContent = "asckwt.com";
+  }
+}
+
+$("gate").onsubmit = e => { e.preventDefault(); key = $("key").value.trim(); if (!key) return; setKey(key); $("gerr").hidden = true; load(); };
+$("range").querySelectorAll("button").forEach(b => b.onclick = () => {
+  days = +b.dataset.d; $("range").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b)); load();
+});
+
+function forecast(daily) {
+  const v = daily.map(d => d.visitors);
+  const last = v.slice(-7), prev = v.slice(-14, -7);
+  const avg = last.reduce((a, b) => a + b, 0) / Math.max(last.length, 1);
+  const sl = last.reduce((a, b) => a + b, 0), sp = prev.reduce((a, b) => a + b, 0);
+  const g = sp > 0 ? Math.min(Math.max(Math.pow(sl / sp, 1 / 7), 0.93), 1.07) : 1;
+  return {avg, change: sp > 0 ? (sl - sp) / sp : null, next: Array.from({length: 7}, (_, i) => Math.round(avg * Math.pow(g, i + 4)))};
+}
+
+function render() {
+  const d = data, daily = d.daily, fc = forecast(daily);
+  $("dash").hidden = false;
+  const g = new Date(d.generated);
+  $("updated").textContent = `آخر تحديث ${g.toLocaleTimeString("ar-KW", {hour: "numeric", minute: "2-digit"})} · آخر ${d.days} يوم`;
+  const clicks = daily.reduce((a, x) => a + x.clicks, 0);
+  const conv = d.totals.visitors ? d.totals.platformVisitors / d.totals.visitors : 0;
+  $("kpis").innerHTML = [
+    ["الزوار", nf.format(d.totals.visitors), "أشخاص مختلفين"],
+    ["الزيارات", nf.format(d.totals.visits), "مرات فتح الموقع"],
+    ["النقرات", nf.format(clicks), "محاضرات وقروبات وخطط"],
+    ["راحوا للمنصة", (conv * 100).toFixed(1) + "%", `${nf.format(d.totals.platformVisitors)} زائر`]
+  ].map(([a, b, c]) => `<div class="kpi"><span>${a}</span><b>${b}</b><small>${c}</small></div>`).join("");
+  lineChart(daily, fc.next);
+  $("dailyTable").innerHTML = `<table><thead><tr><th>اليوم</th><th>الزوار</th><th>الزيارات</th><th>النقرات</th></tr></thead><tbody>${daily.slice().reverse().map(x => `<tr><td>${dayName(x.d)}</td><td>${x.visitors}</td><td>${x.visits}</td><td>${x.clicks}</td></tr>`).join("")}</tbody></table>`;
+  renderTabs();
+  hourChart(d.hours);
+  bars($("weekdays"), d.weekdays.map((n, i) => [DAYS[i], n]));
+  bars($("sources"), d.sources);
+  bars($("devices"), d.devices);
+  insights(d, fc);
+}
+
+function bars(el, rows) {
+  rows = (rows || []).filter(r => r[1] > 0);
+  if (!rows.length) { el.innerHTML = `<li class="empty">ما في بيانات لسا.</li>`; return; }
+  const max = Math.max(...rows.map(r => r[1]));
+  el.innerHTML = rows.map(([n, v]) => `<li><span class="n" title="${esc(n)}">${esc(n)}</span><span class="t"><i style="width:${(v / max * 100).toFixed(1)}%"></i></span><span class="v">${nf.format(v)}</span></li>`).join("");
+}
+
+function renderTabs() {
+  const avail = TOPS.filter(([t]) => (data.top[t] || []).length);
+  if (!avail.some(([t]) => t === topType) && avail.length) topType = avail[0][0];
+  $("topTabs").innerHTML = avail.map(([t, n]) => `<button type="button" role="tab" data-t="${t}" aria-selected="${t === topType}">${n}</button>`).join("");
+  $("topTabs").querySelectorAll("button").forEach(b => b.onclick = () => { topType = b.dataset.t; renderTabs(); });
+  bars($("topList"), (data.top[topType] || []).map(([l, v]) => [prettyLabel(topType, l), v]));
+}
+
+function lineChart(daily, next) {
+  const W = Math.max(320, $("daily").clientWidth || 760), H = W < 560 ? 220 : 260, L = 40, R = 12, T = 12, B = 28;
+  const all = daily.length + next.length;
+  const max = Math.max(4, ...daily.map(x => x.visitors), ...next);
+  const mag = Math.pow(10, Math.floor(Math.log10(max))), r = max / mag;
+  const step = mag * (r > 5 ? 2 : r > 2 ? 1 : 0.5);
+  const top = Math.ceil(max / step) * step;
+  const X = i => L + (i / (all - 1)) * (W - L - R);
+  const y = v => T + (1 - v / top) * (H - T - B);
+  let g = "";
+  for (let v = 0; v <= top; v += step) g += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--grid)"/><text x="${L - 8}" y="${y(v) + 4}" text-anchor="end">${nf.format(v)}</text>`;
+  const ticks = W < 560 ? [0, daily.length - 1] : [0, Math.floor((daily.length - 1) / 2), daily.length - 1];
+  ticks.forEach((i, n) => g += `<text x="${X(i)}" y="${H - 6}" text-anchor="${n ? "middle" : "start"}">${dayName(daily[i].d)}</text>`);
+  if (W >= 560) g += `<text x="${X(all - 1)}" y="${H - 6}" text-anchor="end">+7 أيام</text>`;
+  const pts = daily.map((p, i) => `${X(i)},${y(p.visitors)}`).join(" ");
+  const area = `${X(0)},${y(0)} ${pts} ${X(daily.length - 1)},${y(0)}`;
+  const fpts = [`${X(daily.length - 1)},${y(daily[daily.length - 1].visitors)}`, ...next.map((v, i) => `${X(daily.length + i)},${y(v)}`)].join(" ");
+  const li = daily.length - 1;
+  $("daily").innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="الزوار يومياً" style="direction:ltr">${g}
+    <polygon points="${area}" fill="var(--mark)" opacity=".10"/>
+    <polyline points="${pts}" fill="none" stroke="var(--mark)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+    <polyline points="${fpts}" fill="none" stroke="var(--mark-2)" stroke-width="2" stroke-dasharray="5 5" stroke-linecap="round"/>
+    <circle cx="${X(li)}" cy="${y(daily[li].visitors)}" r="4.5" fill="var(--mark)" stroke="var(--surface)" stroke-width="2"/>
+    <line id="cross" y1="${T}" y2="${H - B}" stroke="var(--muted)" stroke-width="1" opacity="0"/>
+    <circle id="dot" r="5" fill="var(--mark)" stroke="var(--surface)" stroke-width="2" opacity="0"/>
+    <rect id="hit" x="${L}" y="0" width="${W - L - R}" height="${H}" fill="transparent"/></svg><div class="tip" hidden></div>`;
+  const svg = $("daily").querySelector("svg"), tip = $("daily").querySelector(".tip");
+  const cross = svg.querySelector("#cross"), dot = svg.querySelector("#dot");
+  const move = ev => {
+    const r = svg.getBoundingClientRect(), px = (ev.clientX - r.left) / r.width * W;
+    const i = Math.max(0, Math.min(all - 1, Math.round((px - L) / (W - L - R) * (all - 1))));
+    const isF = i >= daily.length, v = isF ? next[i - daily.length] : daily[i].visitors;
+    cross.setAttribute("x1", X(i)); cross.setAttribute("x2", X(i)); cross.setAttribute("opacity", ".5");
+    dot.setAttribute("cx", X(i)); dot.setAttribute("cy", y(v)); dot.setAttribute("opacity", "1");
+    dot.setAttribute("fill", isF ? "var(--mark-2)" : "var(--mark)");
+    tip.hidden = false;
+    tip.style.left = (X(i) / W * r.width) + "px"; tip.style.top = (y(v) / H * r.height) + "px";
+    tip.textContent = isF ? `توقع: حوالي ${nf.format(v)} زائر` : `${dayName(daily[i].d)}: ${nf.format(v)} زائر · ${nf.format(daily[i].clicks)} نقرة`;
+  };
+  const leave = () => { tip.hidden = true; cross.setAttribute("opacity", "0"); dot.setAttribute("opacity", "0"); };
+  svg.addEventListener("pointermove", move); svg.addEventListener("pointerleave", leave);
+}
+
+function hourChart(h) {
+  const W = Math.max(300, $("hours").clientWidth || 480), H = 180, L = 6, R = 6, T = 10, B = 24, max = Math.max(1, ...h);
+  const bw = (W - L - R) / 24;
+  let s = "";
+  h.forEach((v, i) => {
+    const bh = v / max * (H - T - B), x0 = L + i * bw;
+    s += `<rect x="${x0 + 1}" y="${H - B - bh}" width="${bw - 2}" height="${Math.max(bh, v ? 2 : 0)}" rx="3" fill="var(--mark)"><title>الساعة ${i}: ${v} زيارة</title></rect>`;
+    if (i % (W < 420 ? 6 : 3) === 0) s += `<text x="${x0 + bw / 2}" y="${H - 6}" text-anchor="middle">${i === 0 ? "12ص" : i < 12 ? i + "ص" : i === 12 ? "12ظ" : (i - 12) + "م"}</text>`;
+  });
+  s += `<line x1="${L}" x2="${W - R}" y1="${H - B}" y2="${H - B}" stroke="var(--line)"/>`;
+  $("hours").innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="الزيارات حسب الساعة" style="direction:ltr">${s}</svg>`;
+}
+
+function insights(d, fc) {
+  const out = [];
+  const tot7 = fc.next.reduce((a, b) => a + b, 0);
+  if (d.totals.visits < 20) out.push("الأرقام لسا قليلة. بعد أسبوع من نشر الرابط تصير التوقعات أدق.");
+  if (fc.change !== null) out.push(fc.change >= 0
+    ? `الزوار زادوا ${Math.round(fc.change * 100)}% هالأسبوع عن اللي قبله. لو استمر نفس الإيقاع نتوقع حوالي ${nf.format(tot7)} زائر خلال الأيام السبعة الجاية.`
+    : `الزوار نقصوا ${Math.round(-fc.change * 100)}% هالأسبوع عن اللي قبله. التوقع للأسبوع الجاي حوالي ${nf.format(tot7)} زائر. بوست جديد في القروبات ممكن يرجّع الحركة.`);
+  const lec = (d.top.lecture || [])[0];
+  if (lec) out.push(`أكثر محاضرة انطلبت: ${esc(lec[0])} (${nf.format(lec[1])} نقرة). على الأغلب طلاب هالمادة هم أكثر ناس ممكن يشتركون، فهي أولوية للمحتوى والإعلانات.`);
+  const grp = (d.top.group || [])[0];
+  if (grp) out.push(`أكثر قروب دخلوه: ${esc(grp[0])}. هذا مكان مناسب تنشر فيه عروض الكورسات.`);
+  const peak = d.hours.indexOf(Math.max(...d.hours));
+  if (d.hours[peak] > 0) out.push(`الذروة الساعة ${peak === 0 ? 12 : peak > 12 ? peak - 12 : peak} ${peak < 12 ? "الصبح" : peak < 17 ? "الظهر" : "بالليل"}. أفضل وقت تنشر فيه البوستات قبلها بشوي.`);
+  const wd = d.weekdays.indexOf(Math.max(...d.weekdays));
+  if (d.weekdays[wd] > 0) out.push(`أكثر يوم فيه زيارات: ${DAYS[wd]}.`);
+  const src = (d.sources || [])[0];
+  if (src) out.push(`أغلب الزوار جايين من ${esc(src[0])}.`);
+  if (d.totals.visitors) out.push(`${(d.totals.platformVisitors / d.totals.visitors * 100).toFixed(1)}% من الزوار ضغطوا على رابط المنصة. ارتفاع هالنسبة معناه إن الموقع قاعد يجيب مشتركين.`);
+  const mta = "2026-11-14", fin = "2027-01-04";
+  const dd = s => Math.round((new Date(s + "T00:00:00Z") - new Date(d.today + "T00:00:00Z")) / 864e5);
+  const up = [[mta, "الميدترم"], [fin, "الفاينل"]].find(([s]) => dd(s) > 0 && dd(s) <= 30);
+  if (up) out.push(`باقي ${dd(up[0])} يوم على ${up[1]}. الطبيعي إن الزيارات ترتفع كل ما قرب الاختبار، فجهّز المحتوى والعروض من الحين.`);
+  $("insights").innerHTML = out.map(t => `<li>${t}</li>`).join("");
+}
+
+let rz; addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(() => data && (lineChart(data.daily, forecast(data.daily).next), hourChart(data.hours)), 150); });
+load();
+</script>
+</body></html>
