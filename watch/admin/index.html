@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="base-uri 'self'; object-src 'none'"><meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex, nofollow">
+<title>إدارة المحاضرات | الطالب الأكاديمي</title>
+<meta name="theme-color" content="#07005E">
+<link rel="icon" href="../../icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
+<style>
+:root{--navy:#07005E;--yellow:#F7DC6B;--turq:#7DE6D5;--bg:#F6F5FB;--surface:#fff;--fg:#151238;--muted:#5B5878;--line:#E2E0EE;--accent-ink:#07005E;--bad:#B42318;--ok:#067647;--warn:#B54708;
+ --display:"Alexandria","IBM Plex Sans Arabic",Tahoma,sans-serif;--body:"IBM Plex Sans Arabic",Tahoma,"Segoe UI",sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0B0930;--surface:#141142;--fg:#F1F0FA;--muted:#B4B1D3;--line:#2A2663;--accent-ink:#F7DC6B;--bad:#FDA29B;--ok:#75E0A7;--warn:#FEC84B;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0B0930;--surface:#141142;--fg:#F1F0FA;--muted:#B4B1D3;--line:#2A2663;--accent-ink:#F7DC6B;--bad:#FDA29B;--ok:#75E0A7;--warn:#FEC84B;color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.6}
+.wrap{max-width:980px;margin:0 auto;padding-inline:16px}
+header{background:var(--navy);color:#fff;padding:16px 0}
+header .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+header img{height:32px;display:block}
+header b{font-family:var(--display);font-size:17px}
+main{padding-block:20px 48px;display:grid;gap:16px}
+h2{font-family:var(--display);font-weight:700;font-size:18px;margin:0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tabs button{border:1.5px solid var(--line);background:var(--surface);color:var(--fg);font:700 14px var(--display);padding:8px 16px;border-radius:999px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--navy);color:#fff;border-color:var(--navy)}
+input,select{font:inherit;font-size:15px;color:var(--fg);background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;min-width:0}
+input:focus,select:focus{outline:2px solid var(--turq);outline-offset:1px}
+label{display:grid;gap:3px;font-weight:600;font-size:13px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;font:700 14px var(--display);padding:8px 14px;border-radius:10px;background:var(--navy);color:#fff;border:0;cursor:pointer;text-decoration:none;white-space:nowrap}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn.p{background:var(--yellow);color:#07005E}}
+.btn.o{background:transparent;color:var(--accent-ink);border:1.5px solid var(--line)}
+.btn.g{background:#067647;color:#fff}.btn.r{background:transparent;color:var(--bad);border:1.5px solid var(--line)}
+.btn.sm{font-size:13px;padding:5px 10px}
+.btn[disabled]{opacity:.55;cursor:wait}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.grid{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));align-items:end}
+.muted{color:var(--muted)}
+.msg{font-size:14px;margin:0}.msg.bad{color:var(--bad)}.msg.ok{color:var(--ok)}
+.stats{display:flex;gap:10px;flex-wrap:wrap}
+.stats span{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:6px 12px;font-size:14px}
+.stats b{font-family:var(--display)}
+.user{display:grid;gap:10px}
+.user .head{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:baseline}
+.user .head b{font-family:var(--display);font-size:16px}
+.badge{font-size:12px;font-weight:700;padding:1px 9px;border-radius:999px;border:1px solid currentColor}
+.badge.pending{color:var(--warn)}.badge.active{color:var(--ok)}.badge.blocked{color:var(--bad)}
+.acc{display:grid;gap:6px}
+.acc .line{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.acc .line input[list]{width:120px;direction:ltr;text-transform:uppercase}
+.acc .line .old{color:var(--bad);font-size:12px}
+.vlist{display:grid;gap:8px}
+.vrow{display:grid;grid-template-columns:70px 1fr auto;gap:8px;align-items:center}
+@media (max-width:560px){.vrow{grid-template-columns:56px 1fr}.vrow .row{grid-column:1/-1}}
+.vrow input{width:100%}
+progress{width:100%;height:12px}
+</style>
+</head><body>
+<header><div class="wrap"><div class="row"><img src="../../tools/logo-horizontal-color-on-navy.svg" alt="الطالب الأكاديمي"><b>إدارة المحاضرات</b></div><button class="btn o sm" id="out" style="color:#fff;border-color:rgba(255,255,255,.3)" hidden>خروج</button></div></header>
+<main class="wrap">
+
+<form class="card" id="gate" style="display:grid;gap:12px;max-width:420px">
+  <h2>دخول الإدارة</h2>
+  <label>كلمة سر الإدارة<input type="password" name="p" autocomplete="current-password" required></label>
+  <p class="msg bad" id="gate-msg"></p>
+  <button class="btn p" type="submit">دخول</button>
+</form>
+
+<div id="app" hidden style="display:grid;gap:16px">
+  <div class="tabs" role="tablist"><button data-tab="users" aria-selected="true">الطلاب</button><button data-tab="videos" aria-selected="false">المحاضرات</button></div>
+
+  <section id="t-users" style="display:grid;gap:12px">
+    <div class="stats" id="ustats"></div>
+    <div class="row"><input id="q" placeholder="دوّر بالاسم أو الرقم أو المادة" style="flex:1;min-width:200px"><select id="f"><option value="">الكل</option><option value="pending">بانتظار التفعيل</option><option value="active">مفعّل</option><option value="blocked">موقوف</option></select></div>
+    <div id="ulist" style="display:grid;gap:10px"></div>
+  </section>
+
+  <section id="t-videos" hidden style="display:grid;gap:12px">
+    <form class="card" id="up" style="display:grid;gap:12px">
+      <h2>ارفع محاضرة</h2>
+      <div class="grid">
+        <label>المادة<input name="course" list="courses" required dir="ltr" style="text-transform:uppercase"></label>
+        <label style="grid-column:span 2">عنوان المحاضرة<input name="title" required placeholder="مثلاً: المحاضرة 1 · Chapter 1"></label>
+        <label>الترتيب<input name="sort" type="number" min="0" value="1"></label>
+      </div>
+      <label>ملف الفيديو (MP4)<input name="file" type="file" accept="video/mp4,video/*" required></label>
+      <progress id="prog" value="0" max="1" hidden></progress>
+      <p class="msg" id="up-msg"></p>
+      <div class="row"><button class="btn p" type="submit">ارفع</button><span class="muted" style="font-size:13px">خل الصفحة مفتوحة لين يخلص الرفع. الأفضل MP4 (H.264) عشان يشتغل على كل الأجهزة.</span></div>
+    </form>
+    <div id="vlist" style="display:grid;gap:12px"></div>
+  </section>
+</div>
+<datalist id="courses"></datalist>
+</main>
+
+<script>
+(() => {
+const API = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) ? "http://localhost:8799" : "https://asc-videos.m7mdaltalab.workers.dev";
+const PART = 50 * 1024 * 1024;
+const $ = id => document.getElementById(id);
+const el = (tag, props = {}, ...kids) => { const e = document.createElement(tag); Object.assign(e, props); e.append(...kids.filter(k => k != null)); return e; };
+const ss = {get: k => { try { return sessionStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { v == null ? sessionStorage.removeItem(k) : sessionStorage.setItem(k, v); } catch {} }};
+let pass = ss.get("asc-admin");
+const day = 86400;
+const now = () => Math.floor(Date.now() / 1000);
+const toDate = s => new Date(s * 1000).toISOString().slice(0, 10);
+const fromDate = d => Math.floor(new Date(d + "T23:59:59+03:00").getTime() / 1000);
+const fmt = s => s ? new Date(s * 1000).toLocaleDateString("ar-KW", {day: "numeric", month: "short", year: "numeric", numberingSystem: "latn"}) : "—";
+const mb = n => (n / 1048576).toFixed(n > 1048576 * 100 ? 0 : 1) + " MB";
+
+async function call(path, data, method) {
+  const r = await fetch(API + "/api/admin/" + path, {
+    method: method || (data === undefined ? "GET" : "POST"),
+    headers: {Authorization: "Bearer " + pass, ...(data instanceof Blob ? {} : {"Content-Type": "application/json"})},
+    body: data === undefined ? undefined : data instanceof Blob ? data : JSON.stringify(data),
+  }).catch(() => null);
+  if (!r) throw {message: "ما قدرنا نوصل للسيرفر."};
+  const j = await r.json().catch(() => ({}));
+  if (r.status === 401) { pass = null; ss.set("asc-admin", null); gate(j.message); }
+  if (!r.ok) throw {message: j.message || "صار خطأ."};
+  return j;
+}
+
+// قائمة المواد من بيانات الموقع نفسه (index.html)
+fetch("../../").then(r => r.text()).then(t => {
+  const re = /\{code:"([A-Z0-9]+)", name:"([^"]+)"/g; let m; const dl = $("courses");
+  while ((m = re.exec(t))) dl.append(el("option", {value: m[1], label: m[2]}));
+}).catch(() => {});
+
+function gate(msg = "") { $("gate").hidden = false; $("app").hidden = true; $("out").hidden = true; $("gate-msg").textContent = msg; }
+$("gate").onsubmit = async e => { e.preventDefault(); pass = e.target.p.value; ss.set("asc-admin", pass); start(); };
+$("out").onclick = () => { pass = null; ss.set("asc-admin", null); gate(); };
+async function start() {
+  if (!pass) return gate();
+  try { await loadUsers(); } catch (err) { return; }
+  $("gate").hidden = true; $("app").hidden = false; $("out").hidden = false;
+  loadVideos().catch(() => {});
+}
+document.querySelectorAll("[data-tab]").forEach(b => b.onclick = () => {
+  document.querySelectorAll("[data-tab]").forEach(x => x.setAttribute("aria-selected", x === b));
+  $("t-users").hidden = b.dataset.tab !== "users"; $("t-videos").hidden = b.dataset.tab !== "videos";
+});
+
+// ===== الطلاب =====
+let users = [];
+async function loadUsers() { users = (await call("users")).users; renderUsers(); }
+$("q").oninput = () => renderUsers(); $("f").onchange = () => renderUsers();
+const STATUS = {pending: "بانتظار التفعيل", active: "مفعّل", blocked: "موقوف"};
+
+function renderUsers() {
+  const c = {pending: 0, active: 0, blocked: 0}; users.forEach(u => c[u.status]++);
+  $("ustats").replaceChildren(
+    el("span", {}, "الكل ", el("b", {textContent: users.length})),
+    el("span", {}, "بانتظار التفعيل ", el("b", {textContent: c.pending})),
+    el("span", {}, "مفعّل ", el("b", {textContent: c.active})),
+    el("span", {}, "موقوف ", el("b", {textContent: c.blocked})));
+  const q = $("q").value.trim().toLowerCase(), f = $("f").value;
+  const list = users.filter(u => (!f || u.status === f) && (!q || [u.name, u.phone, u.email, u.note, ...u.access.map(a => a.course)].join(" ").toLowerCase().includes(q)));
+  $("ulist").replaceChildren(...list.map(userCard), ...(list.length ? [] : [el("p", {className: "muted", textContent: "ما فيه طلاب."})]));
+}
+
+function userCard(u) {
+  const card = el("div", {className: "card user"});
+  const msg = el("p", {className: "msg"});
+  const head = el("div", {className: "head"},
+    el("b", {textContent: u.name}),
+    el("span", {className: "badge " + u.status, textContent: STATUS[u.status]}),
+    el("a", {href: `https://wa.me/965${u.phone.length === 8 ? u.phone : u.phone.replace(/^965/, "")}`, target: "_blank", rel: "noopener", textContent: u.phone, dir: "ltr", style: "color:var(--accent-ink)"}),
+    u.email ? el("span", {className: "muted", textContent: u.email, dir: "ltr"}) : null);
+  const info = el("div", {className: "muted", style: "font-size:13px", textContent: `سجّل ${fmt(u.created)} · الأجهزة ${u.devices} من 2 · آخر دخول ${fmt(u.seen)} · المشاهدات ${u.views}`});
+
+  // المواد وتاريخ الانتهاء
+  const acc = el("div", {className: "acc"});
+  const addLine = (course = "", until = now() + 120 * day) => {
+    const line = el("div", {className: "line"});
+    const ci = el("input", {value: course, placeholder: "رمز المادة", required: true}); ci.setAttribute("list", "courses");
+    const di = el("input", {type: "date", value: toDate(until)});
+    line.append(ci, el("span", {className: "muted", textContent: "لين"}), di, el("button", {type: "button", className: "btn r sm", textContent: "✕", onclick: () => line.remove()}));
+    if (until < now()) line.append(el("span", {className: "old", textContent: "منتهي"}));
+    acc.append(line);
+  };
+  u.access.forEach(a => addLine(a.course, a.until));
+  const readAccess = () => [...acc.querySelectorAll(".line")].map(l => { const [c, d] = l.querySelectorAll("input"); return {course: c.value.trim().toUpperCase(), until: d.value ? fromDate(d.value) : 0}; }).filter(a => a.course && a.until);
+
+  const note = el("input", {value: u.note || "", placeholder: "ملاحظة (مثلاً: دفع كاش)", style: "flex:1;min-width:180px"});
+  const act = async (data, okText, btn) => {
+    msg.className = "msg"; msg.textContent = "…"; if (btn) btn.disabled = true;
+    try { await call("user", {id: u.id, ...data}); msg.className = "msg ok"; msg.textContent = okText; await loadUsers(); }
+    catch (err) { msg.className = "msg bad"; msg.textContent = err.message; }
+    finally { if (btn) btn.disabled = false; }
+  };
+  const save = el("button", {type: "button", className: "btn g", textContent: u.status === "active" ? "حفظ" : "تفعيل وحفظ"});
+  save.onclick = () => {
+    const access = readAccess();
+    if (!access.length && !confirm("ما حددت أي مادة. تبي تحفظ بدون مواد؟")) return;
+    act({status: u.status === "blocked" ? "blocked" : "active", access, note: note.value}, "انحفظ ✓", save);
+  };
+  const block = el("button", {type: "button", className: "btn r sm", textContent: u.status === "blocked" ? "رجّع الحساب" : "إيقاف"});
+  block.onclick = () => act({status: u.status === "blocked" ? "active" : "blocked"}, "تم", block);
+  const reset = el("button", {type: "button", className: "btn o sm", textContent: "صفّر الأجهزة"});
+  reset.onclick = () => act({resetDevices: true}, "تصفّرت الأجهزة، يقدر يدخل من جديد", reset);
+  const pw = el("button", {type: "button", className: "btn o sm", textContent: "كلمة سر جديدة"});
+  pw.onclick = () => { const p = prompt("كلمة السر الجديدة (6 بالأقل)؛ أرسلها للطالب بالواتساب:"); if (p) act({password: p}, "تغيّرت كلمة السر: " + p, pw); };
+  const del = el("button", {type: "button", className: "btn r sm", textContent: "حذف"});
+  del.onclick = () => { if (confirm(`تبي تحذف حساب ${u.name} نهائياً؟`)) act({delete: true}, "انحذف", del); };
+
+  card.append(head, info,
+    el("div", {className: "muted", style: "font-size:13px;font-weight:600", textContent: "المواد المفعّلة:"}), acc,
+    el("div", {className: "row"}, el("button", {type: "button", className: "btn o sm", textContent: "+ مادة", onclick: () => addLine()}), note),
+    el("div", {className: "row"}, save, block, reset, pw, del), msg);
+  if (!u.access.length && u.status === "pending") addLine();
+  return card;
+}
+
+// ===== المحاضرات =====
+async function loadVideos() {
+  const {videos} = await call("videos");
+  const by = {}; videos.forEach(v => (by[v.course] ||= []).push(v));
+  const box = $("vlist");
+  if (!videos.length) return box.replaceChildren(el("p", {className: "muted", textContent: "ما فيه محاضرات مرفوعة للحين."}));
+  box.replaceChildren(...Object.keys(by).sort().map(code => {
+    const card = el("div", {className: "card", style: "display:grid;gap:10px"}, el("h2", {}, el("bdi", {dir: "ltr", textContent: code}), el("span", {className: "muted", style: "font-size:14px;font-weight:500", textContent: ` · ${by[code].length} محاضرة`})));
+    const list = el("div", {className: "vlist"});
+    by[code].forEach(v => {
+      const sort = el("input", {type: "number", value: v.sort}), title = el("input", {value: v.title});
+      const msg = el("span", {className: "muted", style: "font-size:12px", textContent: v.ready ? `${mb(v.size)} · ${v.views} مشاهدة` : "رفع ما كمل"});
+      const save = el("button", {type: "button", className: "btn o sm", textContent: "حفظ"});
+      save.onclick = async () => { save.disabled = true; try { await call("video", {id: v.id, course: v.course, title: title.value, sort: sort.value}); msg.textContent = "انحفظ ✓"; loadVideos(); } catch (e) { msg.textContent = e.message; } save.disabled = false; };
+      const del = el("button", {type: "button", className: "btn r sm", textContent: "حذف"});
+      del.onclick = async () => { if (!confirm(`تبي تحذف "${v.title}" نهائياً؟`)) return; try { await call("video", {id: v.id, delete: true}); loadVideos(); } catch (e) { msg.textContent = e.message; } };
+      list.append(el("div", {className: "vrow"}, sort, title, el("div", {className: "row"}, msg, save, del)));
+    });
+    card.append(list); return card;
+  }));
+}
+
+$("up").onsubmit = async e => {
+  e.preventDefault();
+  const f = e.target, file = f.file.files[0], msg = $("up-msg"), prog = $("prog"), btn = f.querySelector("[type=submit]");
+  if (!file) return;
+  btn.disabled = true; prog.hidden = false; prog.value = 0; msg.className = "msg"; msg.textContent = "يبدأ الرفع…";
+  let job = null;
+  const warn = ev => { ev.preventDefault(); ev.returnValue = ""; };
+  addEventListener("beforeunload", warn);
+  try {
+    job = await call("upload/start", {course: f.course.value.trim().toUpperCase(), title: f.title.value.trim(), sort: f.sort.value, type: file.type || "video/mp4", size: file.size});
+    const parts = [], total = Math.max(1, Math.ceil(file.size / PART)), t0 = Date.now();
+    for (let i = 0; i < total; i++) {
+      const blob = file.slice(i * PART, Math.min(file.size, (i + 1) * PART));
+      let tries = 0;
+      for (;;) {
+        try { parts.push(await call(`upload/part?id=${job.id}&uploadId=${encodeURIComponent(job.uploadId)}&n=${i + 1}`, blob, "PUT")); break; }
+        catch (err) { if (++tries >= 4) throw err; msg.textContent = `انقطع الاتصال، نعيد المحاولة (${tries})…`; await new Promise(r => setTimeout(r, 2000 * tries)); }
+      }
+      const done = Math.min(file.size, (i + 1) * PART), secs = (Date.now() - t0) / 1000;
+      prog.value = done / file.size;
+      msg.textContent = `${Math.round(done / file.size * 100)}% · ${mb(done)} من ${mb(file.size)}` + (i + 1 < total ? ` · باقي تقريباً ${Math.ceil(secs / done * (file.size - done) / 60)} دقيقة` : "");
+    }
+    await call("upload/done", {id: job.id, uploadId: job.uploadId, parts});
+    msg.className = "msg ok"; msg.textContent = "انرفعت المحاضرة ✓ وصارت تطلع للمشتركين بالمادة.";
+    f.title.value = ""; f.file.value = ""; f.sort.value = Number(f.sort.value) + 1;
+    loadVideos();
+  } catch (err) {
+    msg.className = "msg bad"; msg.textContent = "ما كمل الرفع: " + err.message;
+    if (job) call("upload/done", {id: job.id, uploadId: job.uploadId, abort: true}).catch(() => {});
+  } finally { btn.disabled = false; removeEventListener("beforeunload", warn); }
+};
+
+start();
+})();
+</script>
+</body></html>

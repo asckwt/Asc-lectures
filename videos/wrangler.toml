@@ -1,0 +1,24 @@
+# خادم المحاضرات المحمية: تسجيل الطلاب ودخولهم، وتشغيل الفيديوهات للمشتركين بس.
+# ينرفع تلقائياً من .github/workflows/deploy-videos.yml، واللي ينشئ قاعدة البيانات ومخزن الفيديو أول مرة بنفسه.
+name = "asc-videos"
+main = "worker.js"
+compatibility_date = "2026-10-01"
+workers_dev = true
+
+# مخزن الفيديوهات (Cloudflare R2): بدون رسوم على المشاهدة، والملفات مو عامة
+[[r2_buckets]]
+binding = "VIDEOS"
+bucket_name = "asc-videos"
+
+# قاعدة بيانات الطلاب والاشتراكات (Cloudflare D1)
+# database_id يتعبّى تلقائياً وقت الرفع من GitHub
+[[d1_databases]]
+binding = "DB"
+database_name = "asc-videos"
+database_id = "00000000-0000-0000-0000-000000000000"
+
+# حماية من تخمين كلمات السر: 10 محاولات دخول بالدقيقة لكل IP
+[[ratelimits]]
+name = "LIMITER"
+namespace_id = "1002"
+simple = { limit = 10, period = 60 }

@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="base-uri 'self'; object-src 'none'"><meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="robots" content="noindex">
+<title>محاضرات المشتركين | الطالب الأكاديمي</title>
+<meta name="description" content="شاهد محاضرات المواد اللي مشترك فيها مع الطالب الأكاديمي.">
+<meta name="theme-color" content="#07005E">
+<link rel="icon" href="../icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
+<style>
+:root{--navy:#07005E;--yellow:#F7DC6B;--turq:#7DE6D5;--pink:#E980C2;--bg:#F6F5FB;--surface:#fff;--fg:#151238;--muted:#5B5878;--line:#E2E0EE;--accent-ink:#07005E;--bad:#B42318;--ok:#067647;
+ --display:"Alexandria","IBM Plex Sans Arabic",Tahoma,sans-serif;--body:"IBM Plex Sans Arabic",Tahoma,"Segoe UI",sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0B0930;--surface:#141142;--fg:#F1F0FA;--muted:#B4B1D3;--line:#2A2663;--accent-ink:#F7DC6B;--bad:#FDA29B;--ok:#75E0A7;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0B0930;--surface:#141142;--fg:#F1F0FA;--muted:#B4B1D3;--line:#2A2663;--accent-ink:#F7DC6B;--bad:#FDA29B;--ok:#75E0A7;color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.7}
+.wrap{max-width:860px;margin:0 auto;padding-inline:16px}
+header{background:var(--navy);color:#fff;padding:22px 0 30px}
+header .top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+header img{height:38px;display:block}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(26px,6vw,38px);line-height:1.4;margin:22px 0 4px}
+.lead{color:#D9D7F3;margin:0}
+main{padding-block:24px 48px;display:grid;gap:22px}
+h2{font-family:var(--display);font-weight:700;font-size:20px;margin:0 0 10px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px}
+.tabs{display:flex;gap:6px;background:var(--bg);border-radius:12px;padding:4px;margin-bottom:18px}
+.tabs button{flex:1;border:0;background:transparent;color:var(--muted);font:700 15px var(--display);padding:9px;border-radius:9px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--surface);color:var(--fg);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+form{display:grid;gap:14px}
+label{display:grid;gap:4px;font-weight:600;font-size:14px}
+label small{color:var(--muted);font-weight:400}
+input{font:inherit;font-size:16px;color:var(--fg);background:var(--bg);border:1.5px solid var(--line);border-radius:11px;padding:10px 12px;width:100%}
+input:focus{outline:2px solid var(--turq);outline-offset:1px;border-color:transparent}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:var(--display);font-weight:700;font-size:15px;text-decoration:none;padding:10px 18px;border-radius:11px;background:var(--navy);color:#fff;border:0;cursor:pointer}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn:not(.y):not(.w):not(.o){background:var(--yellow);color:#07005E}}
+.btn.y{background:var(--yellow);color:#07005E}.btn.w{background:#25D366;color:#06301A}
+.btn.o{background:transparent;color:var(--accent-ink);border:1.5px solid var(--line)}
+.btn.ghost{background:rgba(255,255,255,.12);color:#fff;font-size:14px;padding:7px 14px}
+.btn[disabled]{opacity:.6;cursor:wait}
+.msg{margin:0;font-size:14px;color:var(--bad)}
+.msg.ok{color:var(--ok)}
+.muted{color:var(--muted)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.course{display:grid;gap:10px}
+.course h2{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 12px;margin:0}
+.course h2 small{font:500 13px var(--body);color:var(--muted)}
+.list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.list button{width:100%;display:flex;align-items:center;gap:12px;text-align:start;background:var(--surface);color:var(--fg);border:1px solid var(--line);border-radius:14px;padding:12px 14px;font:600 15px var(--body);cursor:pointer}
+.list button:hover{border-color:var(--turq)}
+.list button[aria-current="true"]{border-color:var(--navy);box-shadow:inset 0 0 0 1px var(--navy)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .list button[aria-current="true"]{border-color:var(--yellow);box-shadow:inset 0 0 0 1px var(--yellow)}}
+.list .n{flex:none;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:var(--bg);font:700 13px var(--display)}
+.player{position:sticky;top:0;z-index:5;background:var(--bg);padding-top:8px}
+.stage{position:relative;background:#000;border-radius:16px;overflow:hidden;aspect-ratio:16/9;user-select:none;-webkit-user-select:none}
+.stage video{width:100%;height:100%;display:block;background:#000}
+.stage .mark{position:absolute;pointer-events:none;color:rgba(255,255,255,.55);font:600 clamp(11px,2.2vw,15px) var(--body);text-shadow:0 0 3px rgba(0,0,0,.7);white-space:nowrap;transition:top 1.2s,left 1.2s;direction:ltr}
+.stage:fullscreen{border-radius:0;aspect-ratio:auto}
+.stage .fs{position:absolute;top:10px;inset-inline-start:10px;background:rgba(0,0,0,.55);color:#fff;border:0;border-radius:9px;padding:6px 10px;font:600 13px var(--body);cursor:pointer}
+.now{font-family:var(--display);font-weight:700;margin:10px 0 0}
+.pend{display:grid;gap:12px;text-align:center;justify-items:center}
+.pend .ico{font-size:40px;line-height:1}
+footer{border-top:1px solid var(--line);color:var(--muted);font-size:13px;padding:18px 0 30px}
+footer a{color:inherit}
+</style>
+</head><body>
+<header><div class="wrap">
+  <div class="top"><a href="../"><img src="../tools/logo-horizontal-color-on-navy.svg" alt="الطالب الأكاديمي"></a><button class="btn ghost" id="out" hidden>تسجيل خروج</button></div>
+  <h1 id="hello">محاضرات المشتركين</h1>
+  <p class="lead" id="sub">سجّل دخولك وشوف محاضرات المواد اللي مشترك فيها.</p>
+</div></header>
+<main class="wrap" id="main">
+
+<section class="card" id="auth" hidden>
+  <div class="tabs" role="tablist">
+    <button role="tab" aria-selected="true" data-tab="login">تسجيل دخول</button>
+    <button role="tab" aria-selected="false" data-tab="signup">حساب جديد</button>
+  </div>
+  <form id="f-login" novalidate>
+    <label>رقم الجوال<input name="phone" type="tel" inputmode="tel" autocomplete="tel" dir="ltr" required></label>
+    <label>كلمة السر<input name="password" type="password" autocomplete="current-password" required></label>
+    <p class="msg" role="alert"></p>
+    <div class="row"><button class="btn" type="submit">دخول</button><a class="btn o" id="forgot" target="_blank" rel="noopener">نسيت كلمة السر؟</a></div>
+  </form>
+  <form id="f-signup" novalidate hidden>
+    <label>الاسم الثلاثي<input name="name" autocomplete="name" required></label>
+    <label>رقم الجوال <small>هذا اللي بتدخل فيه، ونتواصل معاك عليه</small><input name="phone" type="tel" inputmode="tel" autocomplete="tel" dir="ltr" required></label>
+    <label>الإيميل <small>(اختياري)</small><input name="email" type="email" autocomplete="email" dir="ltr"></label>
+    <label>كلمة السر <small>6 حروف أو أرقام بالأقل</small><input name="password" type="password" autocomplete="new-password" minlength="6" required></label>
+    <p class="msg" role="alert"></p>
+    <button class="btn" type="submit">سجّل حسابي</button>
+    <p class="muted" style="margin:0;font-size:14px">بعد التسجيل نفعّل اشتراكك ونفتح لك محاضرات موادك. الحساب يشتغل على جهازين بالكثير.</p>
+  </form>
+</section>
+
+<section class="card pend" id="pending" hidden>
+  <div class="ico">⏳</div>
+  <h2 style="margin:0">حسابك انسجل وينتظر التفعيل</h2>
+  <p class="muted" style="margin:0">أرسل لنا بالواتساب عشان نأكد اشتراكك ونفتح لك محاضرات موادك. أول ما نفعّله بتطلع لك المحاضرات هني.</p>
+  <div class="row" style="justify-content:center"><a class="btn w" id="wa" target="_blank" rel="noopener">أرسل لنا بالواتساب</a><button class="btn o" id="refresh">تحديث</button></div>
+</section>
+
+<section class="card pend" id="empty" hidden>
+  <div class="ico">📚</div>
+  <h2 style="margin:0">ما عندك مواد مفعّلة الحين</h2>
+  <p class="muted" style="margin:0">يمكن اشتراكك انتهى أو للحين ما انضافت موادك. كلمنا بالواتساب ونرتبها لك.</p>
+  <div class="row" style="justify-content:center"><a class="btn w" id="wa2" target="_blank" rel="noopener">كلمنا بالواتساب</a></div>
+</section>
+
+<section class="player" id="player" hidden>
+  <div class="stage" id="stage">
+    <video id="vid" controls playsinline preload="metadata" controlslist="nodownload nofullscreen noremoteplayback" disablepictureinpicture disableremoteplayback></video>
+    <div class="mark" id="mark"></div>
+    <button class="fs" id="fs" type="button">⛶ ملء الشاشة</button>
+  </div>
+  <p class="now" id="now"></p>
+</section>
+
+<div id="courses" style="display:grid;gap:22px"></div>
+<p class="muted" id="loading" style="margin:0">لحظة…</p>
+</main>
+<footer><div class="wrap">الطالب الأكاديمي · <a href="../">asckwt.com</a> · <a href="../privacy/">الخصوصية</a> · المحاضرات للمشتركين بس، ونشرها أو تسجيلها ممنوع.</div></footer>
+
+<script>
+(() => {
+const API = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) ? "http://localhost:8799" : "https://asc-videos.m7mdaltalab.workers.dev";
+const WA = "96596050709";
+const $ = id => document.getElementById(id);
+const store = {
+  get: k => { try { return localStorage.getItem(k); } catch { return null; } },
+  set: (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch {} },
+};
+let device = store.get("asc-device");
+if (!device) { device = Array.from(crypto.getRandomValues(new Uint8Array(16)), b => b.toString(16).padStart(2, "0")).join(""); store.set("asc-device", device); }
+let token = store.get("asc-watch-token");
+
+async function call(path, data) {
+  const r = await fetch(API + "/api/" + path, {
+    method: data === undefined ? "GET" : "POST",
+    headers: {"Content-Type": "application/json", ...(token ? {Authorization: "Bearer " + token} : {})},
+    body: data === undefined ? undefined : JSON.stringify(data),
+  }).catch(() => null);
+  if (!r) throw {message: "ما قدرنا نوصل للسيرفر، تأكد من النت وجرّب مرة ثانية."};
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) {
+    if (r.status === 401 && path !== "login") { token = null; store.set("asc-watch-token", null); }
+    throw {status: r.status, code: j.error, message: j.message || "صار خطأ، جرّب مرة ثانية."};
+  }
+  return j;
+}
+const wa = text => `https://wa.me/${WA}?text=${encodeURIComponent(text)}`;
+const fmtDate = s => new Date(s * 1000).toLocaleDateString("ar-KW", {day: "numeric", month: "long", year: "numeric", numberingSystem: "latn"});
+$("forgot").href = wa("السلام عليكم، نسيت كلمة السر حق حسابي في محاضرات المشتركين.");
+
+// تبويبات الدخول والتسجيل
+document.querySelectorAll("[data-tab]").forEach(b => b.onclick = () => {
+  document.querySelectorAll("[data-tab]").forEach(x => x.setAttribute("aria-selected", x === b));
+  $("f-login").hidden = b.dataset.tab !== "login";
+  $("f-signup").hidden = b.dataset.tab !== "signup";
+});
+if (location.hash === "#signup") document.querySelector('[data-tab="signup"]').click();
+
+function bindForm(form, path) {
+  form.onsubmit = async e => {
+    e.preventDefault();
+    const btn = form.querySelector("[type=submit]"), msg = form.querySelector(".msg");
+    msg.textContent = ""; btn.disabled = true;
+    try {
+      const data = Object.fromEntries(new FormData(form)); data.device = device;
+      const r = await call(path, data);
+      token = r.token; store.set("asc-watch-token", token);
+      await load();
+    } catch (err) {
+      msg.textContent = err.message;
+      if (err.code === "exists") document.querySelector('[data-tab="login"]').click(), $("f-login").phone.value = form.phone.value;
+    } finally { btn.disabled = false; }
+  };
+}
+bindForm($("f-login"), "login");
+bindForm($("f-signup"), "signup");
+
+$("out").onclick = async () => {
+  try { await call("logout", {}); } catch {}
+  token = null; store.set("asc-watch-token", null); location.reload();
+};
+$("refresh").onclick = () => load();
+
+function show(which) {
+  ["auth", "pending", "empty", "player"].forEach(id => $(id).hidden = !which.includes(id));
+  $("loading").hidden = true;
+}
+
+let me = null;
+async function load() {
+  if (!token) { show(["auth"]); $("out").hidden = true; $("courses").innerHTML = ""; return; }
+  try { me = await call("me"); }
+  catch (err) { if (err.status === 401 || err.status === 403) { show(["auth"]); $("f-login").querySelector(".msg").textContent = err.message; } else { $("loading").textContent = err.message; } return; }
+  $("out").hidden = false;
+  const first = me.user.name.split(" ")[0];
+  $("hello").textContent = `هلا ${first} 👋`;
+  const hi = `السلام عليكم، أنا ${me.user.name} ورقمي ${me.user.phone}`;
+  $("wa").href = wa(`${hi}، سجّلت بموقع المحاضرات وأبي أفعّل اشتراكي.`);
+  $("wa2").href = wa(`${hi}، ما طلعت لي مواد في موقع المحاضرات.`);
+  if (me.user.status !== "active") { $("sub").textContent = "حسابك جاهز، باقي بس نفعّل اشتراكك."; show(["pending"]); return; }
+  if (!me.courses.length) { $("sub").textContent = "ما فيه مواد مفعّلة لحسابك الحين."; show(["empty"]); return; }
+  $("sub").textContent = "اختار المحاضرة اللي تبيها وتشتغل لك فوق.";
+  show([]);
+  renderCourses();
+}
+
+function renderCourses() {
+  const box = $("courses"); box.innerHTML = "";
+  for (const c of me.courses) {
+    const sec = document.createElement("section"); sec.className = "course";
+    const h = document.createElement("h2");
+    const code = document.createElement("bdi"); code.dir = "ltr"; code.textContent = c.code;
+    const until = document.createElement("small"); until.textContent = `اشتراكك لين ${fmtDate(c.until)}`;
+    h.append(code, until); sec.append(h);
+    if (!c.videos.length) { const p = document.createElement("p"); p.className = "muted"; p.style.margin = "0"; p.textContent = "المحاضرات بتنزل هني قريب."; sec.append(p); }
+    const ul = document.createElement("ul"); ul.className = "list";
+    c.videos.forEach((v, i) => {
+      const li = document.createElement("li"), b = document.createElement("button");
+      const n = document.createElement("span"); n.className = "n"; n.textContent = i + 1;
+      const t = document.createElement("span"); t.textContent = v.title;
+      b.append(n, t); b.dataset.id = v.id;
+      b.onclick = () => play(v, c.code, b);
+      li.append(b); ul.append(li);
+    });
+    sec.append(ul); box.append(sec);
+  }
+}
+
+// المشغّل: رابط موقّع يشتغل 4 ساعات، ولو انتهى يتجدد بروحه ويكمل من نفس المكان
+const vid = $("vid");
+let current = null, renewing = false;
+async function play(v, code, btn, resumeAt = 0) {
+  document.querySelectorAll(".list button").forEach(x => x.setAttribute("aria-current", x === btn));
+  $("player").hidden = false;
+  $("now").textContent = `${code} · ${v.title}`;
+  current = {v, code, btn};
+  try {
+    const r = await call("play", {video: v.id});
+    $("mark").textContent = r.mark;
+    vid.src = r.url;
+    if (resumeAt) vid.addEventListener("loadedmetadata", () => { vid.currentTime = resumeAt; }, {once: true});
+    vid.play().catch(() => {});
+    if (!resumeAt) $("player").scrollIntoView({behavior: "smooth", block: "start"});
+  } catch (err) {
+    $("now").textContent = err.message;
+    if (err.status === 401 || err.status === 403) setTimeout(load, 1500);
+  }
+}
+vid.addEventListener("error", () => {
+  if (!current || renewing) return;
+  renewing = true;
+  const at = vid.currentTime || 0;
+  play(current.v, current.code, current.btn, at).finally(() => setTimeout(() => renewing = false, 5000));
+});
+
+// العلامة المائية (اسم الطالب ورقمه) تتحرك كل شوي
+const mark = $("mark");
+function moveMark() { mark.style.top = (8 + Math.random() * 74) + "%"; mark.style.left = (4 + Math.random() * 60) + "%"; }
+moveMark(); setInterval(moveMark, 12000);
+
+// ملء الشاشة للمشغّل كامل عشان العلامة المائية تبقى ظاهرة
+const stage = $("stage");
+$("fs").onclick = () => {
+  if (document.fullscreenElement) return document.exitFullscreen();
+  if (stage.requestFullscreen) stage.requestFullscreen().catch(() => vid.webkitEnterFullscreen && vid.webkitEnterFullscreen());
+  else if (stage.webkitRequestFullscreen) stage.webkitRequestFullscreen();
+  else if (vid.webkitEnterFullscreen) vid.webkitEnterFullscreen();
+};
+stage.addEventListener("contextmenu", e => e.preventDefault());
+stage.addEventListener("dragstart", e => e.preventDefault());
+
+load();
+})();
+</script>
+<script>if("serviceWorker"in navigator&&location.protocol==="https:")navigator.serviceWorker.register("../sw.js",{scope:"../"});</script>
+</body></html>
