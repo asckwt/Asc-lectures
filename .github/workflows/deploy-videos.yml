@@ -1,0 +1,57 @@
+# يرفع خادم المحاضرات المحمية (videos/worker.js) على Cloudflare كل ما تغيّر.
+# أول مرة ينشئ بنفسه: مخزن الفيديو (R2) وقاعدة البيانات (D1) ومفتاح توقيع الروابط.
+# يحتاج في إعدادات المستودع (Settings > Secrets and variables > Actions):
+#   CLOUDFLARE_API_TOKEN    نفس توكن المساعد، بس لازم يكون فيه صلاحية D1 و R2 (Edit)
+#   CLOUDFLARE_ACCOUNT_ID   رقم حساب Cloudflare
+#   VIDEOS_ADMIN_PASSWORD   كلمة سر لوحة الإدارة (asckwt.com/watch/admin)
+name: Deploy lecture videos server
+on:
+  push:
+    branches: [main]
+    paths: [videos/worker.js, videos/wrangler.toml, videos/schema.sql, .github/workflows/deploy-videos.yml]
+  workflow_dispatch:
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      READY: ${{ secrets.CLOUDFLARE_API_TOKEN != '' && secrets.VIDEOS_ADMIN_PASSWORD != '' }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      ADMIN_PASSWORD: ${{ secrets.VIDEOS_ADMIN_PASSWORD }}
+      WRANGLER: npx --yes wrangler@4.153.0
+    defaults:
+      run:
+        working-directory: videos
+    steps:
+      - if: env.READY != 'true'
+        working-directory: .
+        run: echo "::notice::أسرار Cloudflare وكلمة سر الإدارة مو محطوطة للحين، فما انرفع خادم المحاضرات."
+      - if: env.READY == 'true'
+        uses: actions/checkout@v4
+      - if: env.READY == 'true'
+        uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - name: مخزن الفيديو (R2)
+        if: env.READY == 'true'
+        run: |
+          if $WRANGLER r2 bucket list | grep -q "asc-videos"; then echo "موجود"; else $WRANGLER r2 bucket create asc-videos; fi
+      - name: قاعدة البيانات (D1)
+        if: env.READY == 'true'
+        run: |
+          id=$($WRANGLER d1 list --json | node -e 'const l=JSON.parse(require("fs").readFileSync(0));const d=l.find(x=>x.name==="asc-videos");process.stdout.write(d?d.uuid:"")')
+          if [ -z "$id" ]; then
+            $WRANGLER d1 create asc-videos
+            id=$($WRANGLER d1 list --json | node -e 'const l=JSON.parse(require("fs").readFileSync(0));process.stdout.write(l.find(x=>x.name==="asc-videos").uuid)')
+          fi
+          sed -i "s/^database_id = .*/database_id = \"$id\"/" wrangler.toml
+          $WRANGLER d1 execute asc-videos --remote --file schema.sql --yes
+      - name: رفع الخادم
+        if: env.READY == 'true'
+        run: $WRANGLER deploy
+      - name: الأسرار
+        if: env.READY == 'true'
+        run: |
+          printf '%s' "$ADMIN_PASSWORD" | $WRANGLER secret put ADMIN_PASSWORD
+          if ! $WRANGLER secret list --format json | grep -q '"SIGNING_KEY"'; then
+            openssl rand -base64 48 | tr -d '\n' | $WRANGLER secret put SIGNING_KEY
+          fi
