@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; worker-src 'self' blob:; img-src 'self' data:; connect-src 'self' https://asc-videos.m7mdaltalab.workers.dev https://*.cloudflarestream.com http://localhost:*; media-src 'self' blob: https://*.cloudflarestream.com http://localhost:*"><meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-src blob:; form-action 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; worker-src 'self' blob:; img-src 'self' data:; connect-src 'self' https://asc-videos.m7mdaltalab.workers.dev https://*.cloudflarestream.com http://localhost:*; media-src 'self' blob: https://*.cloudflarestream.com http://localhost:*"><meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="robots" content="noindex">
 <title>محاضرات المشتركين | الطالب الأكاديمي</title>
 <meta name="description" content="شاهد محاضرات المواد اللي مشترك فيها مع الطالب الأكاديمي.">
@@ -16,7 +16,33 @@
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0B0930;--surface:#141142;--fg:#F1F0FA;--muted:#B4B1D3;--line:#2A2663;--accent-ink:#F7DC6B;--bad:#FDA29B;--ok:#75E0A7;color-scheme:dark}}
 :root[data-theme="dark"]{--bg:#0B0930;--surface:#141142;--fg:#F1F0FA;--muted:#B4B1D3;--line:#2A2663;--accent-ink:#F7DC6B;--bad:#FDA29B;--ok:#75E0A7;color-scheme:dark}
 *{box-sizing:border-box}
+.files{margin-top:14px;display:grid;gap:8px}.files h3{margin:0;font:700 16px var(--display);color:var(--accent-ink)}
+.frow{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.ft{flex:1;min-width:160px;font-weight:600}.ft small{display:block;color:var(--muted);font-weight:400}
+.facts{display:flex;gap:6px;flex-wrap:wrap}.fbtn{min-height:44px;padding:8px 14px;border-radius:10px;border:1.5px solid var(--line);background:transparent;color:var(--accent-ink);font:600 14px var(--body);cursor:pointer}.fbtn:hover{border-color:var(--accent-ink)}.fbtn:disabled{opacity:.6}
+.fmsg{width:100%;color:var(--bad)}.fmsg:empty{display:none}.fnote{margin:0;font-size:13px}
 [hidden]{display:none!important}
+.hnav{display:flex;gap:4px;flex-wrap:wrap;align-items:center}
+@media (max-width:560px){header .top{flex-wrap:wrap}.hnav{width:100%;justify-content:space-between;gap:2px}.hnav a{padding:8px 6px;font-size:13px}.hnav .btn.ghost{padding:6px 10px;font-size:13px}}
+.hnav a{color:#fff;text-decoration:none;font:600 14px var(--display);padding:8px 12px;border-radius:10px;min-height:44px;display:inline-flex;align-items:center}
+.hnav a:hover{background:rgba(255,255,255,.1)}
+.news{display:grid;gap:10px}
+.news .nh{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.nw{border:1px solid var(--line);border-radius:14px;padding:12px 14px;background:var(--surface)}
+.nw.pin{background:#FFF8DB;border-color:var(--yellow);color:#151238}
+.nw b{display:block;font:700 15px var(--display)}
+.nw p{margin:4px 0 0;font-size:14px;white-space:pre-wrap}
+.nw small{color:var(--muted)}.nw.pin small{color:#5B5878}
+.chip{display:inline-block;border-radius:999px;padding:1px 10px;font-size:12px;font-weight:600;margin-bottom:4px}
+.chip.t{background:#DDF8F3;color:#0B5D52}.chip.p{background:#FBE6F3;color:#8A1F63}.chip.n{background:var(--navy);color:#fff}
+.clinks{display:flex;gap:6px;flex-wrap:wrap;margin:-4px 0 12px}
+.clinks a{font:600 14px var(--body);text-decoration:none;color:var(--accent-ink);border:1.5px solid var(--line);border-radius:10px;padding:8px 12px;min-height:44px;display:inline-flex;align-items:center;gap:6px}
+.clinks a.w{background:#25D366;border-color:#25D366;color:#06301A}
+.badge{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:#E980C2;color:#07005E;font:700 12px var(--display)}.badge:empty{display:none}
+.chaps{display:flex;gap:6px;overflow-x:auto;padding:8px 0 2px}
+.chaps button{flex:none;min-height:40px;border:1.5px solid var(--line);background:var(--surface);color:var(--fg);border-radius:999px;padding:6px 12px;font:600 13px var(--body);cursor:pointer;white-space:nowrap}
+.chaps button[aria-current="true"]{background:var(--yellow);border-color:var(--yellow);color:#07005E}
+.chaps b{font-family:var(--display);direction:ltr;unicode-bidi:isolate;margin-inline-end:6px}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.7}
 .wrap{max-width:860px;margin:0 auto;padding-inline:16px}
 header{background:var(--navy);color:#fff;padding:22px 0 30px}
@@ -34,7 +60,8 @@ form{display:grid;gap:14px}
 label{display:grid;gap:4px;font-weight:600;font-size:14px}
 label small{color:var(--muted);font-weight:400}
 input{font:inherit;font-size:16px;color:var(--fg);background:var(--bg);border:1.5px solid var(--line);border-radius:11px;padding:10px 12px;width:100%}
-input:focus{outline:2px solid var(--turq);outline-offset:1px;border-color:transparent}
+select{font:inherit;font-size:16px;color:var(--fg);background:var(--bg);border:1.5px solid var(--line);border-radius:11px;padding:10px 12px;width:100%}
+input:focus,select:focus{outline:2px solid var(--turq);outline-offset:1px;border-color:transparent}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:var(--display);font-weight:700;font-size:15px;text-decoration:none;padding:10px 18px;border-radius:11px;background:var(--navy);color:#fff;border:0;cursor:pointer}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn:not(.y):not(.w):not(.o){background:var(--yellow);color:#07005E}}
 .btn.y{background:var(--yellow);color:#07005E}.btn.w{background:#25D366;color:#06301A}
@@ -71,7 +98,7 @@ footer a{color:inherit}
 </style>
 </head><body>
 <header><div class="wrap">
-  <div class="top"><a href="../"><img src="../tools/logo-horizontal-color-on-navy.svg" alt="الطالب الأكاديمي"></a><button class="btn ghost" id="out" hidden>تسجيل خروج</button></div>
+  <div class="top"><a href="../"><img src="../tools/logo-horizontal-color-on-navy.svg" alt="الطالب الأكاديمي"></a><nav class="hnav" id="hnav" aria-label="القائمة" hidden><a href="groups/">القروبات</a><a href="support/">الشكاوي والاقتراحات</a><button class="btn ghost" id="out">تسجيل خروج</button></nav></div>
   <h1 id="hello">محاضرات المشتركين</h1>
   <p class="lead" id="sub">سجّل دخولك وشوف محاضرات المواد اللي مشترك فيها.</p>
 </div></header>
@@ -89,7 +116,9 @@ footer a{color:inherit}
     <div class="row"><button class="btn" type="submit">دخول</button><a class="btn o" id="forgot" target="_blank" rel="noopener">نسيت كلمة السر؟</a></div>
   </form>
   <form id="f-signup" novalidate hidden>
-    <label>الاسم الثلاثي<input name="name" autocomplete="name" required></label>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><label>الاسم الأول<input name="first" autocomplete="given-name" required></label><label>اسم العائلة<input name="family" autocomplete="family-name" required></label></div>
+    <label>الجامعة<select name="uni" id="su-uni"><option value="">اختار جامعتك</option></select></label>
+    <label id="su-major-l" hidden>التخصص<select name="major" id="su-major"><option value="">اختار تخصصك</option></select></label>
     <label>رقم الجوال <small>هذا اللي بتدخل فيه، ونتواصل معاك عليه</small><input name="phone" type="tel" inputmode="tel" autocomplete="tel" dir="ltr" required></label>
     <label>الإيميل <small>(توصلك عليه الفواتير واسترجاع كلمة السر)</small><input name="email" type="email" autocomplete="email" dir="ltr" required></label>
     <label>كلمة السر <small>6 حروف أو أرقام بالأقل</small><input name="password" type="password" autocomplete="new-password" minlength="6" required></label>
@@ -113,6 +142,11 @@ footer a{color:inherit}
   <div class="row" style="justify-content:center"><a class="btn w" id="wa2" target="_blank" rel="noopener">كلمنا بالواتساب</a></div>
 </section>
 
+<section class="card news" id="news" hidden aria-labelledby="news-h">
+  <div class="nh"><h2 id="news-h" style="margin:0">📣 الأخبار</h2><button class="btn o" id="news-all" type="button" hidden style="padding:6px 14px;font-size:14px">كل الأخبار</button></div>
+  <div class="news" id="news-list"></div>
+</section>
+
 <section class="player" id="player" hidden>
   <div class="stage" id="stage">
     <video id="vid" controls playsinline preload="metadata" controlslist="nodownload nofullscreen noremoteplayback" disablepictureinpicture disableremoteplayback></video>
@@ -120,6 +154,7 @@ footer a{color:inherit}
     <button class="fs" id="fs" type="button">⛶ ملء الشاشة</button>
   </div>
   <p class="now" id="now"></p>
+  <div class="chaps" id="chaps" hidden aria-label="الأسئلة بالمحاضرة"></div>
 </section>
 
 <div id="courses" style="display:grid;gap:22px"></div>
@@ -166,6 +201,15 @@ document.querySelectorAll("[data-tab]").forEach(b => b.onclick = () => {
   $("f-signup").hidden = b.dataset.tab !== "signup";
 });
 if (location.hash === "#signup") document.querySelector('[data-tab="signup"]').click();
+// الجامعات والتخصصات من الكتالوج
+call("catalog").then(cat => {
+  $("su-uni").append(...cat.universities.map(u => Object.assign(document.createElement("option"), {value: u.id, textContent: u.name})));
+  $("su-uni").onchange = () => {
+    const ms = cat.majors.filter(m => m.uni === $("su-uni").value);
+    $("su-major").replaceChildren(Object.assign(document.createElement("option"), {value: "", textContent: "اختار تخصصك"}), ...ms.map(m => Object.assign(document.createElement("option"), {value: m.id, textContent: m.name})));
+    $("su-major-l").hidden = !ms.length;
+  };
+}).catch(() => {});
 
 function bindForm(form, path) {
   form.onsubmit = async e => {
@@ -199,10 +243,11 @@ function show(which) {
 
 let me = null;
 async function load() {
-  if (!token) { show(["auth"]); $("out").hidden = true; $("courses").innerHTML = ""; return; }
+  if (!token) { show(["auth"]); $("hnav").hidden = true; $("news").hidden = true; $("courses").innerHTML = ""; return; }
   try { me = await call("me"); }
   catch (err) { if (err.status === 401 || err.status === 403) { show(["auth"]); $("f-login").querySelector(".msg").textContent = err.message; } else { $("loading").textContent = err.message; } return; }
-  $("out").hidden = false;
+  $("hnav").hidden = false;
+  renderNews();
   const first = me.user.name.split(" ")[0];
   $("hello").textContent = `هلا ${first} 👋`;
   const hi = `السلام عليكم، أنا ${me.user.name} ورقمي ${me.user.phone}`;
@@ -215,6 +260,25 @@ async function load() {
   renderCourses();
 }
 
+// الأخبار: المثبّت أول، وبعده أخبار الجامعة والمواد. نعرض 3 وزر للباقي
+function renderNews(all) {
+  const list = me.news || [];
+  $("news").hidden = !list.length;
+  const show = all ? list : list.slice(0, 3);
+  $("news-all").hidden = list.length <= 3 || all;
+  $("news-all").onclick = () => renderNews(true);
+  const ago = s => { const d = Math.floor(Date.now() / 1000) - s; return d < 3600 ? "الحين" : d < 86400 ? `قبل ${Math.max(1, Math.floor(d / 3600))} ساعة` : d < 172800 ? "أمس" : fmtDate(s); };
+  $("news-list").replaceChildren(...show.map(n => {
+    const a = document.createElement("article"); a.className = "nw" + (n.pinned ? " pin" : "");
+    const chip = n.pinned ? ["n", "📌 مثبّت"] : n.scope === "uni" ? ["t", "جامعتك"] : n.scope === "course" ? ["p", `${n.ref} · من أستاذك`] : null;
+    if (chip) { const c = document.createElement("span"); c.className = "chip " + chip[0]; c.textContent = chip[1]; a.append(c); }
+    const b = document.createElement("b"); b.textContent = n.title; a.append(b);
+    if (n.body) { const p = document.createElement("p"); p.textContent = n.body; a.append(p); }
+    const sm = document.createElement("small"); sm.textContent = `${n.author} · ${ago(n.created)}`; a.append(sm);
+    return a;
+  }));
+}
+
 function renderCourses() {
   const box = $("courses"); box.innerHTML = "";
   for (const c of me.courses) {
@@ -223,6 +287,13 @@ function renderCourses() {
     const code = document.createElement("bdi"); code.dir = "ltr"; code.textContent = c.code;
     const until = document.createElement("small"); until.textContent = `اشتراكك لين ${fmtDate(c.until)}`;
     h.append(code, until); sec.append(h);
+    const links = document.createElement("div"); links.className = "clinks";
+    const link = (href, text, cls) => { const a = document.createElement("a"); a.href = href; a.textContent = text; if (cls) a.className = cls; if (/^https?:/.test(href)) { a.target = "_blank"; a.rel = "noopener"; } links.append(a); return a; };
+    link(`course/?id=${encodeURIComponent(c.code)}`, "صفحة المادة");
+    const chat = link(`chat/?course=${encodeURIComponent(c.code)}`, "💬 اسأل الأستاذ");
+    if (me.unread) { const bd = document.createElement("span"); bd.className = "badge"; bd.textContent = me.unread; bd.title = "رسايل جديدة من أساتذتك"; chat.append(bd); }
+    (me.groups || []).filter(g => g.course === c.code).forEach(g => link(g.url, "قروب المادة 🔒", "w"));
+    sec.append(links);
     if (!c.videos.length) { const p = document.createElement("p"); p.className = "muted"; p.style.margin = "0"; p.textContent = "المحاضرات بتنزل هني قريب."; sec.append(p); }
     const ul = document.createElement("ul"); ul.className = "list";
     c.videos.forEach((v, i) => {
@@ -234,8 +305,51 @@ function renderCourses() {
       b.onclick = () => play(v, c.code, b);
       li.append(b); ul.append(li);
     });
-    sec.append(ul); box.append(sec);
+    sec.append(ul);
+    if (c.files?.length) sec.append(fileList(c.files));
+    box.append(sec);
   }
+}
+
+// ===== الملفات: كل طالب ياخذ نسخة عليها اسمه ورقمه، ويقدر يفتحها ويطبعها ويشاركها =====
+const pdfs = {};
+async function getPdf(f) {
+  if (pdfs[f.id]) return pdfs[f.id];
+  const r = await fetch(`${API}/api/file?id=${encodeURIComponent(f.id)}`, {headers: {Authorization: "Bearer " + token}}).catch(() => null);
+  if (!r) throw {message: "ما قدرنا نوصل للسيرفر."};
+  if (!r.ok) { const j = await r.json().catch(() => ({})); throw {message: j.message || "ما قدرنا نجيب الملف."}; }
+  const file = new File([await r.blob()], `${f.title.replace(/[\\/:*?"<>|]/g, "-")}.pdf`, {type: "application/pdf"});
+  return pdfs[f.id] = {file, url: URL.createObjectURL(file)};
+}
+function fileList(files) {
+  const box = document.createElement("div"); box.className = "files";
+  const h = document.createElement("h3"); h.textContent = "الملفات"; box.append(h);
+  for (const f of files) {
+    const row = document.createElement("div"); row.className = "frow";
+    const t = document.createElement("span"); t.className = "ft"; t.textContent = f.title;
+    const meta = document.createElement("small"); meta.textContent = `${f.pages} صفحة`; t.append(meta);
+    const msg = document.createElement("small"); msg.className = "fmsg";
+    const btn = (label, fn) => { const b = document.createElement("button"); b.type = "button"; b.className = "fbtn"; b.textContent = label; b.onclick = async () => {
+      b.disabled = true; msg.textContent = pdfs[f.id] ? "" : "نجهّز نسختك…";
+      try { await fn(await getPdf(f)); msg.textContent = ""; } catch (e) { msg.textContent = e.message || "ما زبطت، جرّب مرة ثانية."; }
+      b.disabled = false; }; return b; };
+    const open = btn("فتح", p => { const a = document.createElement("a"); a.href = p.url; a.target = "_blank"; a.rel = "noopener"; a.click(); });
+    const print = btn("طباعة", p => new Promise(ok => {
+      // الطباعة من إطار مخفي، وإذا المتصفح ما يدعمها (مثل آيفون) نفتح الملف وتطبع من هناك
+      const fr = document.createElement("iframe"); fr.style.cssText = "position:fixed;width:0;height:0;border:0;opacity:0"; fr.src = p.url;
+      fr.onload = () => { try { fr.contentWindow.focus(); fr.contentWindow.print(); } catch { open.click(); } setTimeout(() => fr.remove(), 60000); ok(); };
+      document.body.append(fr);
+    }));
+    const share = btn("مشاركة", async p => {
+      if (navigator.canShare?.({files: [p.file]})) { try { await navigator.share({files: [p.file], title: f.title}); } catch (e) { if (e.name !== "AbortError") throw e; } return; }
+      const a = document.createElement("a"); a.href = p.url; a.download = p.file.name; document.body.append(a); a.click(); a.remove();
+    });
+    if (!navigator.canShare) share.textContent = "تنزيل";
+    const acts = document.createElement("div"); acts.className = "facts"; acts.append(open, print, share);
+    row.append(t, acts, msg); box.append(row);
+  }
+  const note = document.createElement("p"); note.className = "muted fnote"; note.textContent = "كل ملف عليه اسمك ورقمك، فهو لك بروحك."; box.append(note);
+  return box;
 }
 
 const clock = t => { t = Math.floor(t); const h = Math.floor(t / 3600), m = Math.floor(t / 60) % 60, x = String(t % 60).padStart(2, "0"); return h ? `${h}:${String(m).padStart(2, "0")}:${x}` : `${m}:${x}`; };
@@ -274,6 +388,9 @@ async function play(v, code, btn, resumeAt) {
   $("player").hidden = false;
   $("now").textContent = `${code} · ${v.title}`;
   current = {v, code, btn};
+  // فهرس الأسئلة: تضغط السؤال ويروح له
+  $("chaps").hidden = !(v.chapters || []).length;
+  $("chaps").replaceChildren(...(v.chapters || []).map(ch => { const b = document.createElement("button"); b.type = "button"; b.dataset.t = ch.t; const t = document.createElement("b"); t.textContent = clock(ch.t); b.append(t, ch.title); b.onclick = () => { vid.currentTime = ch.t; vid.play().catch(() => {}); }; return b; }));
   const fresh = resumeAt === undefined;
   if (fresh) resumeAt = v.pos && v.duration && v.pos < v.duration - 30 ? Math.max(0, v.pos - 3) : 0;
   try {
@@ -312,7 +429,11 @@ function saveProgress() {
       if (j.stop && !vid.paused) { vid.pause(); $("now").textContent = j.stop; stopped = true; }
     }).catch(() => {});
 }
-vid.addEventListener("timeupdate", () => { if (Math.abs(vid.currentTime - lastSaved) >= 15) saveProgress(); });
+vid.addEventListener("timeupdate", () => {
+  if (Math.abs(vid.currentTime - lastSaved) >= 15) saveProgress();
+  let on = null; for (const b of $("chaps").children) if (Number(b.dataset.t) <= vid.currentTime + 0.5) on = b;
+  for (const b of $("chaps").children) b.setAttribute("aria-current", b === on);
+});
 vid.addEventListener("pause", saveProgress);
 vid.addEventListener("ended", saveProgress);
 addEventListener("pagehide", saveProgress);

@@ -6,6 +6,10 @@
 // الأسرار في Cloudflare: ADMIN_PASSWORD (كلمة سر لوحة الإدارة)، CF_API_TOKEN و CF_ACCOUNT_ID (للكلام مع Stream)،
 // و STREAM_KEY_ID و STREAM_KEY_JWK (مفتاح توقيع روابط المشاهدة). كلها تنحط تلقائياً من GitHub.
 
+import {PDFDocument, rgb, degrees} from "pdf-lib";
+import fontkit from "@pdf-lib/fontkit";
+import FONT from "./fonts/IBMPlexSansArabic-SemiBold.ttf";
+
 const ORIGINS = ["https://www.asckwt.com", "https://asckwt.com"];
 const MAX_DEVICES = 2;
 const LINK_MINUTES = 30; // رابط المشاهدة قصير عشان لو أحد نسخه ما يفيده، والمشغّل يجدده بروحه
@@ -60,8 +64,8 @@ export default {
     const h = {
       "Access-Control-Allow-Origin": okOrigin ? origin : ORIGINS[0],
       "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type, Authorization, Tus-Resumable, Upload-Length, Upload-Metadata",
-      "Access-Control-Expose-Headers": "Location, Tus-Resumable, stream-media-id",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization, Tus-Resumable, Upload-Length, Upload-Metadata, X-Title",
+      "Access-Control-Expose-Headers": "Location, Tus-Resumable, stream-media-id, Content-Disposition",
       "Access-Control-Max-Age": "86400",
       "Vary": "Origin",
       "X-Content-Type-Options": "nosniff",
@@ -69,7 +73,8 @@ export default {
 
     if (req.method === "OPTIONS") return new Response(null, {headers: h});
     if (!url.pathname.startsWith("/api/")) return new Response("asc-videos", {headers: h});
-    if (!okOrigin) return new Response("forbidden", {status: 403});
+    // المتصفح يرسل Origin دايماً، فأي موقع ثاني ينرفض. تطبيق الجوال ما يرسله، والدخول كله بتوكن (مو كوكيز) فما فيه خطر CSRF
+    if (origin && !okOrigin) return new Response("forbidden", {status: 403});
 
     const json = (data, status = 200, cache = "no-store") => new Response(JSON.stringify(data), {status, headers: {...h, "Content-Type": "application/json; charset=utf-8", "Cache-Control": cache}});
     try {
@@ -83,7 +88,8 @@ export default {
       if (path === "course" && req.method === "GET") return json(await coursePage(env, cleanCourse(url.searchParams.get("id"))), 200, "public, max-age=60");
       if (path === "news" && req.method === "GET") return json({news: await newsFor(env, String(url.searchParams.get("uni") || ""), [])}, 200, "public, max-age=60");
       if (path === "doctor" && req.method === "GET") return json(await doctorPage(env, Number(url.searchParams.get("id"))), 200, "public, max-age=60");
-      return json(await student(req, env, url, path));
+      const r = await student(req, env, url, path);
+      return r instanceof Response ? new Response(r.body, {status: r.status, headers: {...h, ...Object.fromEntries(r.headers)}}) : json(r);
     } catch (e) {
       if (e instanceof Fail) return json({error: e.code, message: e.message}, e.status);
       console.error(e);
@@ -123,7 +129,8 @@ async function myCourses(env, userId) {
   await refreshPending(env, codes);
   const {results: vids} = await env.DB.prepare(`SELECT v.id, v.course, v.title, v.duration, p.pos FROM videos v LEFT JOIN progress p ON p.video_id = v.id AND p.user_id = ? WHERE v.ready = 1 AND v.course IN (${codes.map(() => "?").join(",")}) ORDER BY v.course, v.sort, v.created`).bind(userId, ...codes).all();
   const chaps = await chaptersFor(env, vids.map(v => v.id));
-  return access.map(a => ({code: a.course, until: a.until, videos: vids.filter(v => v.course === a.course).map(v => ({id: v.id, title: v.title, duration: v.duration || 0, pos: v.pos || 0, chapters: chaps[v.id] || []}))}));
+  const {results: docs} = await env.DB.prepare(`SELECT id, course, title, pages, size FROM files WHERE course IN (${codes.map(() => "?").join(",")}) ORDER BY course, sort, created`).bind(...codes).all();
+  return access.map(a => ({code: a.course, until: a.until, files: docs.filter(d => d.course === a.course).map(({course, ...d}) => d), videos: vids.filter(v => v.course === a.course).map(v => ({id: v.id, title: v.title, duration: v.duration || 0, pos: v.pos || 0, chapters: chaps[v.id] || []}))}));
 }
 async function chaptersFor(env, ids) {
   const out = {};
@@ -255,6 +262,22 @@ async function student(req, env, url, path) {
     const {results: mine} = await env.DB.prepare("SELECT course, stars, tags, comment, status, reply FROM ratings WHERE user_id = ?").bind(s.user_id).all();
     return {tickets: results, ratings: mine.map(r => ({...r, tags: JSON.parse(r.tags || "[]")}))};
   }
+  // صورة بالشات (حل الطالب مثلاً): ترفع، أو تنقرا بس من صاحب المحادثة
+  if (path === "chatimg" && req.method === "GET") {
+    const s = await session(req, env);
+    const m = await env.DB.prepare("SELECT image FROM messages WHERE id = ? AND student = ? AND image IS NOT NULL").bind(Number(url.searchParams.get("id")), s.user_id).first();
+    if (!m) throw new Fail(404, "none", "الصورة مو موجودة.");
+    return chatImage(env, m.image);
+  }
+  if (path === "chatimg" && req.method === "POST") {
+    const s = await session(req, env);
+    const course = cleanCourse(url.searchParams.get("course"));
+    if (s.status !== "active" || !(await env.DB.prepare("SELECT 1 FROM access WHERE user_id = ? AND course = ? AND until > ?").bind(s.user_id, course, now()).first())) throw new Fail(403, "noaccess", "الشات للمشتركين بالمادة.");
+    await limit(env, req, "chat");
+    const n = (await env.DB.prepare("SELECT COUNT(*) AS n FROM messages WHERE student = ? AND from_staff = 0 AND image IS NOT NULL AND created > ?").bind(s.user_id, now() - 86400).first()).n;
+    if (n >= 30) throw new Fail(429, "many", "وصلت حد الصور اليوم (30)، كمّل باچر.");
+    return chatSend(env, course, s.user_id, "", 0, s.name, await saveImage(env, req, s.user_id));
+  }
   // الشات مع أستاذ المادة: للمشترك الحالي بس
   if (path === "chat") {
     const s = await session(req, env);
@@ -263,6 +286,15 @@ async function student(req, env, url, path) {
     if (req.method === "GET") return chatRead(env, course, s.user_id, false);
     await limit(env, req, "chat");
     return chatSend(env, course, s.user_id, (await body(req)).body, 0, s.name);
+  }
+  // ملف PDF للمشترك: نسخة عليها اسمه ورقمه بكل صفحة
+  if (path === "file" && req.method === "GET") {
+    const s = await session(req, env);
+    await limit(env, req, `file:${s.user_id}`);
+    if (s.status !== "active") throw new Fail(403, "pending", "حسابك للحين مو مفعّل.");
+    const f = await env.DB.prepare("SELECT f.id, f.title FROM files f JOIN access a ON a.course = f.course WHERE f.id = ? AND a.user_id = ? AND a.until > ?").bind(String(url.searchParams.get("id") || ""), s.user_id, now()).first();
+    if (!f) throw new Fail(403, "noaccess", "هالملف مو ضمن اشتراكك.");
+    return studentFile(env, f, s);
   }
   // السعر النهائي مع خصم المواد وكود الخصم. الحساب كله هني بالسيرفر، مو بالمتصفح
   if (path === "quote" && req.method === "POST") {
@@ -406,15 +438,16 @@ async function ratingList(env, courses, n = 20) {
 async function coursePage(env, id) {
   const c = (await catalog(env)).courses.find(x => x.id === id);
   if (!c) throw new Fail(404, "none", "المادة مو موجودة.");
-  const [doc, vids, summary, ratings, groups, g] = await Promise.all([
+  const [doc, vids, summary, ratings, groups, g, files] = await Promise.all([
     c.doctor ? env.DB.prepare("SELECT id, name, bio, photo FROM doctors WHERE id = ? AND visible = 1").bind(c.doctor).first() : null,
     env.DB.prepare("SELECT id, title, duration FROM videos WHERE course = ? AND ready = 1 ORDER BY sort, created").bind(id).all().then(r => r.results),
     ratingSummary(env, [id]), ratingList(env, [id]),
     env.DB.prepare("SELECT title, url FROM wa_groups WHERE scope = 'course' AND ref = ? AND private = 0 ORDER BY sort").bind(id).all().then(r => r.results),
     growth(env),
+    env.DB.prepare("SELECT title, pages FROM files WHERE course = ? ORDER BY sort, created").bind(id).all().then(r => r.results),
   ]);
   const chaps = await chaptersFor(env, vids.map(v => v.id));
-  return {course: c, doctor: doc, lectures: vids.map((v, i) => ({...v, free: i === 0 && g.freeFirst.on, questions: (chaps[v.id] || []).length})), rating: summary, ratings, groups};
+  return {tags: TAGS, course: c, doctor: doc, files, lectures: vids.map((v, i) => ({...v, free: i === 0 && g.freeFirst.on, questions: (chaps[v.id] || []).length})), rating: summary, ratings, groups};
 }
 
 async function doctorPage(env, id) {
@@ -562,13 +595,13 @@ async function admin(req, env, url, path) {
   if (path === "logout" && req.method === "POST") { if (me.token) await env.DB.prepare("DELETE FROM admin_sessions WHERE token = ?").bind(me.token).run(); return {ok: true}; }
   if (path === "whoami" && req.method === "GET") return {role: me.role, name: me.name, courses: me.courses || null};
   // نسجّل كل تعديل (مو القراية) مع اسم اللي سواه
-  if (req.method === "POST" && path !== "upload") {
+  if (req.method === "POST" && !["upload", "fileup", "chatimg"].includes(path)) {
     const data = await req.clone().json().catch(() => null);
     const r = me.role === "teacher" ? await teacher(req, env, url, path, me) : await owner(req, env, url, path, me);
     await audit(env, me, path, data);
     return r;
   }
-  if (path === "upload" && req.method === "POST") await audit(env, me, "upload", Object.fromEntries(url.searchParams));
+  if (["upload", "fileup", "chatimg"].includes(path) && req.method === "POST") await audit(env, me, path, Object.fromEntries(url.searchParams));
   return me.role === "teacher" ? teacher(req, env, url, path, me) : owner(req, env, url, path, me);
 }
 
@@ -622,7 +655,8 @@ async function owner(req, env, url, path, me) {
     const id = Number(b.id);
     if (!(await env.DB.prepare("SELECT 1 FROM users WHERE id = ?").bind(id).first())) throw new Fail(404, "none", "الطالب مو موجود.");
     if (b.delete) {
-      await env.DB.batch(["DELETE FROM sessions WHERE user_id = ?", "DELETE FROM devices WHERE user_id = ?", "DELETE FROM attempts WHERE user_id = ?", "DELETE FROM active WHERE user_id = ?", "DELETE FROM progress WHERE user_id = ?", "DELETE FROM access WHERE user_id = ?", "DELETE FROM views WHERE user_id = ?", "DELETE FROM ratings WHERE user_id = ?", "DELETE FROM tickets WHERE user_id = ?", "DELETE FROM users WHERE id = ?"].map(q => env.DB.prepare(q).bind(id)));
+      await env.DB.batch(["DELETE FROM sessions WHERE user_id = ?", "DELETE FROM devices WHERE user_id = ?", "DELETE FROM attempts WHERE user_id = ?", "DELETE FROM active WHERE user_id = ?", "DELETE FROM progress WHERE user_id = ?", "DELETE FROM access WHERE user_id = ?", "DELETE FROM views WHERE user_id = ?", "DELETE FROM ratings WHERE user_id = ?", "DELETE FROM tickets WHERE user_id = ?", "DELETE FROM messages WHERE student = ?", "DELETE FROM users WHERE id = ?"].map(q => env.DB.prepare(q).bind(id)));
+      if (env.FILES) await deletePrefix(env.FILES, `chat/u${id}/`);
       return {ok: true};
     }
     const q = [];
@@ -704,6 +738,16 @@ async function owner(req, env, url, path, me) {
   if (path === "chats" && req.method === "GET") return chatThreads(env, null);
   if (path === "chat" && req.method === "GET") return chatRead(env, cleanCourse(url.searchParams.get("course")), Number(url.searchParams.get("student")), true);
   if (path === "chat" && req.method === "POST") { const b = await body(req); return chatSend(env, cleanCourse(b.course), Number(b.student), b.body, 1, "الإدارة"); }
+  if (path === "chatimg" && req.method === "GET") {
+    const m = await env.DB.prepare("SELECT image FROM messages WHERE id = ? AND image IS NOT NULL").bind(Number(url.searchParams.get("id"))).first();
+    if (!m) throw new Fail(404, "none", "الصورة مو موجودة.");
+    return chatImage(env, m.image);
+  }
+  if (path === "chatimg" && req.method === "POST") {
+    const course = cleanCourse(url.searchParams.get("course")), student = Number(url.searchParams.get("student"));
+    if (!(await env.DB.prepare("SELECT 1 FROM messages WHERE course = ? AND student = ? LIMIT 1").bind(course, student).first())) throw new Fail(404, "none", "ما فيه محادثة مع هالطالب.");
+    return chatSend(env, course, student, "", 1, me.role === "teacher" ? me.name : "الإدارة", await saveImage(env, req, student));
+  }
 
   if (path === "videos" && req.method === "GET") {
     await refreshPending(env);
@@ -764,6 +808,10 @@ async function owner(req, env, url, path, me) {
     return {ok: true};
   }
 
+  if (path === "files" && req.method === "GET") return {files: (await env.DB.prepare("SELECT * FROM files ORDER BY course, sort, created").all()).results};
+  if (path === "fileup" && req.method === "POST") return fileUpload(req, env, url, me);
+  if (path === "file" && req.method === "POST") return fileEdit(env, await body(req));
+
   // الرفع (tus): المتصفح يطلب هني رابط رفع، وبعدها يرفع الفيديو على طول لـ Cloudflare على أجزاء.
   // لو انقطع النت أو تسكرت الصفحة، يكمل من نفس المكان.
   if (path === "upload" && req.method === "POST") {
@@ -801,7 +849,7 @@ async function saveRow(env, b) {
   const db = env.DB, table = b.table;
   if (b.delete) {
     const key = t.auto ? Number(b.key) : String(b.key || "");
-    if (table === "courses" && (await db.prepare("SELECT 1 FROM videos WHERE course = ? UNION SELECT 1 FROM access WHERE course = ? LIMIT 1").bind(key, key).first())) throw new Fail(409, "used", "المادة فيها محاضرات أو مشتركين، خلها مخفية بدال الحذف.");
+    if (table === "courses" && (await db.prepare("SELECT 1 FROM videos WHERE course = ? UNION SELECT 1 FROM access WHERE course = ? UNION SELECT 1 FROM files WHERE course = ? LIMIT 1").bind(key, key, key).first())) throw new Fail(409, "used", "المادة فيها محاضرات أو ملفات أو مشتركين، خلها مخفية بدال الحذف.");
     if (table === "universities" && (await db.prepare("SELECT 1 FROM courses WHERE uni = ? LIMIT 1").bind(key).first())) throw new Fail(409, "used", "الجامعة فيها مواد، احذف المواد أول أو خلها مخفية.");
     const q = [db.prepare(`DELETE FROM ${table} WHERE ${t.key} = ?`).bind(key)];
     if (table === "courses") q.push(db.prepare("DELETE FROM course_majors WHERE course = ?").bind(key));
@@ -892,6 +940,20 @@ async function teacher(req, env, url, path, me) {
     await own(b.video);
     return owner(req, env, url, path, me);
   }
+  if (path === "files" && req.method === "GET") {
+    if (!me.courses.length) return {files: []};
+    return {files: (await env.DB.prepare(`SELECT * FROM files WHERE course IN (${me.courses.map(() => "?").join(",")}) ORDER BY course, sort, created`).bind(...me.courses).all()).results};
+  }
+  if (path === "fileup" && req.method === "POST") {
+    if (!mine(cleanCourse(url.searchParams.get("course")))) throw new Fail(403, "noaccess", "ترفع بس لموادك.");
+    return fileUpload(req, env, url, me);
+  }
+  if (path === "file" && req.method === "POST") {
+    const b = await body(req);
+    const f = await env.DB.prepare("SELECT course FROM files WHERE id = ?").bind(String(b.id || "")).first();
+    if (!f || !mine(f.course)) throw new Fail(403, "noaccess", "هالملف مو من موادك.");
+    return fileEdit(env, b);
+  }
   if (path === "ratings" && req.method === "GET") {
     if (!me.courses.length) return {ratings: []};
     const {results} = await env.DB.prepare(`SELECT r.id, r.course, r.stars, r.tags, r.comment, r.status, r.reply, r.created, u.name FROM ratings r JOIN users u ON u.id = r.user_id WHERE r.course IN (${me.courses.map(() => "?").join(",")}) AND r.status != 'hidden' ORDER BY r.created DESC LIMIT 300`).bind(...me.courses).all();
@@ -918,6 +980,15 @@ async function teacher(req, env, url, path, me) {
   if (path === "chats" && req.method === "GET") return chatThreads(env, me.courses);
   if (path === "chat" && req.method === "GET") { const c = cleanCourse(url.searchParams.get("course")); if (!mine(c)) throw new Fail(403, "noaccess", "مو من موادك."); return chatRead(env, c, Number(url.searchParams.get("student")), true); }
   if (path === "chat" && req.method === "POST") { const b = await body(req); const c = cleanCourse(b.course); if (!mine(c)) throw new Fail(403, "noaccess", "مو من موادك."); return chatSend(env, c, Number(b.student), b.body, 1, me.name); }
+  if (path === "chatimg" && req.method === "GET") {
+    const m = await env.DB.prepare("SELECT course FROM messages WHERE id = ? AND image IS NOT NULL").bind(Number(url.searchParams.get("id"))).first();
+    if (!m || !mine(m.course)) throw new Fail(403, "noaccess", "مو من موادك.");
+    return owner(req, env, url, path, me);
+  }
+  if (path === "chatimg" && req.method === "POST") {
+    if (!mine(cleanCourse(url.searchParams.get("course")))) throw new Fail(403, "noaccess", "مو من موادك.");
+    return owner(req, env, url, path, me);
+  }
   throw new Fail(403, "noaccess", "هالشي للإدارة بس.");
 }
 
@@ -949,18 +1020,159 @@ async function newsFor(env, uni, courses = []) {
 async function chatThreads(env, courses) {
   if (courses && !courses.length) return {threads: []};
   const where = courses ? `WHERE m.course IN (${courses.map(() => "?").join(",")})` : "";
-  const {results} = await env.DB.prepare(`WITH t AS (SELECT course, student, MAX(id) AS last, SUM(from_staff = 0 AND seen = 0) AS unread FROM messages m ${where} GROUP BY course, student) SELECT t.course, t.student, t.last, t.unread, u.name, x.body AS preview, x.created AS at FROM t JOIN users u ON u.id = t.student JOIN messages x ON x.id = t.last ORDER BY t.last DESC LIMIT 200`).bind(...(courses || [])).all();
+  const {results} = await env.DB.prepare(`WITH t AS (SELECT course, student, MAX(id) AS last, SUM(from_staff = 0 AND seen = 0) AS unread FROM messages m ${where} GROUP BY course, student) SELECT t.course, t.student, t.last, t.unread, u.name, CASE WHEN x.body = '' AND x.image IS NOT NULL THEN '📷 صورة' ELSE x.body END AS preview, x.created AS at FROM t JOIN users u ON u.id = t.student JOIN messages x ON x.id = t.last ORDER BY t.last DESC LIMIT 200`).bind(...(courses || [])).all();
   return {threads: results};
 }
 async function chatRead(env, course, student, asStaff) {
-  const {results} = await env.DB.prepare("SELECT id, from_staff, author, body, image, created FROM messages WHERE course = ? AND student = ? ORDER BY id DESC LIMIT 200").bind(course, student).all();
+  const {results} = await env.DB.prepare("SELECT id, from_staff, author, body, image IS NOT NULL AS image, created FROM messages WHERE course = ? AND student = ? ORDER BY id DESC LIMIT 200").bind(course, student).all();
   await env.DB.prepare("UPDATE messages SET seen = 1 WHERE course = ? AND student = ? AND from_staff = ? AND seen = 0").bind(course, student, asStaff ? 0 : 1).run();
   return {messages: results.reverse()};
 }
-async function chatSend(env, course, student, text, fromStaff, author) {
+async function chatSend(env, course, student, text, fromStaff, author, image = null) {
   text = String(text || "").trim().slice(0, 2000);
-  if (!text) throw new Fail(400, "bad", "اكتب رسالتك.");
+  if (!text && !image) throw new Fail(400, "bad", "اكتب رسالتك.");
   if (fromStaff && !(await env.DB.prepare("SELECT 1 FROM messages WHERE course = ? AND student = ? LIMIT 1").bind(course, student).first())) throw new Fail(404, "none", "ما فيه محادثة مع هالطالب.");
-  await env.DB.prepare("INSERT INTO messages (course, student, from_staff, author, body, created) VALUES (?, ?, ?, ?, ?, ?)").bind(course, student, fromStaff, author, text, now()).run();
+  const {id} = await env.DB.prepare("INSERT INTO messages (course, student, from_staff, author, body, image, created) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id").bind(course, student, fromStaff, author, text, image, now()).first();
+  return {ok: true, id};
+}
+
+// ===== ملفات المواد (PDF) =====
+const MAX_FILE = 25 * 1024 * 1024;
+function needFiles(env) {
+  if (!env.FILES) throw new Fail(503, "nofiles", "تخزين الملفات (R2) مو مفعّل للحين.");
+  return env.FILES;
+}
+
+// الرفع: PDF بس، ومو مقفول بكلمة سر (لأن لازم نكتب عليه اسم الطالب)
+async function fileUpload(req, env, url, me) {
+  const bucket = needFiles(env);
+  const title = String(url.searchParams.get("title") || "").trim().replace(/\s+/g, " ").slice(0, 150), course = cleanCourse(url.searchParams.get("course"));
+  if (!title || !course) throw new Fail(400, "bad", "اكتب عنوان الملف ورمز المادة.");
+  if (!(await env.DB.prepare("SELECT 1 FROM courses WHERE id = ?").bind(course).first())) throw new Fail(400, "bad", "المادة مو موجودة.");
+  if (Number(req.headers.get("Content-Length") || 0) > MAX_FILE) throw new Fail(413, "big", "الملف أكبر من 25 ميغا.");
+  const buf = new Uint8Array(await req.arrayBuffer());
+  if (buf.length > MAX_FILE) throw new Fail(413, "big", "الملف أكبر من 25 ميغا.");
+  if (buf.length < 8 || String.fromCharCode(...buf.slice(0, 5)) !== "%PDF-") throw new Fail(400, "type", "الملف لازم يكون PDF.");
+  let pages;
+  try { pages = (await PDFDocument.load(buf, {updateMetadata: false})).getPageCount(); }
+  catch (e) { throw new Fail(400, "type", /encrypt/i.test(e.message) ? "الملف مقفول بكلمة سر، شيل القفل وارفعه مرة ثانية." : "الملف PDF خربان، جرّب تحفظه من جديد."); }
+  if (!pages) throw new Fail(400, "type", "الملف فاضي.");
+  const id = "f-" + rand(12);
+  await bucket.put(`files/${id}.pdf`, buf, {httpMetadata: {contentType: "application/pdf"}});
+  await env.DB.prepare("INSERT INTO files (id, course, title, size, pages, sort, staff_id, created) VALUES (?, ?, ?, ?, ?, ?, ?, ?)").bind(id, course, title, buf.length, pages, Number(url.searchParams.get("sort")) || 0, me.id || null, now()).run();
+  return {ok: true, id, pages};
+}
+
+async function fileEdit(env, b) {
+  const f = await env.DB.prepare("SELECT id FROM files WHERE id = ?").bind(String(b.id || "")).first();
+  if (!f) throw new Fail(404, "none", "الملف مو موجود.");
+  if (b.delete) {
+    const bucket = needFiles(env);
+    await env.DB.prepare("DELETE FROM files WHERE id = ?").bind(f.id).run();
+    await bucket.delete(`files/${f.id}.pdf`);
+    // النسخ اللي عليها أسماء الطلاب
+    await deletePrefix(bucket, `wm/${f.id}/`);
+    return {ok: true};
+  }
+  const title = String(b.title || "").trim().replace(/\s+/g, " ").slice(0, 150);
+  if (!title) throw new Fail(400, "bad", "اكتب عنوان الملف.");
+  await env.DB.prepare("UPDATE files SET title = ?, sort = ? WHERE id = ?").bind(title, Number(b.sort) || 0, f.id).run();
   return {ok: true};
+}
+
+// نسخة الطالب: تنحفظ أول مرة، وبعدها تنرد على طول بدون ما نعيد الكتابة
+async function studentFile(env, f, s) {
+  const bucket = needFiles(env);
+  const key = `wm/${f.id}/${s.user_id}-${(await sha256(`${s.name}|${s.phone}`)).slice(0, 12)}.pdf`;
+  let out = await bucket.get(key);
+  let bytes;
+  if (out) bytes = await out.arrayBuffer();
+  else {
+    const src = await bucket.get(`files/${f.id}.pdf`);
+    if (!src) throw new Fail(404, "none", "الملف مو موجود.");
+    bytes = await watermark(await src.arrayBuffer(), s.name, s.phone);
+    await bucket.put(key, bytes, {httpMetadata: {contentType: "application/pdf"}});
+  }
+  const name = `${f.title}.pdf`.replace(/[\\/:*?"<>|]/g, "-");
+  return new Response(bytes, {headers: {
+    "Content-Type": "application/pdf",
+    "Content-Disposition": `inline; filename="file.pdf"; filename*=UTF-8''${encodeURIComponent(name)}`,
+    "Cache-Control": "private, no-store",
+  }});
+}
+
+// اسم الطالب ورقمه بالوسط مايل 3 مرات بكل صفحة (خفيف عشان ما يغطي الشرح)، وسطر صغير تحت
+async function watermark(src, name, phone) {
+  // نشيل رموز التحكم واتجاه الكتابة المخفية عشان محد يخرّب شكل العلامة من اسمه
+  const plain = t => String(t).replace(/[\u0000-\u001f\u007f\u200b-\u200f\u202a-\u202e\u2066-\u2069\ufeff]/g, "").trim() || "-";
+  name = plain(name); phone = plain(phone);
+  const doc = await PDFDocument.load(src, {updateMetadata: false});
+  doc.registerFontkit(fontkit);
+  // الخط كامل: تقطيعه (subset) يخرّب الحروف العربية بـ pdf-lib
+  const font = await doc.embedFont(FONT, {subset: false});
+  const ink = rgb(0.027, 0, 0.37);
+  // الاسم والرقم ينرسمون كل واحد لحاله: لو انكتبوا سطر واحد ينقلب ترتيب الأرقام
+  const line = (page, x, y, size, opacity, angle, parts) => {
+    const gap = size * 0.6, rad = angle * Math.PI / 180, cos = Math.cos(rad), sin = Math.sin(rad);
+    let d = 0;
+    for (const t of parts) {
+      page.drawText(t, {x: x + cos * d, y: y + sin * d, size, font, color: ink, opacity, rotate: degrees(angle)});
+      d += font.widthOfTextAtSize(t, size) + gap;
+    }
+    return d - gap;
+  };
+  const parts = [phone, name];
+  const width = (size) => parts.reduce((w, t) => w + font.widthOfTextAtSize(t, size), 0) + size * 0.6 * (parts.length - 1);
+  for (const page of doc.getPages()) {
+    const box = page.getCropBox();
+    const angle = Math.atan2(box.height, box.width) * 180 / Math.PI, rad = angle * Math.PI / 180;
+    // 3 خطوط متوازية على القطر (بالوسط وفوقه وتحته)، وكل خط ياخذ نص طول القطر تقريباً
+    const diag = Math.hypot(box.width, box.height);
+    const size = Math.max(10, Math.min(30, 0.5 * diag / width(1)));
+    const w = width(size);
+    for (const [kx, ky] of [[0.5, 0.5], [0.24, 0.76], [0.76, 0.24]]) {
+      const cx = box.x + box.width * kx, cy = box.y + box.height * ky;
+      line(page, cx - Math.cos(rad) * w / 2, cy - Math.sin(rad) * w / 2 - size / 3, size, 0.1, angle, parts);
+    }
+    const fs = Math.max(6, Math.min(9, box.width / 70)), foot = ["asckwt.com", phone, name];
+    const fw = foot.reduce((a, t) => a + font.widthOfTextAtSize(t, fs), 0) + fs * 0.6 * 2;
+    line(page, box.x + (box.width - fw) / 2, box.y + fs * 1.2, fs, 0.5, 0, foot);
+  }
+  doc.setProducer("asckwt.com");
+  doc.setSubject(`${name} · ${phone}`);
+  return doc.save({useObjectStreams: true});
+}
+
+// ===== صور الشات =====
+const MAX_IMG = 5 * 1024 * 1024;
+function imageType(b) {
+  const a = (i, j) => String.fromCharCode(...b.slice(i, j));
+  if (b[0] === 0xFF && b[1] === 0xD8 && b[2] === 0xFF) return "image/jpeg";
+  if (a(0, 8) === "\x89PNG\r\n\x1a\n") return "image/png";
+  if (a(0, 4) === "RIFF" && a(8, 12) === "WEBP") return "image/webp";
+  return null;
+}
+async function saveImage(env, req, student) {
+  const bucket = needFiles(env);
+  if (Number(req.headers.get("Content-Length") || 0) > MAX_IMG) throw new Fail(413, "big", "الصورة أكبر من 5 ميغا.");
+  const buf = new Uint8Array(await req.arrayBuffer());
+  if (buf.length > MAX_IMG) throw new Fail(413, "big", "الصورة أكبر من 5 ميغا.");
+  const type = buf.length > 12 && imageType(buf);
+  if (!type) throw new Fail(400, "type", "الصورة لازم تكون JPG أو PNG أو WebP.");
+  const key = `chat/u${student}/${rand(12)}`;
+  await bucket.put(key, buf, {httpMetadata: {contentType: type}});
+  return key;
+}
+async function chatImage(env, key) {
+  const o = await needFiles(env).get(key);
+  if (!o) throw new Fail(404, "none", "الصورة مو موجودة.");
+  return new Response(o.body, {headers: {"Content-Type": o.httpMetadata?.contentType || "application/octet-stream", "Cache-Control": "private, max-age=86400", "Content-Security-Policy": "default-src 'none'"}});
+}
+async function deletePrefix(bucket, prefix) {
+  let cursor;
+  do {
+    const l = await bucket.list({prefix, cursor});
+    if (l.objects.length) await bucket.delete(l.objects.map(o => o.key));
+    cursor = l.truncated ? l.cursor : undefined;
+  } while (cursor);
 }

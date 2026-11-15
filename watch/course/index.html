@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; worker-src 'self' blob:; img-src 'self' data: https:; connect-src 'self' https://asc-videos.m7mdaltalab.workers.dev https://*.cloudflarestream.com http://localhost:*; media-src 'self' blob: https://*.cloudflarestream.com http://localhost:*"><meta name="referrer" content="strict-origin-when-cross-origin">
+<title>المادة | الطالب الأكاديمي</title>
+<meta name="description" content="محاضرات المادة وأسعارها وآراء الطلاب، مع الطالب الأكاديمي.">
+<meta name="theme-color" content="#07005E">
+<link rel="icon" href="../../icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../app.css">
+<style>
+.hero{display:flex;flex-wrap:wrap;gap:18px;align-items:flex-end;justify-content:space-between}
+.facts{display:flex;flex-wrap:wrap;gap:6px 16px;color:#D9D7F3;font-size:14px}
+.facts .stars{font-size:15px}
+.doc{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);border-radius:16px;padding:10px 14px;color:#fff;text-decoration:none;min-height:44px}
+.doc .av{width:46px;height:46px;border-radius:50%;background:var(--turq);color:#07005E;display:grid;place-items:center;font:700 18px var(--display);overflow:hidden;flex:none}
+.doc .av img{width:100%;height:100%;object-fit:cover}
+.doc small{display:block;color:#D9D7F3}
+.cols{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:22px;align-items:start}
+@media (max-width:860px){.cols{grid-template-columns:1fr}}
+aside{display:grid;gap:16px;position:sticky;top:12px}
+@media (max-width:860px){aside{position:static}}
+.plan{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1.5px solid var(--line);border-radius:14px;padding:12px 14px}
+.plan small{display:block;color:var(--muted);font-weight:400}
+.plan b.p{font:800 18px var(--display);white-space:nowrap}
+.free{background:var(--soft-t);color:var(--ink-t);border-radius:999px;padding:1px 10px;font-size:12px;font-weight:600}
+.lock{color:var(--muted)}
+.dist{display:grid;gap:4px;flex:1;min-width:180px}
+.dist div{display:flex;align-items:center;gap:8px;font-size:13px}
+.dist span.bar{flex:1;height:8px;background:var(--bg);border-radius:999px;overflow:hidden}
+.dist span.bar i{display:block;height:100%;background:var(--star)}
+.rev{border-top:1px solid var(--line);padding-top:12px;display:grid;gap:4px}
+.rev .reply{background:var(--bg);border-radius:12px;padding:8px 12px;font-size:14px}
+.tagpick{display:flex;flex-wrap:wrap;gap:6px}
+.tagpick label{display:inline-flex;align-items:center;min-height:40px;border:1.5px solid var(--line);border-radius:999px;padding:4px 12px;cursor:pointer;font-weight:500}
+.tagpick input{position:absolute;opacity:0;width:1px;height:1px}
+.tagpick label:has(input:checked){background:var(--yellow);border-color:var(--yellow);color:#07005E}
+.starpick{display:flex;justify-content:center;gap:4px;direction:ltr}
+.starpick button{width:52px;height:52px;border:0;background:transparent;font-size:38px;color:var(--line);cursor:pointer}
+.starpick button.on{color:var(--star)}
+</style>
+</head><body>
+<header class="top"><div class="wrap">
+  <div class="bar" id="bar"></div>
+  <div class="hero">
+    <div>
+      <div class="row" style="gap:6px"><span class="chip t" id="uni"></span><span class="chip y" id="code" dir="ltr"></span></div>
+      <h1 id="title" dir="ltr" style="text-align:right">المادة</h1>
+      <div class="facts" id="facts"></div>
+    </div>
+    <a class="doc" id="doc" hidden></a>
+  </div>
+</div></header>
+<main class="wrap">
+  <p class="msg" id="err" role="alert"></p>
+  <div class="cols" id="cols" hidden>
+    <div style="display:grid;gap:22px">
+      <section class="card" id="prev" hidden>
+        <h2 id="prev-t"></h2>
+        <div class="stage" id="stage"><video controls playsinline preload="metadata" controlslist="nodownload noremoteplayback" disablepictureinpicture></video><div class="mark"></div></div>
+        <div class="chaps" id="chaps" hidden></div>
+        <p class="msg" id="prev-msg"></p>
+      </section>
+      <section class="card">
+        <h2>المحاضرات</h2>
+        <ol class="list" id="lecs"></ol>
+      </section>
+      <section class="card" id="files-c" hidden>
+        <h2>الملفات</h2>
+        <p class="muted" style="margin:0 0 10px;font-size:14px">للمشتركين، وكل ملف ينزل عليه اسمك.</p>
+        <ul class="list" id="files"></ul>
+      </section>
+      <section class="card">
+        <div class="row" style="justify-content:space-between"><h2 style="margin:0">آراء الطلاب</h2><button class="btn o sm" id="rate-b" type="button" hidden>قيّم المادة</button></div>
+        <div class="row" style="margin:12px 0;align-items:center;gap:18px" id="sum"></div>
+        <div id="revs" style="display:grid;gap:12px"></div>
+      </section>
+    </div>
+    <aside>
+      <section class="card" id="buy" style="display:grid;gap:10px">
+        <h2 style="margin:0">اشترك بالمادة</h2>
+        <div id="plans" style="display:grid;gap:8px"></div>
+        <a class="btn y" id="buy-b" target="_blank" rel="noopener">اشترك الحين</a>
+        <span class="muted" style="font-size:13px;text-align:center">نرد عليك بالواتساب ونفعّل لك على طول.</span>
+      </section>
+      <section class="card" id="mine" hidden style="display:grid;gap:10px">
+        <h2 style="margin:0">أنت مشترك ✓</h2>
+        <a class="btn" href="../">شوف المحاضرات</a>
+        <a class="btn o" id="chat-b">💬 اسأل الأستاذ</a>
+      </section>
+      <section class="card" id="groups-c" hidden style="display:grid;gap:8px">
+        <h2 style="margin:0">قروبات المادة</h2>
+        <div id="groups" style="display:grid;gap:8px"></div>
+      </section>
+    </aside>
+  </div>
+</main>
+<dialog id="rate" aria-labelledby="rate-h">
+  <form method="dialog" id="rate-f" style="display:grid;gap:14px">
+    <h2 id="rate-h" style="margin:0;text-align:center">شنو رأيك بالشرح؟</h2>
+    <div class="starpick" id="starpick" role="group" aria-label="عدد النجوم"></div>
+    <div class="tagpick" id="tagpick"></div>
+    <label>تعليقك (اختياري)<textarea name="comment" rows="3" maxlength="500"></textarea></label>
+    <p class="muted" style="margin:0;font-size:13px">يطلع اسمك الأول بس. التقييم نجمتين أو أقل نراجعه قبل لا ينشر.</p>
+    <p class="msg" id="rate-msg" role="alert"></p>
+    <div class="row"><button class="btn" type="submit" value="send">أرسل</button><button class="btn o" type="button" id="rate-x">بعدين</button></div>
+  </form>
+</dialog>
+<footer><div class="wrap"><a href="../../">الطالب الأكاديمي</a> · <a href="../../privacy/">الخصوصية</a></div></footer>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.20/dist/hls.min.js" integrity="sha384-V5ruNBgmYcC3SJRUQeNykAAAgde5gOFq/Hu0CZj7bygDP0yRIhkvX8+w0u/7mRvr" crossorigin="anonymous"></script>
+<script src="../app.js"></script>
+<script src="course.js"></script>
+</body></html>

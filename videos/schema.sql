@@ -246,3 +246,16 @@ CREATE TABLE IF NOT EXISTS audit (
   detail TEXT
 );
 CREATE INDEX IF NOT EXISTS audit_at ON audit(at);
+
+-- ملفات المواد (PDF). الملف نفسه على R2 باسم files/<id>.pdf، وكل طالب ياخذ نسخة عليها اسمه ورقمه
+CREATE TABLE IF NOT EXISTS files (
+  id TEXT PRIMARY KEY,
+  course TEXT NOT NULL,
+  title TEXT NOT NULL,
+  size INTEGER NOT NULL,
+  pages INTEGER NOT NULL,
+  sort INTEGER NOT NULL DEFAULT 0,
+  staff_id INTEGER,
+  created INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS files_course ON files (course, sort);

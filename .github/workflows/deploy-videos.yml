@@ -5,11 +5,13 @@
 #   CLOUDFLARE_API_TOKEN    نفس توكن المساعد، بس لازم يكون فيه صلاحية D1: Edit و Stream: Edit
 #   CLOUDFLARE_ACCOUNT_ID   رقم حساب Cloudflare
 #   VIDEOS_ADMIN_PASSWORD   كلمة سر لوحة الإدارة (asckwt.com/watch/admin)
+#   VIDEOS_OPS_KEY          (اختياري) مفتاح Claude لإدارة المحتوى، 32 حرف بالأقل. كل تعديل فيه ينسجّل باسم Claude
+# ملفات المواد على R2: لازم يكون R2 مفعّل والتوكن فيه صلاحية R2: Edit، وإلا ينرفع الخادم بدون الملفات.
 name: Deploy lecture videos server
 on:
   push:
     branches: [main]
-    paths: [videos/worker.js, videos/wrangler.toml, videos/schema.sql, .github/workflows/deploy-videos.yml]
+    paths: [videos/**, .github/workflows/deploy-videos.yml]
   workflow_dispatch:
     inputs:
       reset_2fa:
@@ -24,6 +26,7 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       ADMIN_PASSWORD: ${{ secrets.VIDEOS_ADMIN_PASSWORD }}
+      OPS_KEY: ${{ secrets.VIDEOS_OPS_KEY }}
       WRANGLER: npx --yes wrangler@4.153.0
     defaults:
       run:
@@ -37,6 +40,18 @@ jobs:
       - if: env.READY == 'true'
         uses: actions/setup-node@v4
         with: {node-version: 22}
+      - name: الحزم (pdf-lib للعلامة المائية)
+        if: env.READY == 'true'
+        run: npm ci --no-audit --no-fund
+      - name: تخزين الملفات (R2)
+        if: env.READY == 'true'
+        run: |
+          if ! $WRANGLER r2 bucket list 2>/dev/null | grep -q "asc-files"; then
+            if ! $WRANGLER r2 bucket create asc-files; then
+              echo "::warning::ما قدرنا ننشئ تخزين R2. تأكد إن R2 مفعّل وإن التوكن فيه صلاحية R2: Edit. الخادم بينرفع بدون الملفات."
+              sed -i '/^\[\[r2_buckets\]\]/,/^bucket_name/d' wrangler.toml
+            fi
+          fi
       - name: قاعدة البيانات (D1)
         if: env.READY == 'true'
         run: |
@@ -58,6 +73,7 @@ jobs:
         run: |
           printf '%s' "$ADMIN_PASSWORD" | $WRANGLER secret put ADMIN_PASSWORD
           printf '%s' "$CLOUDFLARE_API_TOKEN" | $WRANGLER secret put CF_API_TOKEN
+          if [ ${#OPS_KEY} -ge 32 ]; then printf '%s' "$OPS_KEY" | $WRANGLER secret put OPS_KEY; fi
           if ! $WRANGLER secret list --format json | grep -q '"STREAM_KEY_ID"'; then
             r=$(curl -sS -X POST -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/stream/keys")
             if [ "$(echo "$r" | jq -r .success)" != "true" ]; then

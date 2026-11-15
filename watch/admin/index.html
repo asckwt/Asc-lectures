@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; worker-src 'self' blob:; img-src 'self' data:; connect-src 'self' https://asc-videos.m7mdaltalab.workers.dev https://*.cloudflarestream.com https://*.videodelivery.net https://upload.cloudflarestream.com http://localhost:*; media-src 'none'"><meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; worker-src 'self' blob:; img-src 'self' data: blob:; connect-src 'self' https://asc-videos.m7mdaltalab.workers.dev https://*.cloudflarestream.com https://*.videodelivery.net https://upload.cloudflarestream.com http://localhost:*; media-src 'none'"><meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex, nofollow">
 <title>لوحة التحكم | الطالب الأكاديمي</title>
 <meta name="theme-color" content="#07005E">
@@ -146,6 +146,18 @@ progress{width:100%;height:12px}
       <div class="row"><button class="btn p" type="submit">ارفع</button><button class="btn o sm" type="button" id="pause" hidden>إيقاف مؤقت</button><span class="muted" style="font-size:13px">الفيديو يروح على طول لـ Cloudflare. لو انقطع النت يكمل بروحه، ولو سكرت الصفحة ارجع اختار نفس الملف ويكمل من وين وقف.</span></div>
     </form>
     <div id="vlist" style="display:grid;gap:12px"></div>
+    <form class="card" id="fup" style="display:grid;gap:12px">
+      <h2>ارفع ملف (PDF)</h2>
+      <div class="grid">
+        <label>المادة<input name="course" list="courses" required dir="ltr" style="text-transform:uppercase"></label>
+        <label style="grid-column:span 2">عنوان الملف<input name="title" required placeholder="مثلاً: ملخص الفصل الأول"></label>
+        <label>الترتيب<input name="sort" type="number" min="0" value="1"></label>
+      </div>
+      <label>الملف (PDF، لين 25 ميغا)<input name="file" type="file" accept="application/pdf,.pdf" required></label>
+      <p class="msg" id="fup-msg"></p>
+      <div class="row"><button class="btn p" type="submit">ارفع الملف</button><span class="muted" style="font-size:13px">كل طالب ينزّل نسخة عليها اسمه ورقمه بكل صفحة، فلو انتشر الملف تعرف من وين.</span></div>
+    </form>
+    <div id="flist" style="display:grid;gap:12px"></div>
   </section>
 </div>
   <section id="t-catalog" hidden style="display:grid;gap:12px">
@@ -281,11 +293,12 @@ async function start() {
     document.querySelectorAll("[data-tab]").forEach(b => b.hidden = !TEACHER_TABS.includes(b.dataset.tab));
     document.querySelector('[data-tab="videos"]').click();
     $("courses").replaceChildren(...myCourses.map(c => el("option", {value: c})));
-    loadVideos().catch(() => {}); loadThreads().catch(() => {});
+    loadVideos().catch(() => {}); loadFiles().catch(() => {}); loadThreads().catch(() => {});
     return;
   }
   loadUsers().catch(() => {});
   loadVideos().catch(() => {});
+  loadFiles().catch(() => {});
   loadStats().catch(() => {});
   loadCatalog().catch(() => {});
   loadThreads().catch(() => {});
@@ -424,6 +437,43 @@ async function loadVideos() {
     card.append(list); return card;
   }));
 }
+
+// ===== الملفات =====
+async function loadFiles() {
+  const {files} = await call("files");
+  const box = $("flist");
+  if (!files.length) return box.replaceChildren(el("p", {className: "muted", textContent: "ما فيه ملفات مرفوعة للحين."}));
+  const by = {}; files.forEach(f => (by[f.course] ||= []).push(f));
+  box.replaceChildren(...Object.keys(by).sort().map(code => {
+    const card = el("div", {className: "card", style: "display:grid;gap:10px"}, el("h2", {}, el("bdi", {dir: "ltr", textContent: code}), el("span", {className: "muted", style: "font-size:14px;font-weight:500", textContent: ` · ${by[code].length} ملف`})));
+    const list = el("div", {className: "vlist"});
+    by[code].forEach(f => {
+      const sort = el("input", {type: "number", value: f.sort}), title = el("input", {value: f.title});
+      const msg = el("span", {className: "muted", style: "font-size:12px", textContent: `${f.pages} صفحة · ${mb(f.size)}`});
+      const save = el("button", {type: "button", className: "btn o sm", textContent: "حفظ"});
+      save.onclick = async () => { save.disabled = true; try { await call("file", {id: f.id, title: title.value, sort: sort.value}); msg.textContent = "انحفظ ✓"; loadFiles(); } catch (e) { msg.textContent = e.message; } save.disabled = false; };
+      const del = el("button", {type: "button", className: "btn r sm", textContent: "حذف"});
+      del.onclick = async () => { if (!confirm(`تبي تحذف "${f.title}" نهائياً؟`)) return; try { await call("file", {id: f.id, delete: true}); loadFiles(); } catch (e) { msg.textContent = e.message; } };
+      list.append(el("div", {className: "vrow frow"}, sort, title, el("div", {className: "row"}, msg, save, del)));
+    });
+    card.append(list); return card;
+  }));
+}
+$("fup").onsubmit = async e => {
+  e.preventDefault();
+  const f = e.target, file = f.file.files[0], msg = $("fup-msg"), btn = f.querySelector("[type=submit]");
+  if (!file) return;
+  msg.className = "msg";
+  if (file.size > 25 * 1048576) { msg.className = "msg bad"; msg.textContent = "الملف أكبر من 25 ميغا، صغّره وارفعه."; return; }
+  btn.disabled = true; msg.textContent = "يرفع…";
+  try {
+    const r = await call("fileup?" + new URLSearchParams({course: f.course.value.trim().toUpperCase(), title: f.title.value.trim(), sort: f.sort.value || 0}), file);
+    msg.className = "msg ok"; msg.textContent = `انرفع ✓ (${r.pages} صفحة)`;
+    f.title.value = ""; f.file.value = ""; f.sort.value = Number(f.sort.value) + 1;
+    loadFiles();
+  } catch (err) { msg.className = "msg bad"; msg.textContent = err.message; }
+  btn.disabled = false;
+};
 
 // الرفع: يروح على طول من جهازك لـ Cloudflare على أجزاء، ويكمل بروحه لو انقطع النت
 let upload = null;
@@ -688,17 +738,43 @@ async function loadThreads() {
     el("span", {style: "display:grid"}, el("b", {textContent: t.name}), el("span", {className: "muted", style: "font-size:12px;font-weight:500", textContent: `${t.course} · ${t.preview.slice(0, 40)}`})),
     t.unread ? el("span", {className: "cnt", textContent: t.unread}) : null)) : [el("p", {className: "muted", style: "margin:0", textContent: "ما فيه رسائل للحين."})]));
 }
+// الصور تنقرا بصلاحية الدخول، فنجيبها ونعرضها من الذاكرة
+const imgCache = {};
+function authImg(id) {
+  const img = el("img", {alt: "صورة", style: "display:block;max-width:100%;max-height:320px;border-radius:8px;background:#fff;cursor:zoom-in"});
+  const show = u => { img.src = u; img.onclick = () => window.open(u, "_blank", "noopener"); };
+  if (imgCache[id]) show(imgCache[id]);
+  else fetch(`${API}/api/admin/chatimg?id=${id}`, {headers: {Authorization: "Bearer " + pass}}).then(r => r.ok ? r.blob() : null).then(b => { if (b) show(imgCache[id] = URL.createObjectURL(b)); }).catch(() => {});
+  return img;
+}
+// نصغّر الصورة لـ 1600 بكسل JPEG قبل الرفع: أسرع، وتنشال منها بيانات الموقع (GPS)
+async function shrink(file) {
+  const bmp = await createImageBitmap(file).catch(() => null);
+  if (!bmp) throw {message: "الصورة مو مدعومة، جرّب صورة JPG أو PNG."};
+  const k = Math.min(1, 1600 / Math.max(bmp.width, bmp.height));
+  const c = document.createElement("canvas"); c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+  const g = c.getContext("2d"); g.fillStyle = "#fff"; g.fillRect(0, 0, c.width, c.height); g.drawImage(bmp, 0, 0, c.width, c.height);
+  return new Promise(ok => c.toBlob(ok, "image/jpeg", 0.85));
+}
 async function showThread(t) {
   openThread = t;
   const {messages} = await call(`chat?course=${encodeURIComponent(t.course)}&student=${t.student}`);
   const box = el("div", {style: "display:grid;gap:8px;max-height:420px;overflow:auto"});
   messages.forEach(m => box.append(el("div", {style: `justify-self:${m.from_staff ? "end" : "start"};max-width:85%;background:${m.from_staff ? "var(--navy)" : "var(--bg)"};color:${m.from_staff ? "#fff" : "var(--fg)"};border-radius:12px;padding:8px 12px`},
-    el("div", {style: "font-size:12px;opacity:.75", textContent: `${m.author} · ${fmt(m.created)}`}), el("div", {style: "white-space:pre-wrap", textContent: m.body}))));
+    el("div", {style: "font-size:12px;opacity:.75", textContent: `${m.author} · ${fmt(m.created)}`}), m.image ? authImg(m.id) : null, m.body ? el("div", {style: "white-space:pre-wrap", textContent: m.body}) : null)));
   const input = el("textarea", {placeholder: "ردّك…", rows: 2, style: "font:inherit;font-size:15px;color:var(--fg);background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:8px 10px"});
   const msg = el("span", {className: "msg"});
   const send = el("button", {type: "button", className: "btn g", textContent: "أرسل"});
   send.onclick = async () => { if (!input.value.trim()) return; send.disabled = true; try { await call("chat", {course: t.course, student: t.student, body: input.value}); await showThread(t); } catch (e) { msg.className = "msg bad"; msg.textContent = e.message; send.disabled = false; } };
-  $("thread").replaceChildren(el("h2", {}, t.name, el("span", {className: "muted", style: "font-size:14px;font-weight:500", textContent: " · " + t.course})), box, input, el("div", {className: "row"}, send, msg));
+  const pick = el("input", {type: "file", accept: "image/*", hidden: true});
+  const attach = el("button", {type: "button", className: "btn o", textContent: "📎 صورة", onclick: () => pick.click()});
+  pick.onchange = async () => {
+    const file = pick.files[0]; pick.value = ""; if (!file) return;
+    attach.disabled = true; msg.className = "msg"; msg.textContent = "ترفع الصورة…";
+    try { await call(`chatimg?course=${encodeURIComponent(t.course)}&student=${t.student}`, await shrink(file)); await showThread(t); }
+    catch (e) { msg.className = "msg bad"; msg.textContent = e.message; attach.disabled = false; }
+  };
+  $("thread").replaceChildren(el("h2", {}, t.name, el("span", {className: "muted", style: "font-size:14px;font-weight:500", textContent: " · " + t.course})), box, input, el("div", {className: "row"}, send, attach, pick, msg));
   box.scrollTop = box.scrollHeight;
   loadThreads().catch(() => {});
 }

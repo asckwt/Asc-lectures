@@ -24,3 +24,14 @@ simple = { limit = 10, period = 60 }
 name = "ADMIN_LIMITER"
 namespace_id = "1003"
 simple = { limit = 60, period = 60 }
+
+# ملفات المواد (PDF) وصور الشات، على Cloudflare R2. الرفع ينشئه إذا مو موجود
+[[r2_buckets]]
+binding = "FILES"
+bucket_name = "asc-files"
+
+# الخط العربي اللي ينكتب فيه اسم الطالب ورقمه على الملفات
+[[rules]]
+type = "Data"
+globs = ["**/*.ttf"]
+fallthrough = true

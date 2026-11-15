@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://asc-videos.m7mdaltalab.workers.dev http://localhost:*"><meta name="referrer" content="strict-origin-when-cross-origin">
+<title>الأستاذ | الطالب الأكاديمي</title>
+<meta name="description" content="ملف الأستاذ وموادّه وآراء الطلاب فيه.">
+<meta name="theme-color" content="#07005E">
+<link rel="icon" href="../../icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../app.css">
+<style>
+.pro{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.pro .av{width:84px;height:84px;border-radius:50%;background:var(--turq);color:#07005E;display:grid;place-items:center;font:800 32px var(--display);overflow:hidden;flex:none}
+.pro .av img{width:100%;height:100%;object-fit:cover}
+.rev{border-top:1px solid var(--line);padding-top:12px;display:grid;gap:4px}
+.rev .reply{background:var(--bg);border-radius:12px;padding:8px 12px;font-size:14px}
+</style>
+</head><body>
+<header class="top"><div class="wrap">
+  <div class="bar" id="bar"></div>
+  <h1 id="title">الأستاذ</h1>
+  <p class="lead" id="lead"></p>
+</div></header>
+<main class="wrap">
+  <p class="msg" id="err" role="alert"></p>
+  <section class="card" id="about" hidden></section>
+  <section class="card" id="cs" hidden><h2>موادّه</h2><div id="clist" style="display:grid;gap:8px"></div></section>
+  <section class="card" id="rs" hidden><h2>آراء الطلاب</h2><div id="rlist" style="display:grid;gap:12px"></div></section>
+</main>
+<footer><div class="wrap"><a href="../../">الطالب الأكاديمي</a> · <a href="../../privacy/">الخصوصية</a></div></footer>
+<script src="../app.js"></script>
+<script src="doctor.js"></script>
+</body></html>
