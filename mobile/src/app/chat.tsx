@@ -78,7 +78,8 @@ export default function Chat() {
           );
         })}
       </ScrollView>
-      <View style={{ backgroundColor: c.surface, borderTopWidth: 1, borderColor: c.line, padding: 10, paddingBottom: bottom + 10, gap: 8 }}>
+      <View style={{ backgroundColor: c.surface, borderTopWidth: 1, borderColor: c.line, paddingBottom: bottom }}>
+       <View style={{ ...column, padding: 10, gap: 8 }}>
         {pic && (
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: c.softT, borderRadius: 12, padding: 6 }}>
             <Image source={{ uri: pic }} style={{ width: 44, height: 44, borderRadius: 8 }} />
@@ -99,6 +100,7 @@ export default function Chat() {
           <Pressable accessibilityRole="button" onPress={() => pick(false)} style={{ minHeight: 44, borderWidth: 1.5, borderStyle: 'dashed', borderColor: c.ink, borderRadius: 12, paddingHorizontal: 14, justifyContent: 'center' }}><T style={{ fontFamily: font.display, color: c.ink, fontSize: 14 }}>📎 أرفق صورة حلّك</T></Pressable>
           <Pressable accessibilityRole="button" onPress={() => pick(true)} style={{ minHeight: 44, borderWidth: 1.5, borderColor: c.line, borderRadius: 12, paddingHorizontal: 14, justifyContent: 'center' }}><T style={{ fontFamily: font.display, color: c.ink, fontSize: 14 }}>📷 صوّر</T></Pressable>
         </View>
+       </View>
       </View>
     </KeyboardAvoidingView>
   );
