@@ -70,6 +70,23 @@ progress{width:100%;height:12px}
 .bars div{flex:1;background:var(--turq);border-radius:4px 4px 0 0;min-height:2px;position:relative}
 .bars div:hover::after{content:attr(data-t);position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:var(--fg);color:var(--bg);font-size:11px;padding:2px 6px;border-radius:6px;white-space:nowrap}
 .badge.proc{color:var(--warn)}.badge.fail{color:var(--bad)}
+.ed{display:grid;gap:10px}
+.ed .top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.ed .item{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:8px 0;border-top:1px solid var(--line)}
+.ed .item .t{flex:1;min-width:200px;display:grid}
+.ed .item .t b{font-family:var(--display);font-size:15px}
+.ed .item .t span{color:var(--muted);font-size:13px}
+.ed form{display:grid;gap:10px;background:var(--bg);border:1.5px solid var(--line);border-radius:12px;padding:12px}
+.ed form .grid{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.ed label.chk{display:flex;gap:6px;align-items:center;font-weight:600}
+.ed .multi{display:flex;flex-wrap:wrap;gap:6px 14px}
+.ed textarea{font:inherit;font-size:15px;color:var(--fg);background:var(--surface);border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;min-height:70px}
+.off{opacity:.55}
+.gset{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.gset .card{display:grid;gap:8px;align-content:start}
+.gset .card .h{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.gset .card .h b{font-family:var(--display)}
+.gset input[type=number]{width:90px}
 </style>
 </head><body>
 <header><div class="wrap"><div class="row"><img src="../../tools/logo-horizontal-color-on-navy.svg" alt="الطالب الأكاديمي"><b>لوحة التحكم</b></div><button class="btn o sm" id="out" style="color:#fff;border-color:rgba(255,255,255,.3)" hidden>خروج</button></div></header>
@@ -89,7 +106,7 @@ progress{width:100%;height:12px}
 </form>
 
 <div id="app" hidden style="display:grid;gap:16px">
-  <div class="tabs" role="tablist"><button data-tab="dash" aria-selected="true">الملخص</button><button data-tab="users" aria-selected="false">الطلاب</button><button data-tab="videos" aria-selected="false">المحاضرات</button></div>
+  <div class="tabs" role="tablist"><button data-tab="dash" aria-selected="true">الملخص</button><button data-tab="users" aria-selected="false">الطلاب</button><button data-tab="videos" aria-selected="false">المحاضرات</button><button data-tab="catalog" aria-selected="false">المواد والأسعار</button><button data-tab="promos" aria-selected="false">أكواد الخصم</button><button data-tab="groups" aria-selected="false">القروبات</button><button data-tab="growth" aria-selected="false">التسويق</button></div>
 
   <section id="t-dash" style="display:grid;gap:12px">
     <div class="kpis" id="kpis"></div>
@@ -122,6 +139,24 @@ progress{width:100%;height:12px}
       <div class="row"><button class="btn p" type="submit">ارفع</button><button class="btn o sm" type="button" id="pause" hidden>إيقاف مؤقت</button><span class="muted" style="font-size:13px">الفيديو يروح على طول لـ Cloudflare. لو انقطع النت يكمل بروحه، ولو سكرت الصفحة ارجع اختار نفس الملف ويكمل من وين وقف.</span></div>
     </form>
     <div id="vlist" style="display:grid;gap:12px"></div>
+  </section>
+</div>
+  <section id="t-catalog" hidden style="display:grid;gap:12px">
+    <p class="muted" style="margin:0;font-size:14px">رتّبها كذا: الجامعة، بعدها تخصصاتها، بعدها الدكاترة، وآخر شي المواد وأسعارها. أي تغيير يطلع للطلاب خلال دقيقة.</p>
+    <div class="card ed" id="ed-universities"></div>
+    <div class="card ed" id="ed-majors"></div>
+    <div class="card ed" id="ed-doctors"></div>
+    <div class="card ed" id="ed-courses"></div>
+  </section>
+  <section id="t-promos" hidden style="display:grid;gap:12px"><div class="card ed" id="ed-promos"></div></section>
+  <section id="t-groups" hidden style="display:grid;gap:12px">
+    <p class="muted" style="margin:0;font-size:14px">القروب الخاص (للمشتركين) رابطه ما يطلع إلا للطالب المشترك بالمادة. الواتساب ما يسمح نطلّع أحد تلقائياً، فاللي خلص اشتراكهم يطلعون لك تحت عشان تشيلهم.</p>
+    <div class="card ed" id="ed-groups"></div>
+    <div class="card" style="display:grid;gap:8px"><h2>طلاب خلص اشتراكهم (آخر 30 يوم)</h2><table class="tbl" id="expired"></table></div>
+  </section>
+  <section id="t-growth" hidden style="display:grid;gap:12px">
+    <div class="gset" id="gset"></div>
+    <div class="row"><button class="btn g" id="gsave" type="button">احفظ</button><p class="msg" id="gmsg"></p></div>
   </section>
 </div>
 <datalist id="courses"></datalist>
@@ -157,11 +192,6 @@ async function call(path, data, method) {
   return j;
 }
 
-// قائمة المواد من بيانات الموقع نفسه (index.html)
-fetch("../../").then(r => r.text()).then(t => {
-  const re = /\{code:"([A-Z0-9]+)", name:"([^"]+)"/g; let m; const dl = $("courses");
-  while ((m = re.exec(t))) dl.append(el("option", {value: m[1], label: m[2]}));
-}).catch(() => {});
 
 function gate(msg = "") { $("gate").hidden = false; $("app").hidden = true; $("out").hidden = true; $("gate-msg").textContent = msg; }
 // الدخول: كلمة السر + رمز التحقق بخطوتين، والسيرفر يعطي جلسة 12 ساعة
@@ -190,6 +220,7 @@ async function start() {
   $("gate").hidden = true; $("app").hidden = false; $("out").hidden = false;
   loadVideos().catch(() => {});
   loadStats().catch(() => {});
+  loadCatalog().catch(() => {});
 }
 
 // ===== الملخص =====
@@ -217,8 +248,9 @@ async function loadStats() {
 }
 document.querySelectorAll("[data-tab]").forEach(b => b.onclick = () => {
   document.querySelectorAll("[data-tab]").forEach(x => x.setAttribute("aria-selected", x === b));
-  ["dash", "users", "videos"].forEach(t => $("t-" + t).hidden = b.dataset.tab !== t);
+  ["dash", "users", "videos", "catalog", "promos", "groups", "growth"].forEach(t => $("t-" + t).hidden = b.dataset.tab !== t);
   if (b.dataset.tab === "dash") loadStats().catch(() => {});
+  if (b.dataset.tab === "groups") loadExpired().catch(() => {});
 });
 
 // ===== الطلاب =====
@@ -365,6 +397,138 @@ $("up").onsubmit = async e => {
   if (prev.length) { upload.resumeFromPreviousUpload(prev[0]); msg.textContent = "لقينا رفع قديم لنفس الملف، نكمل من وين وقف…"; }
   $("pause").hidden = false;
   upload.start();
+};
+
+// ===== المواد والأسعار، الدكاترة، أكواد الخصم، القروبات =====
+let cat = null;
+const kwd = f => (f / 1000).toLocaleString("en", {maximumFractionDigits: 3}) + " د.ك";
+async function loadCatalog() {
+  cat = await call("catalog");
+  // قائمة المواد لخانات الرفع وتفعيل الطلاب
+  $("courses").replaceChildren(...cat.courses.map(c => el("option", {value: c.id, label: c.title})));
+  const uniOpts = () => cat.universities.map(u => [u.id, u.name]);
+  const uniName = id => cat.universities.find(u => u.id === id)?.name || id;
+  const majorOpts = () => cat.majors.map(m => [m.id, `${m.name} (${m.uni})`]);
+  const courseOpts = () => cat.courses.map(c => [c.id, `${c.code} · ${c.title}`]);
+  editor({box: $("ed-universities"), title: "الجامعات", table: "universities", key: "id", rows: cat.universities, add: "+ جامعة",
+    fields: [{k: "id", label: "الرمز بالإنجليزي (مثل AOU)", type: "ltr", lock: true}, {k: "name", label: "اسم الجامعة"}, {k: "sort", label: "الترتيب", type: "num"}, {k: "visible", label: "تطلع للطلاب", type: "bool", def: true}],
+    line: u => [u.name, `${u.id} · ${cat.courses.filter(c => c.uni === u.id).length} مادة`], off: u => !u.visible});
+  editor({box: $("ed-majors"), title: "التخصصات", table: "majors", key: "id", rows: cat.majors, add: "+ تخصص",
+    fields: [{k: "uni", label: "الجامعة", type: "select", opts: uniOpts}, {k: "name", label: "اسم التخصص"}, {k: "sort", label: "الترتيب", type: "num"}],
+    line: m => [m.name, uniName(m.uni)]});
+  editor({box: $("ed-doctors"), title: "الدكاترة", table: "doctors", key: "id", rows: cat.doctors, add: "+ دكتور",
+    fields: [{k: "name", label: "الاسم (مثل د. أحمد)"}, {k: "photo", label: "رابط الصورة (https)", type: "ltr"}, {k: "sample", label: "المحاضرة التجريبية (رقم الفيديو)", type: "ltr"}, {k: "sort", label: "الترتيب", type: "num"}, {k: "visible", label: "يطلع للطلاب", type: "bool", def: true}, {k: "bio", label: "نبذة (التخصص والخبرة)", type: "long"}],
+    line: d => [d.name, `${cat.courses.filter(c => c.doctor === d.id).length} مادة`], off: d => !d.visible});
+  editor({box: $("ed-courses"), title: "المواد والأسعار", table: "courses", key: "id", rows: cat.courses, add: "+ مادة",
+    fields: [{k: "uni", label: "الجامعة", type: "select", opts: uniOpts, lock: true}, {k: "code", label: "رمز المادة (مثل B326)", type: "ltr", lock: true}, {k: "title", label: "اسم المادة"},
+      {k: "doctor", label: "الدكتور", type: "select", opts: () => [["", "—"], ...cat.doctors.map(d => [d.id, d.name])]},
+      {k: "price_mid", label: "سعر الميدتيرم (د.ك)", type: "kwd"}, {k: "price_final", label: "سعر الفاينل (د.ك)", type: "kwd"}, {k: "price_full", label: "سعر الفصل كامل (د.ك)", type: "kwd"},
+      {k: "mid_until", label: "آخر يوم للميدتيرم", type: "date"}, {k: "final_until", label: "آخر يوم للفاينل والكامل", type: "date"}, {k: "sort", label: "الترتيب", type: "num"},
+      {k: "installments", label: "الفصل كامل يندفع قسطين", type: "bool"}, {k: "visible", label: "تطلع للطلاب", type: "bool"},
+      {k: "majors", label: "التخصصات اللي فيها هالمادة", type: "multi", opts: majorOpts}],
+    line: c => [`${c.code} · ${c.title}`, `${uniName(c.uni)} · ميدتيرم ${kwd(c.price_mid)} · فاينل ${kwd(c.price_final)} · كامل ${kwd(c.price_full)}${c.installments ? " (قسطين)" : ""} · ${c.lectures} محاضرة · ${c.subscribers} مشترك`], off: c => !c.visible});
+  editor({box: $("ed-promos"), title: "أكواد الخصم", table: "promos", key: "code", rows: cat.promos, add: "+ كود",
+    fields: [{k: "code", label: "الكود (بالإنجليزي)", type: "ltr", lock: true}, {k: "kind", label: "النوع", type: "select", opts: () => [["pct", "نسبة %"], ["amt", "مبلغ ثابت د.ك"]]},
+      {k: "value", label: "القيمة", type: "promo"}, {k: "course", label: "على", type: "select", opts: () => [["", "كل المواد"], ...courseOpts()]},
+      {k: "max_uses", label: "عدد مرات الاستخدام (فاضي = بدون حد)", type: "num", empty: true}, {k: "until", label: "آخر يوم (فاضي = بدون)", type: "date"}, {k: "active", label: "شغّال", type: "bool", def: true}],
+    line: p => [p.code, `${p.kind === "pct" ? p.value + "%" : kwd(p.value)} · ${p.course || "كل المواد"} · انستخدم ${p.used}${p.max_uses ? " من " + p.max_uses : ""}${p.until ? " · لين " + fmt(p.until) : ""}`],
+    off: p => !p.active || (p.until && p.until < now()) || (p.max_uses && p.used >= p.max_uses)});
+  editor({box: $("ed-groups"), title: "قروبات الواتساب", table: "wa_groups", key: "id", rows: cat.groups, add: "+ قروب",
+    fields: [{k: "uni", label: "الجامعة", type: "select", opts: uniOpts}, {k: "scope", label: "القروب حق", type: "select", opts: () => [["uni", "الجامعة كلها"], ["major", "تخصص"], ["course", "مادة"]]},
+      {k: "ref", label: "التخصص أو المادة", type: "select", opts: () => [["", "—"], ...majorOpts(), ...courseOpts()]}, {k: "title", label: "اسم القروب"}, {k: "url", label: "رابط القروب", type: "ltr"},
+      {k: "sort", label: "الترتيب", type: "num"}, {k: "private", label: "خاص للمشتركين بالمادة", type: "bool"}],
+    line: g => [g.title + (g.private ? " 🔒" : ""), `${uniName(g.uni)} · ${g.scope === "uni" ? "الجامعة" : g.scope === "major" ? "تخصص " + (cat.majors.find(m => String(m.id) === String(g.ref))?.name || g.ref) : g.ref}`]});
+  renderGrowth();
+}
+
+function editor({box, title, table, key, rows, fields, line, off, add}) {
+  const list = el("div");
+  const head = el("div", {className: "top"}, el("h2", {textContent: `${title} (${rows.length})`}), el("button", {type: "button", className: "btn sm", textContent: add, onclick: () => { list.querySelector("form")?.remove(); list.prepend(form(null)); }}));
+  function form(row) {
+    const f = el("form"), grid = el("div", {className: "grid"}), checks = el("div", {className: "row"}), extra = el("div"), msg = el("p", {className: "msg"});
+    const inputs = {};
+    for (const fd of fields) {
+      const v = row ? row[fd.k] : fd.def;
+      let inp;
+      if (fd.type === "bool") { inp = el("input", {type: "checkbox", checked: !!v}); checks.append(el("label", {className: "chk"}, inp, fd.label)); inputs[fd.k] = inp; continue; }
+      if (fd.type === "select") { inp = el("select"); fd.opts().forEach(([val, t]) => inp.append(el("option", {value: val, textContent: t}))); if (v != null) inp.value = v; }
+      else if (fd.type === "multi") {
+        const box = el("div", {className: "multi"}); inputs[fd.k] = box;
+        fd.opts().forEach(([val, t]) => box.append(el("label", {className: "chk"}, el("input", {type: "checkbox", value: val, checked: (v || []).includes(val)}), t)));
+        extra.append(el("div", {style: "display:grid;gap:4px"}, el("span", {style: "font-weight:600;font-size:13px", textContent: fd.label}), box)); continue;
+      }
+      else if (fd.type === "long") { inp = el("textarea", {value: v || ""}); }
+      else if (fd.type === "date") inp = el("input", {type: "date", value: v ? toDate(v) : ""});
+      else if (fd.type === "kwd") inp = el("input", {type: "number", min: 0, step: "0.001", value: v != null ? v / 1000 : ""});
+      else if (fd.type === "promo") inp = el("input", {type: "number", min: 0, step: "0.001", value: v != null ? (row?.kind === "amt" ? v / 1000 : v) : ""});
+      else if (fd.type === "num") inp = el("input", {type: "number", value: v ?? (fd.empty ? "" : 0)});
+      else inp = el("input", {value: v ?? "", dir: fd.type === "ltr" ? "ltr" : "auto"});
+      if (fd.lock && row) inp.disabled = true;
+      inputs[fd.k] = inp;
+      grid.append(el("label", {style: fd.type === "long" ? "grid-column:1/-1" : ""}, fd.label, inp));
+    }
+    const read = () => Object.fromEntries(fields.map(fd => {
+      const i = inputs[fd.k];
+      if (fd.type === "bool") return [fd.k, i.checked];
+      if (fd.type === "multi") return [fd.k, [...i.querySelectorAll("input:checked")].map(x => Number(x.value))];
+      if (fd.type === "date") return [fd.k, i.value ? fromDate(i.value) : null];
+      return [fd.k, i.value];
+    }));
+    const save = el("button", {type: "submit", className: "btn g", textContent: "حفظ"});
+    const cancel = el("button", {type: "button", className: "btn o sm", textContent: "إلغاء", onclick: () => f.remove()});
+    const del = row ? el("button", {type: "button", className: "btn r sm", textContent: "حذف"}) : null;
+    const run = async (data, b) => {
+      b.disabled = true; msg.className = "msg"; msg.textContent = "…";
+      try { await call("save", {table, key: row ? row[key] : undefined, ...data}); await loadCatalog(); }
+      catch (err) { msg.className = "msg bad"; msg.textContent = err.message; b.disabled = false; }
+    };
+    f.onsubmit = e => { e.preventDefault(); run({row: read()}, save); };
+    if (del) del.onclick = () => { if (confirm("متأكد تبي تحذفه؟")) run({delete: true}, del); };
+    f.append(grid, checks, extra, el("div", {className: "row"}, save, cancel, del), msg);
+    return f;
+  }
+  list.append(...(rows.length ? rows.map(r => {
+    const [a, b] = line(r);
+    const item = el("div", {className: "item" + (off && off(r) ? " off" : "")}, el("div", {className: "t"}, el("b", {textContent: a}), el("span", {textContent: b})));
+    item.append(el("button", {type: "button", className: "btn o sm", textContent: "تعديل", onclick: () => { list.querySelector("form")?.remove(); item.after(form(r)); }}));
+    return item;
+  }) : [el("p", {className: "muted", style: "margin:0", textContent: "ما فيه شي للحين."})]));
+  box.replaceChildren(head, list);
+}
+
+async function loadExpired() {
+  const {users: us} = await call("users");
+  const t = now(), list = [];
+  us.forEach(u => u.access.forEach(a => { if (a.until < t && a.until > t - 30 * day && !u.access.some(b => b.course === a.course && b.until > t)) list.push({...u, course: a.course, until: a.until}); }));
+  rows($("expired"), list.sort((a, b) => b.until - a.until), r => [`${r.name} · ${r.phone}`, r.course, fmt(r.until)], "ما فيه أحد خلص اشتراكه.");
+}
+
+// ===== إعدادات التسويق =====
+const GL = {
+  referral: ["كود الإحالة", "كل طالب ياخذ كود. ربعه ياخذ خصم، وهو ياخذ رصيد بعد ما ربعه يدفع.", {friend: "خصم ربعه (د.ك)", reward: "رصيده (د.ك)"}],
+  bundle: ["خصم باقة المواد", "إذا اشترك بأكثر من مادة بنفس الطلب، ينخصم تلقائي.", {two: "مادتين (%)", three: "3 مواد وأكثر (%)"}],
+  examReminder: ["تذكير قبل الامتحان", "إيميل للي ما خلصوا محاضراتهم قبل الامتحان.", {days: "قبل (أيام)"}],
+  installmentReminder: ["تذكير القسط الثاني", "إيميل قبل موعد القسط الثاني.", {days: "قبل (أيام)"}],
+  review: ["المراجعة السريعة", "أهم النقاط من الفيديوات تطلع قبل الامتحان.", {days: "قبل (أيام)"}],
+  freeFirst: ["أول محاضرة مجانية", "أول محاضرة من كل مادة مفتوحة للكل.", {}],
+  privateGroups: ["قروبات المشتركين", "رابط القروب الخاص يطلع للمشترك بالمادة.", {}],
+};
+const money = k => k === "friend" || k === "reward";
+const ds = (e, k, f) => { e.dataset.k = k; e.dataset.f = f; return e; };
+function renderGrowth() {
+  const g = cat.growth;
+  $("gset").replaceChildren(...Object.entries(GL).map(([k, [t, d, nums]]) => el("div", {className: "card"},
+    el("div", {className: "h"}, el("b", {textContent: t}), el("label", {className: "chk", style: "display:flex;gap:6px;align-items:center"}, ds(el("input", {type: "checkbox", checked: g[k].on}), k, "on"), "شغّال")),
+    el("span", {className: "muted", style: "font-size:13px", textContent: d}),
+    ...Object.entries(nums).map(([f, l]) => el("label", {style: "display:flex;gap:8px;align-items:center;font-weight:500"}, l, ds(el("input", {type: "number", min: 0, step: money(f) ? "0.001" : "1", value: money(f) ? g[k][f] / 1000 : g[k][f]}), k, f))))));
+}
+$("gsave").onclick = async () => {
+  const out = {};
+  $("gset").querySelectorAll("input").forEach(i => { const {k, f} = i.dataset; (out[k] ||= {})[f] = f === "on" ? i.checked : money(f) ? Math.round(Number(i.value) * 1000) : Number(i.value); });
+  $("gsave").disabled = true; $("gmsg").className = "msg";
+  try { const r = await call("growth", out); cat.growth = r.growth; renderGrowth(); $("gmsg").className = "msg ok"; $("gmsg").textContent = "انحفظ ✓"; }
+  catch (e) { $("gmsg").className = "msg bad"; $("gmsg").textContent = e.message; }
+  $("gsave").disabled = false;
 };
 
 start();

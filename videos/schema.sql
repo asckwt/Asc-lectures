@@ -3,6 +3,8 @@ CREATE TABLE IF NOT EXISTS users (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL,
   phone TEXT NOT NULL UNIQUE,
+  uni TEXT,
+  major INTEGER,
   email TEXT,
   pass TEXT NOT NULL,
   status TEXT NOT NULL DEFAULT 'pending', -- pending | active | blocked
@@ -86,3 +88,74 @@ CREATE TABLE IF NOT EXISTS admin_sessions (
   exp INTEGER NOT NULL,
   ua TEXT
 );
+
+-- ===== الكتالوج: جامعة ← تخصص ← مادة، والدكاترة والأسعار =====
+-- الأسعار كلها بالفلس (1 د.ك = 1000) عشان ما يصير خطأ كسور
+CREATE TABLE IF NOT EXISTS universities (
+  id TEXT PRIMARY KEY, -- رمز قصير مثل AOU
+  name TEXT NOT NULL,
+  sort INTEGER NOT NULL DEFAULT 0,
+  visible INTEGER NOT NULL DEFAULT 1
+);
+CREATE TABLE IF NOT EXISTS majors (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  uni TEXT NOT NULL,
+  name TEXT NOT NULL,
+  sort INTEGER NOT NULL DEFAULT 0
+);
+CREATE INDEX IF NOT EXISTS majors_uni ON majors(uni, sort);
+CREATE TABLE IF NOT EXISTS doctors (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  bio TEXT,
+  photo TEXT,
+  sample TEXT, -- محاضرة تجريبية (رقم فيديو)
+  sort INTEGER NOT NULL DEFAULT 0,
+  visible INTEGER NOT NULL DEFAULT 1
+);
+-- id = رمز الجامعة-رمز المادة (مثل AOU-B326)، وهو اللي ينحفظ في videos.course و access.course
+CREATE TABLE IF NOT EXISTS courses (
+  id TEXT PRIMARY KEY,
+  uni TEXT NOT NULL,
+  code TEXT NOT NULL,
+  title TEXT NOT NULL,
+  doctor INTEGER,
+  price_mid INTEGER NOT NULL DEFAULT 0,
+  price_final INTEGER NOT NULL DEFAULT 0,
+  price_full INTEGER NOT NULL DEFAULT 0,
+  installments INTEGER NOT NULL DEFAULT 0, -- 1 = الفصل كامل يندفع قسطين
+  mid_until INTEGER, -- آخر يوم لباقة الميدتيرم
+  final_until INTEGER, -- آخر يوم لباقة الفاينل والكامل
+  visible INTEGER NOT NULL DEFAULT 0,
+  sort INTEGER NOT NULL DEFAULT 0
+);
+CREATE INDEX IF NOT EXISTS courses_uni ON courses(uni, sort);
+CREATE TABLE IF NOT EXISTS course_majors (
+  course TEXT NOT NULL,
+  major INTEGER NOT NULL,
+  PRIMARY KEY (course, major)
+);
+-- أكواد الخصم: kind = pct (نسبة) أو amt (مبلغ بالفلس)
+CREATE TABLE IF NOT EXISTS promos (
+  code TEXT PRIMARY KEY,
+  kind TEXT NOT NULL,
+  value INTEGER NOT NULL,
+  course TEXT, -- فاضي = كل المواد
+  max_uses INTEGER, -- فاضي = بدون حد
+  used INTEGER NOT NULL DEFAULT 0,
+  until INTEGER, -- فاضي = بدون تاريخ
+  active INTEGER NOT NULL DEFAULT 1,
+  created INTEGER NOT NULL
+);
+-- قروبات الواتساب: scope = uni | major | course. private = 1 يعني للمشتركين بالمادة بس
+CREATE TABLE IF NOT EXISTS wa_groups (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  uni TEXT NOT NULL,
+  scope TEXT NOT NULL,
+  ref TEXT,
+  title TEXT NOT NULL,
+  url TEXT NOT NULL,
+  private INTEGER NOT NULL DEFAULT 0,
+  sort INTEGER NOT NULL DEFAULT 0
+);
+CREATE INDEX IF NOT EXISTS wa_groups_uni ON wa_groups(uni, scope, sort);
