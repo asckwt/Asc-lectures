@@ -153,7 +153,11 @@ async function student(req, env, url, path) {
     const {video} = await body(req);
     const v = await env.DB.prepare("SELECT v.id, v.host FROM videos v JOIN access a ON a.course = v.course WHERE v.id = ? AND v.ready = 1 AND a.user_id = ? AND a.until > ?").bind(String(video || ""), s.user_id, now()).first();
     if (!v) throw new Fail(403, "noaccess", "هالمحاضرة مو ضمن اشتراكك.");
-    await env.DB.prepare("INSERT INTO views (user_id, video_id, at) VALUES (?, ?, ?)").bind(s.user_id, v.id, now()).run();
+    await env.DB.batch([
+      env.DB.prepare("INSERT INTO views (user_id, video_id, at) VALUES (?, ?, ?)").bind(s.user_id, v.id, now()),
+      // فيديو واحد بنفس الوقت: هالجهاز صار هو اللي يشغّل، وأي جهاز ثاني يوقف
+      env.DB.prepare("INSERT INTO active (user_id, token, at) VALUES (?, ?, ?) ON CONFLICT (user_id) DO UPDATE SET token = excluded.token, at = excluded.at").bind(s.user_id, s.token, now()),
+    ]);
     const token = await streamToken(env, v.id, now() + LINK_HOURS * 3600);
     return {url: `${v.host}/${token}/manifest/video.m3u8`, mark: `${s.name} · ${s.phone}`};
   }
@@ -165,6 +169,8 @@ async function student(req, env, url, path) {
     const v = await env.DB.prepare("SELECT id FROM videos WHERE id = ?").bind(String(b.video || "")).first();
     if (!v) throw new Fail(404, "none", "مو موجود.");
     await env.DB.prepare("INSERT INTO progress (user_id, video_id, pos, at) VALUES (?, ?, ?, ?) ON CONFLICT (user_id, video_id) DO UPDATE SET pos = excluded.pos, at = excluded.at").bind(s.user_id, v.id, pos, now()).run();
+    const a = await env.DB.prepare("SELECT token FROM active WHERE user_id = ?").bind(s.user_id).first();
+    if (a && a.token !== s.token) return {ok: true, stop: "حسابك قاعد يشغّل محاضرة على جهاز ثاني، فوقّفناها هني. اضغط تشغيل لو تبي تكمل من هالجهاز."};
     return {ok: true};
   }
   throw new Fail(404, "none", "مو موجود.");
@@ -176,11 +182,22 @@ async function login(env, req, phone, password, device) {
   const u = await env.DB.prepare("SELECT id, name, phone, pass, status FROM users WHERE phone = ?").bind(phone).first();
   if (!u || !(await checkPass(password, u.pass))) throw new Fail(401, "wrong", "رقم الجوال أو كلمة السر غلط.");
   if (u.status === "blocked") throw new Fail(403, "blocked", "حسابك موقوف، تواصل معنا بالواتساب.");
+  // الأجهزة تنقفل على الحساب: تسجيل الخروج ما يفكها، بس الإدارة تصفّرها
+  const ua = (req.headers.get("User-Agent") || "").slice(0, 200);
+  const known = await env.DB.prepare("SELECT 1 FROM devices WHERE user_id = ? AND device = ?").bind(u.id, device).first();
+  if (!known) {
+    const {n} = await env.DB.prepare("SELECT COUNT(*) AS n FROM devices WHERE user_id = ?").bind(u.id).first();
+    if (n >= MAX_DEVICES) {
+      await env.DB.prepare("INSERT INTO attempts (user_id, device, ua, at) VALUES (?, ?, ?, ?)").bind(u.id, device, ua, now()).run();
+      throw new Fail(403, "devices", `حسابك مسجّل على جهازين، وهذا أقصى شي. لو غيّرت جهازك كلمنا بالواتساب ونصفّر لك الأجهزة.`);
+    }
+    await env.DB.prepare("INSERT INTO devices (user_id, device, ua, first, last) VALUES (?, ?, ?, ?, ?)").bind(u.id, device, ua, now(), now()).run();
+  } else {
+    await env.DB.prepare("UPDATE devices SET last = ?, ua = ? WHERE user_id = ? AND device = ?").bind(now(), ua, u.id, device).run();
+  }
   await env.DB.prepare("DELETE FROM sessions WHERE user_id = ? AND (device = ? OR seen < ?)").bind(u.id, device, now() - SESSION_DAYS * 86400).run();
-  const {n} = await env.DB.prepare("SELECT COUNT(DISTINCT device) AS n FROM sessions WHERE user_id = ?").bind(u.id).first();
-  if (n >= MAX_DEVICES) throw new Fail(403, "devices", `حسابك مفتوح على جهازين، وهذا أقصى شي. سجّل خروج من جهاز ثاني أو تواصل معنا بالواتساب نصفّر لك الأجهزة.`);
   const token = rand(32);
-  await env.DB.prepare("INSERT INTO sessions (token, user_id, device, ua, created, seen) VALUES (?, ?, ?, ?, ?, ?)").bind(await sha256(token), u.id, device, (req.headers.get("User-Agent") || "").slice(0, 200), now(), now()).run();
+  await env.DB.prepare("INSERT INTO sessions (token, user_id, device, ua, created, seen) VALUES (?, ?, ?, ?, ?, ?)").bind(await sha256(token), u.id, device, ua, now(), now()).run();
   return {token, user: {name: u.name, phone: u.phone, status: u.status}};
 }
 
@@ -236,13 +253,14 @@ async function admin(req, env, url, path) {
     ]);
     const {results: top} = await env.DB.prepare("SELECT v.course, v.title, COUNT(w.at) AS n FROM views w JOIN videos v ON v.id = w.video_id WHERE w.at > ? GROUP BY v.id ORDER BY n DESC LIMIT 5").bind(mo).all();
     const {results: byCourse} = await env.DB.prepare("SELECT a.course, COUNT(*) AS n FROM access a JOIN users u ON u.id = a.user_id WHERE u.status = 'active' AND a.until > ? GROUP BY a.course ORDER BY n DESC").bind(t).all();
+    const {results: sharing} = await env.DB.prepare("SELECT u.id, u.name, u.phone, COUNT(*) AS n, MAX(t.at) AS last FROM attempts t JOIN users u ON u.id = t.user_id WHERE t.at > ? GROUP BY u.id ORDER BY n DESC LIMIT 20").bind(t - 30 * 86400).all();
     const {results: daily} = await env.DB.prepare("SELECT (at + 10800) / 86400 AS d, COUNT(*) AS n FROM views WHERE at > ? GROUP BY d ORDER BY d").bind(t - 14 * 86400).all();
     const count = Object.fromEntries(st.results.map(r => [r.status, r.n]));
     return {
       users: {pending: count.pending || 0, active: count.active || 0, blocked: count.blocked || 0, newWeek: act?.n || 0},
       views: {week: vw?.week || 0, month: vw?.month || 0, total: vw?.total || 0, watchersWeek: vw?.watchers || 0},
       videos: {count: vids?.n || 0, processing: vids?.processing || 0, hours: Math.round((vids?.secs || 0) / 360) / 10},
-      expiring: exp.results, top, byCourse,
+      expiring: exp.results, top, byCourse, sharing,
       daily: daily.map(r => ({day: r.d * 86400, n: r.n})),
     };
   }
@@ -250,7 +268,8 @@ async function admin(req, env, url, path) {
   if (path === "users" && req.method === "GET") {
     const {results: users} = await env.DB.prepare("SELECT id, name, phone, email, status, note, created FROM users ORDER BY CASE status WHEN 'pending' THEN 0 ELSE 1 END, created DESC").all();
     const {results: access} = await env.DB.prepare("SELECT user_id, course, until FROM access").all();
-    const {results: devs} = await env.DB.prepare("SELECT user_id, COUNT(DISTINCT device) AS n, MAX(seen) AS seen FROM sessions GROUP BY user_id").all();
+    const {results: devs} = await env.DB.prepare("SELECT user_id, COUNT(*) AS n, MAX(last) AS seen FROM devices GROUP BY user_id").all();
+    const {results: tries} = await env.DB.prepare("SELECT user_id, COUNT(*) AS n FROM attempts WHERE at > ? GROUP BY user_id").bind(now() - 30 * 86400).all();
     const {results: views} = await env.DB.prepare("SELECT user_id, COUNT(*) AS n FROM views GROUP BY user_id").all();
     return {users: users.map(u => ({
       ...u,
@@ -258,6 +277,7 @@ async function admin(req, env, url, path) {
       devices: devs.find(d => d.user_id === u.id)?.n || 0,
       seen: devs.find(d => d.user_id === u.id)?.seen || null,
       views: views.find(x => x.user_id === u.id)?.n || 0,
+      attempts: tries.find(x => x.user_id === u.id)?.n || 0,
     }))};
   }
 
@@ -266,12 +286,13 @@ async function admin(req, env, url, path) {
     const id = Number(b.id);
     if (!(await env.DB.prepare("SELECT 1 FROM users WHERE id = ?").bind(id).first())) throw new Fail(404, "none", "الطالب مو موجود.");
     if (b.delete) {
-      await env.DB.batch(["DELETE FROM sessions WHERE user_id = ?", "DELETE FROM access WHERE user_id = ?", "DELETE FROM views WHERE user_id = ?", "DELETE FROM users WHERE id = ?"].map(q => env.DB.prepare(q).bind(id)));
+      await env.DB.batch(["DELETE FROM sessions WHERE user_id = ?", "DELETE FROM devices WHERE user_id = ?", "DELETE FROM attempts WHERE user_id = ?", "DELETE FROM active WHERE user_id = ?", "DELETE FROM progress WHERE user_id = ?", "DELETE FROM access WHERE user_id = ?", "DELETE FROM views WHERE user_id = ?", "DELETE FROM users WHERE id = ?"].map(q => env.DB.prepare(q).bind(id)));
       return {ok: true};
     }
     const q = [];
     if (["pending", "active", "blocked"].includes(b.status)) q.push(env.DB.prepare("UPDATE users SET status = ? WHERE id = ?").bind(b.status, id));
     if (b.status === "blocked" || b.resetDevices) q.push(env.DB.prepare("DELETE FROM sessions WHERE user_id = ?").bind(id));
+    if (b.resetDevices) q.push(env.DB.prepare("DELETE FROM devices WHERE user_id = ?").bind(id), env.DB.prepare("DELETE FROM attempts WHERE user_id = ?").bind(id));
     if (typeof b.note === "string") q.push(env.DB.prepare("UPDATE users SET note = ? WHERE id = ?").bind(b.note.slice(0, 300), id));
     if (typeof b.password === "string" && b.password) {
       if (b.password.length < 6) throw new Fail(400, "password", "كلمة السر لازم تكون 6 بالأقل.");

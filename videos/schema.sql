@@ -52,3 +52,26 @@ CREATE TABLE IF NOT EXISTS progress (
   at INTEGER NOT NULL,
   PRIMARY KEY (user_id, video_id)
 );
+-- الأجهزة المسجّلة لكل طالب (جهازين بالكثير). تسجيل الخروج ما يمسحها، بس الإدارة
+CREATE TABLE IF NOT EXISTS devices (
+  user_id INTEGER NOT NULL,
+  device TEXT NOT NULL,
+  ua TEXT,
+  first INTEGER NOT NULL,
+  last INTEGER NOT NULL,
+  PRIMARY KEY (user_id, device)
+);
+-- محاولات دخول من جهاز ثالث (علامة إن الحساب يتشارك)
+CREATE TABLE IF NOT EXISTS attempts (
+  user_id INTEGER NOT NULL,
+  device TEXT NOT NULL,
+  ua TEXT,
+  at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS attempts_at ON attempts(at);
+-- الجلسة اللي تشغّل فيديو الحين (وحدة بس لكل حساب)
+CREATE TABLE IF NOT EXISTS active (
+  user_id INTEGER PRIMARY KEY,
+  token TEXT NOT NULL,
+  at INTEGER NOT NULL
+);

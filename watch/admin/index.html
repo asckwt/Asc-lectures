@@ -92,6 +92,7 @@ progress{width:100%;height:12px}
       <div class="card" style="display:grid;gap:8px"><h2>اشتراكات تخلص خلال أسبوعين</h2><table class="tbl" id="expiring"></table></div>
       <div class="card" style="display:grid;gap:8px"><h2>أكثر المحاضرات مشاهدة (شهر)</h2><table class="tbl" id="top"></table></div>
       <div class="card" style="display:grid;gap:8px"><h2>المشتركين بكل مادة</h2><table class="tbl" id="bycourse"></table></div>
+      <div class="card" style="display:grid;gap:8px"><h2>محاولات دخول من جهاز ثالث (شهر)</h2><p class="muted" style="margin:0;font-size:13px">ممكن الطالب غيّر جهازه، أو يشارك حسابه.</p><table class="tbl" id="sharing"></table></div>
     </div>
   </section>
 
@@ -178,7 +179,8 @@ async function loadStats() {
     kpi("اشتراكات تخلص قريب", s.expiring.length, "خلال أسبوعين", s.expiring.length > 0),
     kpi("مشاهدات هالأسبوع", s.views.week, `${s.views.watchersWeek} طالب شافوا · ${s.views.month} بالشهر`),
     kpi("المحاضرات", s.videos.count, `${s.videos.hours} ساعة` + (s.videos.processing ? ` · ${s.videos.processing} تتجهز` : "")),
-    kpi("موقوفين", s.users.blocked));
+    kpi("موقوفين", s.users.blocked),
+    kpi("محاولات جهاز ثالث", s.sharing.length, "طلاب هالشهر", s.sharing.length > 0));
   const days = []; const today = Math.floor((now() + 10800) / day);
   for (let d = today - 13; d <= today; d++) days.push({day: d * day, n: (s.daily.find(x => x.day === d * day) || {}).n || 0});
   const max = Math.max(1, ...days.map(d => d.n));
@@ -186,6 +188,7 @@ async function loadStats() {
   rows($("expiring"), s.expiring, r => [r.name, r.course, fmt(r.until)], "ما فيه اشتراكات تخلص قريب.");
   rows($("top"), s.top, r => [`${r.course} · ${r.title}`, r.n], "ما فيه مشاهدات للحين.");
   rows($("bycourse"), s.byCourse, r => [r.course, r.n], "ما فيه مشتركين للحين.");
+  rows($("sharing"), s.sharing, r => [`${r.name} · ${r.phone}`, fmt(r.last), `${r.n} مرة`], "ما فيه محاولات.");
 }
 document.querySelectorAll("[data-tab]").forEach(b => b.onclick = () => {
   document.querySelectorAll("[data-tab]").forEach(x => x.setAttribute("aria-selected", x === b));
@@ -220,6 +223,7 @@ function userCard(u) {
     el("a", {href: `https://wa.me/965${u.phone.length === 8 ? u.phone : u.phone.replace(/^965/, "")}`, target: "_blank", rel: "noopener", textContent: u.phone, dir: "ltr", style: "color:var(--accent-ink)"}),
     u.email ? el("span", {className: "muted", textContent: u.email, dir: "ltr"}) : null);
   const info = el("div", {className: "muted", style: "font-size:13px", textContent: `سجّل ${fmt(u.created)} · الأجهزة ${u.devices} من 2 · آخر دخول ${fmt(u.seen)} · المشاهدات ${u.views}`});
+  if (u.attempts) info.append(el("span", {style: "color:var(--warn);font-weight:700", textContent: ` · ⚠ حاول يدخل من جهاز ثالث ${u.attempts} مرة هالشهر`}));
 
   // المواد وتاريخ الانتهاء
   const acc = el("div", {className: "acc"});

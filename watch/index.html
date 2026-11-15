@@ -248,7 +248,7 @@ function progressLabel(el, v) {
 
 // المشغّل: جودة تتغير حسب النت (HLS)، ورابط موقّع يشتغل 4 ساعات، ولو انتهى يتجدد بروحه ويكمل من نفس المكان
 const vid = $("vid");
-let current = null, renewing = false, hls = null;
+let current = null, renewing = false, hls = null, stopped = false;
 function load_src(url, at) {
   if (hls) { hls.destroy(); hls = null; }
   const seek = () => { if (at > 0) vid.currentTime = at; };
@@ -292,6 +292,7 @@ function renew() {
   play(current.v, current.code, current.btn, vid.currentTime || 0).finally(() => setTimeout(() => renewing = false, 5000));
 }
 vid.addEventListener("error", () => { if (!hls) renew(); });
+vid.addEventListener("play", () => { if (stopped && current) { stopped = false; $("now").textContent = `${current.code} · ${current.v.title}`; renew(); } });
 
 // نحفظ وين وقف الطالب كل 15 ثانية، وإذا وقّف الفيديو أو طلع من الصفحة
 let lastSaved = 0;
@@ -302,7 +303,11 @@ function saveProgress() {
   lastSaved = pos;
   current.v.pos = pos; if (vid.duration) current.v.duration = Math.round(vid.duration);
   progressLabel(current.btn.querySelector(".p"), current.v);
-  fetch(API + "/api/progress", {method: "POST", keepalive: true, headers: {"Content-Type": "application/json", Authorization: "Bearer " + token}, body: JSON.stringify({video: current.v.id, pos})}).catch(() => {});
+  fetch(API + "/api/progress", {method: "POST", keepalive: true, headers: {"Content-Type": "application/json", Authorization: "Bearer " + token}, body: JSON.stringify({video: current.v.id, pos})})
+    .then(r => r.json()).then(j => {
+      // الحساب صار يشغّل على جهاز ثاني: نوقف هني
+      if (j.stop && !vid.paused) { vid.pause(); $("now").textContent = j.stop; stopped = true; }
+    }).catch(() => {});
 }
 vid.addEventListener("timeupdate", () => { if (Math.abs(vid.currentTime - lastSaved) >= 15) saveProgress(); });
 vid.addEventListener("pause", saveProgress);
