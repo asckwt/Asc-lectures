@@ -82,6 +82,11 @@ progress{width:100%;height:12px}
 .ed .multi{display:flex;flex-wrap:wrap;gap:6px 14px}
 .ed textarea{font:inherit;font-size:15px;color:var(--fg);background:var(--surface);border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;min-height:70px}
 .off{opacity:.55}
+.chatcols{grid-template-columns:minmax(0,1fr) minmax(0,2fr)}@media (max-width:700px){.chatcols{grid-template-columns:minmax(0,1fr)}}
+.cnt:not(:empty){background:#E980C2;color:#07005E;border-radius:999px;padding:0 7px;font-size:12px;margin-inline-start:4px}
+.stars{color:#B07A00;letter-spacing:1px}
+.chap{display:grid;gap:6px;grid-column:1/-1}
+.chap textarea{font:inherit;font-size:14px;color:var(--fg);background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;min-height:110px;direction:rtl}
 .gset{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
 .gset .card{display:grid;gap:8px;align-content:start}
 .gset .card .h{display:flex;justify-content:space-between;align-items:center;gap:8px}
@@ -94,7 +99,9 @@ progress{width:100%;height:12px}
 
 <form class="card" id="gate" style="display:grid;gap:12px;max-width:420px">
   <h2>دخول الإدارة</h2>
-  <label>كلمة سر الإدارة<input type="password" name="p" autocomplete="current-password" required></label>
+  <label class="chk" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="is-t"> أنا أستاذ</label>
+  <label id="u-l" hidden>رقم جوالك<input name="u" inputmode="tel" autocomplete="username" dir="ltr"></label>
+  <label><span id="p-l">كلمة سر الإدارة</span><input type="password" name="p" autocomplete="current-password" required></label>
   <div id="setup" hidden style="display:grid;gap:8px">
     <p style="margin:0;font-size:14px">أول مرة: افتح تطبيق <b>Google Authenticator</b> (أو أي تطبيق مصادقة) بجوالك، وصوّر هالرمز. بعدها اكتب الرقم اللي يطلع لك.</p>
     <div id="qr" style="background:#fff;padding:10px;border-radius:12px;justify-self:start"></div>
@@ -106,7 +113,7 @@ progress{width:100%;height:12px}
 </form>
 
 <div id="app" hidden style="display:grid;gap:16px">
-  <div class="tabs" role="tablist"><button data-tab="dash" aria-selected="true">الملخص</button><button data-tab="users" aria-selected="false">الطلاب</button><button data-tab="videos" aria-selected="false">المحاضرات</button><button data-tab="catalog" aria-selected="false">المواد والأسعار</button><button data-tab="promos" aria-selected="false">أكواد الخصم</button><button data-tab="groups" aria-selected="false">القروبات</button><button data-tab="growth" aria-selected="false">التسويق</button></div>
+  <div class="tabs" role="tablist"><button data-tab="dash" aria-selected="true">الملخص</button><button data-tab="users" aria-selected="false">الطلاب</button><button data-tab="videos" aria-selected="false">المحاضرات</button><button data-tab="catalog" aria-selected="false">المواد والأسعار</button><button data-tab="promos" aria-selected="false">أكواد الخصم</button><button data-tab="groups" aria-selected="false">القروبات</button><button data-tab="growth" aria-selected="false">التسويق</button><button data-tab="ratings" aria-selected="false">التقييمات <span class="cnt" id="c-ratings"></span></button><button data-tab="tickets" aria-selected="false">الشكاوي والاقتراحات <span class="cnt" id="c-tickets"></span></button><button data-tab="chat" aria-selected="false">الشات <span class="cnt" id="c-chat"></span></button><button data-tab="news" aria-selected="false">الأخبار</button><button data-tab="staff" aria-selected="false">الأساتذة</button><button data-tab="audit" aria-selected="false">سجل التعديلات</button></div>
 
   <section id="t-dash" style="display:grid;gap:12px">
     <div class="kpis" id="kpis"></div>
@@ -154,6 +161,50 @@ progress{width:100%;height:12px}
     <div class="card ed" id="ed-groups"></div>
     <div class="card" style="display:grid;gap:8px"><h2>طلاب خلص اشتراكهم (آخر 30 يوم)</h2><table class="tbl" id="expired"></table></div>
   </section>
+  <section id="t-ratings" hidden style="display:grid;gap:12px">
+    <p class="muted" style="margin:0;font-size:14px">التقييمات بنجمتين أو أقل ما تطلع إلا بعد ما توافق عليها. الباقي ينزل على طول، وتقدر تخفيه.</p>
+    <div class="row"><select id="rf"><option value="pending">تنتظر مراجعتك</option><option value="published">منشورة</option><option value="hidden">مخفية</option><option value="">الكل</option></select></div>
+    <div id="rlist" style="display:grid;gap:10px"></div>
+  </section>
+  <section id="t-tickets" hidden style="display:grid;gap:12px">
+    <div class="row"><select id="tf"><option value="open">جديدة</option><option value="working">قاعدين نشتغل عليها</option><option value="solved">انحلت</option><option value="">الكل</option></select></div>
+    <div id="tlist" style="display:grid;gap:10px"></div>
+  </section>
+  <section id="t-chat" hidden style="display:grid;gap:12px">
+    <div class="cols chatcols">
+      <div class="card" style="display:grid;gap:6px;align-content:start"><h2>المحادثات</h2><div id="threads" style="display:grid;gap:4px"></div></div>
+      <div class="card" style="display:grid;gap:10px;align-content:start" id="thread"><p class="muted" style="margin:0">اختار محادثة.</p></div>
+    </div>
+  </section>
+  <section id="t-news" hidden style="display:grid;gap:12px">
+    <form class="card" id="nform" style="display:grid;gap:10px">
+      <h2>خبر جديد</h2>
+      <div class="grid">
+        <label>لمين<select name="scope"><option value="all">كل الطلاب</option><option value="uni">جامعة</option><option value="course">مادة</option></select></label>
+        <label>الجامعة أو المادة<select name="ref"></select></label>
+        <label>يختفي بعد (اختياري)<input type="date" name="until"></label>
+      </div>
+      <label>العنوان<input name="title" required maxlength="150"></label>
+      <label>التفاصيل (اختياري)<textarea name="body" rows="3" style="font:inherit;font-size:15px;color:var(--fg);background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:8px 10px"></textarea></label>
+      <label class="chk owner-only" style="display:flex;gap:6px;align-items:center"><input type="checkbox" name="pinned"> ثبّته فوق</label>
+      <div class="row"><button class="btn g" type="submit">انشر</button><p class="msg" id="nmsg"></p></div>
+    </form>
+    <div id="nlist" style="display:grid;gap:10px"></div>
+  </section>
+  <section id="t-staff" hidden style="display:grid;gap:12px">
+    <p class="muted" style="margin:0;font-size:14px">كل أستاذ يدخل من نفس الصفحة (يختار "أنا أستاذ") برقمه وكلمة سره ورمز من جواله. يشوف مواده بس: يرفع، يحط الأسئلة، يرد على التقييمات والشات، وينشر أخبار لطلابه. ما يشوف الأسعار ولا المشتركين ولا المشاهدات.</p>
+    <form class="card" id="sform" style="display:grid;gap:10px">
+      <h2>حساب أستاذ جديد</h2>
+      <div class="grid">
+        <label>الأستاذ<select name="doctor" required></select></label>
+        <label>رقم جواله (يدخل فيه)<input name="username" inputmode="tel" dir="ltr" required></label>
+        <label>كلمة سر (10 بالأقل)<input name="password" minlength="10" required></label>
+      </div>
+      <div class="row"><button class="btn g" type="submit">سوّ الحساب</button><p class="msg" id="smsg"></p></div>
+    </form>
+    <div id="slist" style="display:grid;gap:10px"></div>
+  </section>
+  <section id="t-audit" hidden style="display:grid;gap:12px"><div class="card"><table class="tbl" id="alist"></table></div></section>
   <section id="t-growth" hidden style="display:grid;gap:12px">
     <div class="gset" id="gset"></div>
     <div class="row"><button class="btn g" id="gsave" type="button">احفظ</button><p class="msg" id="gmsg"></p></div>
@@ -199,7 +250,7 @@ $("gate").onsubmit = async e => {
   e.preventDefault();
   const f = e.target, btn = f.querySelector("[type=submit]"); btn.disabled = true; $("gate-msg").textContent = "";
   try {
-    const r = await fetch(API + "/api/admin/login", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({password: f.p.value, code: f.code.value})}).catch(() => null);
+    const r = await fetch(API + "/api/admin/login", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({password: f.p.value, code: f.code.value, ...($("is-t").checked ? {username: f.u.value} : {})})}).catch(() => null);
     if (!r) throw {message: "ما قدرنا نوصل للسيرفر."};
     const j = await r.json().catch(() => ({}));
     if (!r.ok) throw {message: j.message || "صار خطأ."};
@@ -213,14 +264,31 @@ $("gate").onsubmit = async e => {
   } catch (err) { $("gate-msg").textContent = err.message; }
   finally { btn.disabled = false; }
 };
+$("is-t").onchange = () => { const t = $("is-t").checked; $("u-l").hidden = !t; $("gate").u.required = t; $("p-l").textContent = t ? "كلمة السر" : "كلمة سر الإدارة"; };
 $("out").onclick = () => { call("logout", {}).catch(() => {}); pass = null; ss.set("asc-admin", null); gate(); };
+// الأستاذ يشوف بس التبويبات اللي تخصه
+const TEACHER_TABS = ["videos", "ratings", "chat", "news"];
+let role = "owner", myCourses = [];
 async function start() {
   if (!pass) return gate();
-  try { await loadUsers(); } catch (err) { return; }
+  let me;
+  try { me = await call("whoami"); } catch (err) { return; }
+  role = me.role; myCourses = me.courses || [];
   $("gate").hidden = true; $("app").hidden = false; $("out").hidden = false;
+  document.querySelector("header b").textContent = role === "teacher" ? `لوحة ${me.name}` : "لوحة التحكم";
+  document.querySelectorAll(".owner-only").forEach(e => e.hidden = role !== "owner");
+  if (role === "teacher") {
+    document.querySelectorAll("[data-tab]").forEach(b => b.hidden = !TEACHER_TABS.includes(b.dataset.tab));
+    document.querySelector('[data-tab="videos"]').click();
+    $("courses").replaceChildren(...myCourses.map(c => el("option", {value: c})));
+    loadVideos().catch(() => {}); loadThreads().catch(() => {});
+    return;
+  }
+  loadUsers().catch(() => {});
   loadVideos().catch(() => {});
   loadStats().catch(() => {});
   loadCatalog().catch(() => {});
+  loadThreads().catch(() => {});
 }
 
 // ===== الملخص =====
@@ -229,6 +297,7 @@ const kpi = (label, value, small, warn) => el("div", {className: "kpi" + (warn ?
 const rows = (box, list, cells, empty) => box.replaceChildren(...(list.length ? list.map(r => el("tr", {}, ...cells(r).map((c, i, a) => el("td", {className: i === a.length - 1 ? "n" : "", textContent: c})))) : [el("tr", {}, el("td", {className: "muted", textContent: empty}))]));
 async function loadStats() {
   const s = await call("stats");
+  $("c-ratings").textContent = s.pendingRatings || ""; $("c-tickets").textContent = s.openTickets || "";
   $("kpis").replaceChildren(
     kpi("طلاب مفعّلين", s.users.active, `+${s.users.newWeek} تسجيل هالأسبوع`),
     kpi("بانتظار التفعيل", s.users.pending, s.users.pending ? "روح تبويب الطلاب وفعّلهم" : "ما فيه أحد ينتظر", s.users.pending > 0),
@@ -248,9 +317,15 @@ async function loadStats() {
 }
 document.querySelectorAll("[data-tab]").forEach(b => b.onclick = () => {
   document.querySelectorAll("[data-tab]").forEach(x => x.setAttribute("aria-selected", x === b));
-  ["dash", "users", "videos", "catalog", "promos", "groups", "growth"].forEach(t => $("t-" + t).hidden = b.dataset.tab !== t);
+  ["dash", "users", "videos", "catalog", "promos", "groups", "growth", "ratings", "tickets", "chat", "news", "staff", "audit"].forEach(t => $("t-" + t).hidden = b.dataset.tab !== t);
   if (b.dataset.tab === "dash") loadStats().catch(() => {});
   if (b.dataset.tab === "groups") loadExpired().catch(() => {});
+  if (b.dataset.tab === "ratings") loadRatings().catch(() => {});
+  if (b.dataset.tab === "tickets") loadTickets().catch(() => {});
+  if (b.dataset.tab === "chat") loadThreads().catch(() => {});
+  if (b.dataset.tab === "news") loadNews().catch(() => {});
+  if (b.dataset.tab === "staff") loadStaff().catch(() => {});
+  if (b.dataset.tab === "audit") loadAudit().catch(() => {});
 });
 
 // ===== الطلاب =====
@@ -336,12 +411,15 @@ async function loadVideos() {
     const list = el("div", {className: "vlist"});
     by[code].forEach(v => {
       const sort = el("input", {type: "number", value: v.sort}), title = el("input", {value: v.title});
-      const msg = el("span", {className: "muted", style: "font-size:12px", textContent: v.ready === 1 ? `${Math.round(v.duration / 60)} دقيقة · ${v.views} مشاهدة` : v.ready === -1 ? "فشل التجهيز، احذفه وارفعه مرة ثانية" : "يتجهز… (أو الرفع ما كمل)"});
+      const msg = el("span", {className: "muted", style: "font-size:12px", textContent: v.ready === 1 ? `${Math.round(v.duration / 60)} دقيقة` + (v.views != null ? ` · ${v.views} مشاهدة` : "") : v.ready === -1 ? "فشل التجهيز، احذفه وارفعه مرة ثانية" : "يتجهز… (أو الرفع ما كمل)"});
       const save = el("button", {type: "button", className: "btn o sm", textContent: "حفظ"});
       save.onclick = async () => { save.disabled = true; try { await call("video", {id: v.id, course: v.course, title: title.value, sort: sort.value}); msg.textContent = "انحفظ ✓"; loadVideos(); } catch (e) { msg.textContent = e.message; } save.disabled = false; };
       const del = el("button", {type: "button", className: "btn r sm", textContent: "حذف"});
       del.onclick = async () => { if (!confirm(`تبي تحذف "${v.title}" نهائياً؟`)) return; try { await call("video", {id: v.id, delete: true}); loadVideos(); } catch (e) { msg.textContent = e.message; } };
-      list.append(el("div", {className: "vrow"}, sort, title, el("div", {className: "row"}, msg, save, del)));
+      const qs = el("button", {type: "button", className: "btn o sm", textContent: `الأسئلة (${v.chapters.length})`});
+      const row = el("div", {className: "vrow"}, sort, title, el("div", {className: "row"}, msg, qs, save, del));
+      qs.onclick = () => { const open = row.querySelector(".chap"); if (open) return open.remove(); row.append(chapEditor(v, () => loadVideos())); };
+      list.append(row);
     });
     card.append(list); return card;
   }));
@@ -530,6 +608,162 @@ $("gsave").onclick = async () => {
   catch (e) { $("gmsg").className = "msg bad"; $("gmsg").textContent = e.message; }
   $("gsave").disabled = false;
 };
+
+// ===== فهرس الأسئلة: كل سطر "الوقت العنوان"، مثل 2:10 سؤال 1 =====
+const mmss = t => `${Math.floor(t / 3600) ? Math.floor(t / 3600) + ":" + String(Math.floor(t / 60) % 60).padStart(2, "0") : Math.floor(t / 60)}:${String(t % 60).padStart(2, "0")}`;
+function parseChapters(text) {
+  const out = [], bad = [];
+  text.split("\n").map(l => l.trim()).filter(Boolean).forEach(l => {
+    const m = l.replace(/[٠-٩]/g, c => "٠١٢٣٤٥٦٧٨٩".indexOf(c)).match(/^(\d{1,2}(?::\d{1,2}){1,2})\s*[-–·:]?\s*(.+)$/);
+    if (!m) return bad.push(l);
+    const t = m[1].split(":").map(Number).reduce((a, n) => a * 60 + n, 0);
+    out.push({t, title: m[2].trim()});
+  });
+  return {items: out.sort((a, b) => a.t - b.t), bad};
+}
+function chapEditor(v, done) {
+  const ta = el("textarea", {value: v.chapters.map(c => `${mmss(c.t)} ${c.title}`).join("\n"), placeholder: "2:10 سؤال 1: Goodwill\n7:45 سؤال 2: NCI"});
+  const msg = el("p", {className: "msg"});
+  const save = el("button", {type: "button", className: "btn g sm", textContent: "احفظ الأسئلة"});
+  save.onclick = async () => {
+    const {items, bad} = parseChapters(ta.value);
+    if (bad.length) { msg.className = "msg bad"; msg.textContent = "هالسطر مو واضح: " + bad[0]; return; }
+    save.disabled = true;
+    try { await call("chapters", {video: v.id, items}); msg.className = "msg ok"; msg.textContent = "انحفظت ✓"; done(); }
+    catch (e) { msg.className = "msg bad"; msg.textContent = e.message; save.disabled = false; }
+  };
+  return el("div", {className: "chap"}, el("span", {className: "muted", style: "font-size:13px", textContent: "كل سؤال بسطر: الوقت وبعده العنوان. الطالب يضغط عليه وينقله للدقيقة."}), ta, el("div", {className: "row"}, save, msg));
+}
+
+// ===== التقييمات =====
+let ratingsList = [];
+async function loadRatings() { ratingsList = (await call("ratings")).ratings; if (role === "teacher") $("rf").value = ""; $("rf").hidden = role === "teacher"; renderRatings(); }
+$("rf").onchange = () => renderRatings();
+function renderRatings() {
+  const f = $("rf").value, list = ratingsList.filter(r => !f || r.status === f);
+  $("rlist").replaceChildren(...(list.length ? list.map(r => {
+    const reply = el("input", {value: r.reply || "", placeholder: "ردّك (اختياري، يطلع تحت التقييم)", style: "flex:1;min-width:200px"});
+    const msg = el("span", {className: "msg"});
+    const act = (status, b) => async () => { b.disabled = true; try { await call("rating", {id: r.id, status, reply: reply.value}); await loadRatings(); loadStats().catch(() => {}); } catch (e) { msg.className = "msg bad"; msg.textContent = e.message; b.disabled = false; } };
+    const pub = el("button", {type: "button", className: "btn g sm", textContent: r.status === "published" || role === "teacher" ? "حفظ الرد" : "انشره"}); pub.onclick = act(role === "teacher" ? r.status : "published", pub);
+    const hide = el("button", {type: "button", className: "btn r sm", textContent: "اخفيه"}); hide.onclick = act("hidden", hide);
+    const wa = el("a", {className: "btn o sm", href: `https://wa.me/965${r.phone}`, target: "_blank", rel: "noopener", textContent: "كلّمه واتساب"});
+    return el("div", {className: "card", style: "display:grid;gap:8px"},
+      el("div", {className: "row"}, el("b", {textContent: r.name}), el("bdi", {dir: "ltr", className: "muted", textContent: r.course}), el("span", {className: "stars", textContent: "★".repeat(r.stars) + "☆".repeat(5 - r.stars)}), el("span", {className: "badge " + (r.status === "pending" ? "pending" : r.status === "published" ? "active" : "blocked"), textContent: {pending: "تنتظر", published: "منشورة", hidden: "مخفية"}[r.status]}), el("span", {className: "muted", style: "font-size:12px", textContent: fmt(r.created)})),
+      r.tags.length ? el("div", {className: "muted", style: "font-size:13px", textContent: r.tags.join(" · ")}) : null,
+      r.comment ? el("p", {style: "margin:0", textContent: r.comment}) : el("p", {className: "muted", style: "margin:0", textContent: "بدون تعليق"}),
+      el("div", {className: "row"}, reply), el("div", {className: "row"}, pub, r.status !== "hidden" && role === "owner" ? hide : null, r.phone ? wa : null, msg));
+  }) : [el("p", {className: "muted", textContent: "ما فيه تقييمات هني."})]));
+}
+
+// ===== الشكاوي والاقتراحات =====
+const KIND = {suggestion: "اقتراح", complaint: "شكوى", tech: "مشكلة تقنية", payment: "مشكلة دفع"};
+const TST = {open: "جديدة", working: "قاعدين نشتغل عليها", solved: "انحلت"};
+let ticketsList = [];
+async function loadTickets() { ticketsList = (await call("tickets")).tickets; renderTickets(); }
+$("tf").onchange = () => renderTickets();
+function renderTickets() {
+  const f = $("tf").value, list = ticketsList.filter(t => !f || t.status === f);
+  $("tlist").replaceChildren(...(list.length ? list.map(t => {
+    const reply = el("textarea", {value: t.reply || "", placeholder: "ردّك على الطالب (يطلع له بصفحة طلباتي)", style: "font:inherit;font-size:14px;color:var(--fg);background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;min-height:60px"});
+    const st = el("select"); Object.entries(TST).forEach(([k, l]) => st.append(el("option", {value: k, textContent: l}))); st.value = t.status;
+    const msg = el("span", {className: "msg"});
+    const save = el("button", {type: "button", className: "btn g sm", textContent: "حفظ"});
+    save.onclick = async () => { save.disabled = true; try { await call("ticket", {id: t.id, status: st.value, reply: reply.value}); await loadTickets(); loadStats().catch(() => {}); } catch (e) { msg.className = "msg bad"; msg.textContent = e.message; save.disabled = false; } };
+    return el("div", {className: "card", style: "display:grid;gap:8px"},
+      el("div", {className: "row"}, el("b", {textContent: KIND[t.kind]}), t.course ? el("bdi", {dir: "ltr", className: "muted", textContent: t.course}) : null, el("span", {className: "badge " + (t.status === "solved" ? "active" : "pending"), textContent: TST[t.status]}), el("span", {className: "muted", style: "font-size:12px", textContent: fmt(t.created)})),
+      el("div", {className: "muted", style: "font-size:13px"}, `${t.name} · `, el("a", {href: `https://wa.me/965${t.phone}`, target: "_blank", rel: "noopener", dir: "ltr", textContent: t.phone, style: "color:var(--accent-ink)"}), ` · ${t.email || ""}`),
+      el("p", {style: "margin:0;white-space:pre-wrap", textContent: t.message}),
+      reply, el("div", {className: "row"}, st, save, msg));
+  }) : [el("p", {className: "muted", textContent: "ما فيه رسائل هني."})]));
+}
+
+// ===== الشات مع الطلاب =====
+let threadsList = [], openThread = null;
+async function loadThreads() {
+  threadsList = (await call("chats")).threads;
+  const unread = threadsList.reduce((a, t) => a + (t.unread || 0), 0);
+  $("c-chat").textContent = unread || "";
+  $("threads").replaceChildren(...(threadsList.length ? threadsList.map(t => el("button", {type: "button", className: "btn o", style: "justify-content:space-between;text-align:start;white-space:normal" + (openThread && openThread.course === t.course && openThread.student === t.student ? ";border-color:var(--navy)" : ""), onclick: () => showThread(t)},
+    el("span", {style: "display:grid"}, el("b", {textContent: t.name}), el("span", {className: "muted", style: "font-size:12px;font-weight:500", textContent: `${t.course} · ${t.preview.slice(0, 40)}`})),
+    t.unread ? el("span", {className: "cnt", textContent: t.unread}) : null)) : [el("p", {className: "muted", style: "margin:0", textContent: "ما فيه رسائل للحين."})]));
+}
+async function showThread(t) {
+  openThread = t;
+  const {messages} = await call(`chat?course=${encodeURIComponent(t.course)}&student=${t.student}`);
+  const box = el("div", {style: "display:grid;gap:8px;max-height:420px;overflow:auto"});
+  messages.forEach(m => box.append(el("div", {style: `justify-self:${m.from_staff ? "end" : "start"};max-width:85%;background:${m.from_staff ? "var(--navy)" : "var(--bg)"};color:${m.from_staff ? "#fff" : "var(--fg)"};border-radius:12px;padding:8px 12px`},
+    el("div", {style: "font-size:12px;opacity:.75", textContent: `${m.author} · ${fmt(m.created)}`}), el("div", {style: "white-space:pre-wrap", textContent: m.body}))));
+  const input = el("textarea", {placeholder: "ردّك…", rows: 2, style: "font:inherit;font-size:15px;color:var(--fg);background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:8px 10px"});
+  const msg = el("span", {className: "msg"});
+  const send = el("button", {type: "button", className: "btn g", textContent: "أرسل"});
+  send.onclick = async () => { if (!input.value.trim()) return; send.disabled = true; try { await call("chat", {course: t.course, student: t.student, body: input.value}); await showThread(t); } catch (e) { msg.className = "msg bad"; msg.textContent = e.message; send.disabled = false; } };
+  $("thread").replaceChildren(el("h2", {}, t.name, el("span", {className: "muted", style: "font-size:14px;font-weight:500", textContent: " · " + t.course})), box, input, el("div", {className: "row"}, send, msg));
+  box.scrollTop = box.scrollHeight;
+  loadThreads().catch(() => {});
+}
+
+// ===== الأخبار =====
+const SCOPE = {all: "كل الطلاب", uni: "جامعة", course: "مادة"};
+function fillNewsRef() {
+  const f = $("nform"), sc = f.scope.value;
+  const opts = sc === "uni" ? (cat?.universities || []).map(u => [u.id, u.name]) : sc === "course" ? (role === "teacher" ? myCourses.map(c => [c, c]) : (cat?.courses || []).map(c => [c.id, `${c.code} · ${c.title}`])) : [];
+  f.ref.replaceChildren(...opts.map(([v, t]) => el("option", {value: v, textContent: t})));
+  f.ref.disabled = sc === "all";
+}
+$("nform").scope.onchange = fillNewsRef;
+async function loadNews() {
+  if (role === "teacher") { const f = $("nform"); [...f.scope.options].forEach(o => o.hidden = o.value !== "course"); f.scope.value = "course"; }
+  fillNewsRef();
+  const {news} = await call("news");
+  $("nlist").replaceChildren(...(news.length ? news.map(n => {
+    const del = el("button", {type: "button", className: "btn r sm", textContent: "احذفه"});
+    del.onclick = async () => { if (!confirm("تبي تحذف هالخبر؟")) return; await call("news", {id: n.id, delete: true}).catch(e => alert(e.message)); loadNews(); };
+    return el("div", {className: "card", style: "display:grid;gap:6px" + (n.until && n.until < now() ? ";opacity:.55" : "")},
+      el("div", {className: "row"}, n.pinned ? el("span", {textContent: "📌"}) : null, el("b", {textContent: n.title}), el("span", {className: "muted", style: "font-size:13px", textContent: `${SCOPE[n.scope]}${n.ref ? " · " + n.ref : ""} · ${n.author} · ${fmt(n.created)}${n.until ? " · لين " + fmt(n.until) : ""}`})),
+      n.body ? el("p", {style: "margin:0;white-space:pre-wrap", textContent: n.body}) : null, el("div", {className: "row"}, del));
+  }) : [el("p", {className: "muted", textContent: "ما فيه أخبار."})]));
+}
+$("nform").onsubmit = async e => {
+  e.preventDefault();
+  const f = e.target, b = f.querySelector("[type=submit]"); b.disabled = true; $("nmsg").className = "msg";
+  try {
+    await call("news", {scope: f.scope.value, ref: f.ref.value, title: f.title.value, body: f.body.value, pinned: f.pinned.checked, until: f.until.value ? fromDate(f.until.value) : null});
+    f.title.value = ""; f.body.value = ""; f.pinned.checked = false; f.until.value = "";
+    $("nmsg").className = "msg ok"; $("nmsg").textContent = "انتشر ✓"; loadNews();
+  } catch (err) { $("nmsg").className = "msg bad"; $("nmsg").textContent = err.message; }
+  b.disabled = false;
+};
+
+// ===== حسابات الأساتذة =====
+async function loadStaff() {
+  const {staff} = await call("staff");
+  $("sform").doctor.replaceChildren(...(cat?.doctors || []).filter(d => !staff.some(s => s.doctor === d.id)).map(d => el("option", {value: d.id, textContent: d.name})));
+  $("slist").replaceChildren(...(staff.length ? staff.map(s => {
+    const msg = el("span", {className: "msg"});
+    const act = (data, okText) => async () => { try { await call("staff", {id: s.id, ...data}); msg.className = "msg ok"; msg.textContent = okText; loadStaff(); } catch (e) { msg.className = "msg bad"; msg.textContent = e.message; } };
+    const pw = el("button", {type: "button", className: "btn o sm", textContent: "كلمة سر جديدة", onclick: () => { const p = prompt("كلمة السر الجديدة (10 بالأقل):"); if (p) act({password: p}, "تغيّرت")(); }});
+    return el("div", {className: "card", style: "display:grid;gap:8px" + (s.active ? "" : ";opacity:.6")},
+      el("div", {className: "row"}, el("b", {textContent: s.name}), el("bdi", {dir: "ltr", className: "muted", textContent: s.username}), el("span", {className: "badge " + (s.active ? "active" : "blocked"), textContent: s.active ? "شغّال" : "موقوف"}), el("span", {className: "muted", style: "font-size:13px", textContent: s.has2fa ? "التحقق بخطوتين مفعّل" : "ما فعّل التحقق للحين"})),
+      el("div", {className: "row"},
+        el("button", {type: "button", className: s.active ? "btn r sm" : "btn g sm", textContent: s.active ? "أوقفه" : "رجّعه", onclick: act({active: !s.active}, "تم")}),
+        el("button", {type: "button", className: "btn o sm", textContent: "صفّر رمز الجوال", onclick: act({reset2fa: true}, "تصفّر، أول دخول يطلع له QR جديد")}),
+        pw, el("button", {type: "button", className: "btn r sm", textContent: "احذف", onclick: () => { if (confirm(`تحذف حساب ${s.name}؟`)) act({delete: true}, "انحذف")(); }}), msg));
+  }) : [el("p", {className: "muted", textContent: "ما فيه حسابات أساتذة للحين."})]));
+}
+$("sform").onsubmit = async e => {
+  e.preventDefault();
+  const f = e.target; $("smsg").className = "msg";
+  try { await call("staff", {doctor: f.doctor.value, username: f.username.value, password: f.password.value}); f.reset(); $("smsg").className = "msg ok"; $("smsg").textContent = "انسوى ✓ أرسل له الرقم وكلمة السر، وأول دخول يربط جواله."; loadStaff(); }
+  catch (err) { $("smsg").className = "msg bad"; $("smsg").textContent = err.message; }
+};
+
+// ===== سجل التعديلات =====
+const ACTION = {save: "تعديل بالمواد/الأسعار", growth: "إعدادات التسويق", user: "تعديل طالب", video: "تعديل محاضرة", chapters: "فهرس أسئلة", rating: "تقييم", ticket: "شكوى", news: "خبر", chat: "رسالة شات", staff: "حساب أستاذ", upload: "رفع محاضرة"};
+async function loadAudit() {
+  const {audit} = await call("audit");
+  rows($("alist"), audit, a => [a.who, ACTION[a.action] || a.action, (a.detail || "").slice(0, 80), new Date(a.at * 1000).toLocaleString("ar-KW", {numberingSystem: "latn", dateStyle: "short", timeStyle: "short"})], "ما فيه تعديلات.");
+}
 
 start();
 })();

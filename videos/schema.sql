@@ -86,7 +86,8 @@ CREATE TABLE IF NOT EXISTS settings (
 CREATE TABLE IF NOT EXISTS admin_sessions (
   token TEXT PRIMARY KEY,
   exp INTEGER NOT NULL,
-  ua TEXT
+  ua TEXT,
+  staff_id INTEGER -- فاضي = المدير، غير جذي = حساب أستاذ
 );
 
 -- ===== الكتالوج: جامعة ← تخصص ← مادة، والدكاترة والأسعار =====
@@ -196,3 +197,52 @@ CREATE TABLE IF NOT EXISTS chapters (
   title TEXT NOT NULL,
   PRIMARY KEY (video_id, t)
 );
+
+-- ===== حسابات الأساتذة، الأخبار، الشات، سجل التعديلات =====
+-- كل أستاذ مربوط بدكتور (doctors.id) ويشوف بس مواده
+CREATE TABLE IF NOT EXISTS staff (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  doctor INTEGER NOT NULL UNIQUE,
+  username TEXT NOT NULL UNIQUE, -- رقم جواله
+  pass TEXT NOT NULL,
+  totp TEXT,
+  totp_pending TEXT,
+  active INTEGER NOT NULL DEFAULT 1,
+  created INTEGER NOT NULL
+);
+-- scope = all | uni | course
+CREATE TABLE IF NOT EXISTS news (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  scope TEXT NOT NULL,
+  ref TEXT,
+  title TEXT NOT NULL,
+  body TEXT,
+  pinned INTEGER NOT NULL DEFAULT 0,
+  author TEXT NOT NULL,
+  staff_id INTEGER,
+  created INTEGER NOT NULL,
+  until INTEGER -- بعده ما يطلع
+);
+CREATE INDEX IF NOT EXISTS news_scope ON news(scope, ref, created);
+-- محادثة خاصة بين الطالب وأستاذ المادة
+CREATE TABLE IF NOT EXISTS messages (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  course TEXT NOT NULL,
+  student INTEGER NOT NULL,
+  from_staff INTEGER NOT NULL, -- 0 الطالب، 1 الأستاذ أو الإدارة
+  author TEXT NOT NULL,
+  body TEXT NOT NULL,
+  image TEXT,
+  created INTEGER NOT NULL,
+  seen INTEGER NOT NULL DEFAULT 0 -- الطرف الثاني قراها
+);
+CREATE INDEX IF NOT EXISTS messages_thread ON messages(course, student, id);
+CREATE INDEX IF NOT EXISTS messages_course ON messages(course, id);
+-- كل تعديل من الداشبورد: مين سواه ومتى
+CREATE TABLE IF NOT EXISTS audit (
+  at INTEGER NOT NULL,
+  who TEXT NOT NULL,
+  action TEXT NOT NULL,
+  detail TEXT
+);
+CREATE INDEX IF NOT EXISTS audit_at ON audit(at);

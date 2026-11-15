@@ -81,6 +81,7 @@ export default {
       // الكتالوج عام ونفس الشي للكل، فيتخزن دقيقة بالمتصفح وبالذاكرة
       if (path === "catalog" && req.method === "GET") return json(await catalog(env), 200, "public, max-age=60");
       if (path === "course" && req.method === "GET") return json(await coursePage(env, cleanCourse(url.searchParams.get("id"))), 200, "public, max-age=60");
+      if (path === "news" && req.method === "GET") return json({news: await newsFor(env, String(url.searchParams.get("uni") || ""), [])}, 200, "public, max-age=60");
       if (path === "doctor" && req.method === "GET") return json(await doctorPage(env, Number(url.searchParams.get("id"))), 200, "public, max-age=60");
       return json(await student(req, env, url, path));
     } catch (e) {
@@ -181,7 +182,9 @@ async function student(req, env, url, path) {
       const ids = courses.map(c => c.code);
       groups = (await env.DB.prepare(`SELECT ref AS course, title, url FROM wa_groups WHERE private = 1 AND scope = 'course' AND ref IN (${ids.map(() => "?").join(",")}) ORDER BY sort`).bind(...ids).all()).results;
     }
-    return {user: {name: s.name, phone: s.phone, status: s.status}, courses, groups};
+    const u = await env.DB.prepare("SELECT uni FROM users WHERE id = ?").bind(s.user_id).first();
+    const unread = (await env.DB.prepare("SELECT COUNT(*) AS n FROM messages WHERE student = ? AND from_staff = 1 AND seen = 0").bind(s.user_id).first()).n;
+    return {user: {name: s.name, phone: s.phone, status: s.status, uni: u?.uni || null}, courses, groups, news: await newsFor(env, u?.uni, courses.map(c => c.code)), unread};
   }
   if (path === "play" && req.method === "POST") {
     const s = await session(req, env);
@@ -251,6 +254,15 @@ async function student(req, env, url, path) {
     const {results} = await env.DB.prepare("SELECT id, kind, course, message, status, reply, created, updated FROM tickets WHERE user_id = ? ORDER BY created DESC LIMIT 30").bind(s.user_id).all();
     const {results: mine} = await env.DB.prepare("SELECT course, stars, tags, comment, status, reply FROM ratings WHERE user_id = ?").bind(s.user_id).all();
     return {tickets: results, ratings: mine.map(r => ({...r, tags: JSON.parse(r.tags || "[]")}))};
+  }
+  // الشات مع أستاذ المادة: للمشترك الحالي بس
+  if (path === "chat") {
+    const s = await session(req, env);
+    const course = cleanCourse(req.method === "GET" ? url.searchParams.get("course") : (await req.clone().json().catch(() => ({}))).course);
+    if (s.status !== "active" || !(await env.DB.prepare("SELECT 1 FROM access WHERE user_id = ? AND course = ? AND until > ?").bind(s.user_id, course, now()).first())) throw new Fail(403, "noaccess", "الشات للمشتركين بالمادة.");
+    if (req.method === "GET") return chatRead(env, course, s.user_id, false);
+    await limit(env, req, "chat");
+    return chatSend(env, course, s.user_id, (await body(req)).body, 0, s.name);
   }
   // السعر النهائي مع خصم المواد وكود الخصم. الحساب كله هني بالسيرفر، مو بالمتصفح
   if (path === "quote" && req.method === "POST") {
@@ -485,20 +497,30 @@ async function checkCode(secret, code) {
 const setting = async (env, k) => (await env.DB.prepare("SELECT v FROM settings WHERE k = ?").bind(k).first())?.v || null;
 const setSetting = (env, k, v) => env.DB.prepare("INSERT INTO settings (k, v) VALUES (?, ?) ON CONFLICT (k) DO UPDATE SET v = excluded.v").bind(k, v).run();
 
-// دخول الإدارة: كلمة السر + رمز من التطبيق، ويعطي جلسة تشتغل 12 ساعة
+// دخول الإدارة: كلمة السر + رمز من التطبيق، ويعطي جلسة تشتغل 12 ساعة.
+// المدير يدخل بكلمة سر الإدارة، والأستاذ برقم جواله وكلمة سره. الاثنين لازم رمز التحقق بخطوتين.
 async function adminLogin(req, env) {
   await limit(env, req, "admin-login");
   const b = await body(req);
-  if (!env.ADMIN_PASSWORD || !sameText(String(b.password || ""), env.ADMIN_PASSWORD)) throw new Fail(401, "admin", "كلمة سر الإدارة غلط.");
-  let secret = await setting(env, "totp");
+  let staff = null, secret, pending, label = "الإدارة";
+  if (b.username) {
+    staff = await env.DB.prepare("SELECT s.*, d.name FROM staff s JOIN doctors d ON d.id = s.doctor WHERE s.username = ?").bind(cleanPhone(b.username)).first();
+    if (!staff) { await hashPass(String(b.password || "")); throw new Fail(401, "admin", "الرقم أو كلمة السر غلط."); }
+    if (!(await checkPass(String(b.password || ""), staff.pass))) throw new Fail(401, "admin", "الرقم أو كلمة السر غلط.");
+    if (!staff.active) throw new Fail(403, "admin", "حسابك موقوف، كلّم الإدارة.");
+    secret = staff.totp; pending = staff.totp_pending; label = staff.name;
+  } else {
+    if (!env.ADMIN_PASSWORD || !sameText(String(b.password || ""), env.ADMIN_PASSWORD)) throw new Fail(401, "admin", "كلمة سر الإدارة غلط.");
+    secret = await setting(env, "totp"); pending = await setting(env, "totp_pending");
+  }
+  const savePending = v => staff ? env.DB.prepare("UPDATE staff SET totp_pending = ? WHERE id = ?").bind(v, staff.id).run() : setSetting(env, "totp_pending", v);
   if (!secret) {
-    // أول مرة: نجهّز مفتاح ويربطه المدير بتطبيق المصادقة، وما يتفعّل إلا لما يدخل رمز صح
-    let pending = await setting(env, "totp_pending");
-    if (!pending) { pending = b32encode(crypto.getRandomValues(new Uint8Array(20))); await setSetting(env, "totp_pending", pending); }
-    if (!b.code) return {setup: true, secret: pending, uri: `otpauth://totp/${encodeURIComponent("الطالب الأكاديمي:الإدارة")}?secret=${pending}&issuer=${encodeURIComponent("الطالب الأكاديمي")}`};
+    // أول مرة: نجهّز مفتاح ويربطه بتطبيق المصادقة، وما يتفعّل إلا لما يدخل رمز صح
+    if (!pending) { pending = b32encode(crypto.getRandomValues(new Uint8Array(20))); await savePending(pending); }
+    if (!b.code) return {setup: true, secret: pending, uri: `otpauth://totp/${encodeURIComponent("الطالب الأكاديمي:" + label)}?secret=${pending}&issuer=${encodeURIComponent("الطالب الأكاديمي")}`};
     if (!(await checkCode(pending, b.code))) throw new Fail(401, "code", "الرمز غلط. تأكد إن وقت جوالك مضبوط وجرّب الرمز الجديد.");
-    await setSetting(env, "totp", pending);
-    await env.DB.prepare("DELETE FROM settings WHERE k = 'totp_pending'").run();
+    if (staff) await env.DB.prepare("UPDATE staff SET totp = totp_pending, totp_pending = NULL WHERE id = ?").bind(staff.id).run();
+    else { await setSetting(env, "totp", pending); await env.DB.prepare("DELETE FROM settings WHERE k = 'totp_pending'").run(); }
   } else {
     if (!b.code) return {need: "code"};
     if (!(await checkCode(secret, b.code))) throw new Fail(401, "code", "الرمز غلط أو انتهى، جرّب الرمز الجديد.");
@@ -506,18 +528,51 @@ async function adminLogin(req, env) {
   const token = rand(32);
   await env.DB.batch([
     env.DB.prepare("DELETE FROM admin_sessions WHERE exp < ?").bind(now()),
-    env.DB.prepare("INSERT INTO admin_sessions (token, exp, ua) VALUES (?, ?, ?)").bind(await sha256(token), now() + ADMIN_HOURS * 3600, (req.headers.get("User-Agent") || "").slice(0, 200)),
+    env.DB.prepare("INSERT INTO admin_sessions (token, exp, ua, staff_id) VALUES (?, ?, ?, ?)").bind(await sha256(token), now() + ADMIN_HOURS * 3600, (req.headers.get("User-Agent") || "").slice(0, 200), staff?.id ?? null),
   ]);
-  return {token};
+  return {token, role: staff ? "teacher" : "owner", name: label};
+}
+
+// مين داخل: المدير، أو أستاذ، أو مفتاح Claude (OPS_KEY) اللي يدير المحتوى عن طريق GitHub
+async function whoAdmin(req, env) {
+  const auth = req.headers.get("Authorization") || "";
+  if (/^Ops\s+/i.test(auth)) {
+    const k = auth.replace(/^Ops\s+/i, "");
+    if (env.OPS_KEY && env.OPS_KEY.length >= 32 && sameText(k, env.OPS_KEY)) return {role: "owner", name: "Claude"};
+    throw new Fail(401, "admin", "المفتاح غلط.");
+  }
+  const t = auth.replace(/^Bearer\s+/i, "");
+  const row = t && await env.DB.prepare("SELECT a.token, a.staff_id, s.doctor, s.active, d.name FROM admin_sessions a LEFT JOIN staff s ON s.id = a.staff_id LEFT JOIN doctors d ON d.id = s.doctor WHERE a.token = ? AND a.exp > ?").bind(await sha256(t), now()).first();
+  if (!row) throw new Fail(401, "admin", "انتهت جلسة الإدارة، سجّل دخولك مرة ثانية.");
+  if (row.staff_id == null) return {role: "owner", name: "المدير", token: row.token};
+  if (!row.active) throw new Fail(403, "admin", "حسابك موقوف، كلّم الإدارة.");
+  const {results} = await env.DB.prepare("SELECT id FROM courses WHERE doctor = ?").bind(row.doctor).all();
+  return {role: "teacher", id: row.staff_id, doctor: row.doctor, name: row.name, token: row.token, courses: results.map(c => c.id)};
+}
+
+async function audit(env, me, action, data) {
+  const clean = JSON.stringify(data ?? null, (k, v) => /pass|code|secret/i.test(k) ? "***" : v);
+  await env.DB.prepare("INSERT INTO audit (at, who, action, detail) VALUES (?, ?, ?, ?)").bind(now(), me.name, action, clean.slice(0, 1000)).run();
 }
 
 async function admin(req, env, url, path) {
   if (path === "login" && req.method === "POST") return adminLogin(req, env);
   await limit(env, req, "admin", "ADMIN_LIMITER");
-  const t = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
-  const ok = t && await env.DB.prepare("SELECT 1 FROM admin_sessions WHERE token = ? AND exp > ?").bind(await sha256(t), now()).first();
-  if (!ok) throw new Fail(401, "admin", "انتهت جلسة الإدارة، سجّل دخولك مرة ثانية.");
-  if (path === "logout" && req.method === "POST") { await env.DB.prepare("DELETE FROM admin_sessions WHERE token = ?").bind(await sha256(t)).run(); return {ok: true}; }
+  const me = await whoAdmin(req, env);
+  if (path === "logout" && req.method === "POST") { if (me.token) await env.DB.prepare("DELETE FROM admin_sessions WHERE token = ?").bind(me.token).run(); return {ok: true}; }
+  if (path === "whoami" && req.method === "GET") return {role: me.role, name: me.name, courses: me.courses || null};
+  // نسجّل كل تعديل (مو القراية) مع اسم اللي سواه
+  if (req.method === "POST" && path !== "upload") {
+    const data = await req.clone().json().catch(() => null);
+    const r = me.role === "teacher" ? await teacher(req, env, url, path, me) : await owner(req, env, url, path, me);
+    await audit(env, me, path, data);
+    return r;
+  }
+  if (path === "upload" && req.method === "POST") await audit(env, me, "upload", Object.fromEntries(url.searchParams));
+  return me.role === "teacher" ? teacher(req, env, url, path, me) : owner(req, env, url, path, me);
+}
+
+async function owner(req, env, url, path, me) {
 
   // ملخص الداشبورد
   if (path === "stats" && req.method === "GET") {
@@ -614,6 +669,41 @@ async function admin(req, env, url, path) {
     await setSetting(env, "growth", JSON.stringify(out)); catCache = null;
     return {ok: true, growth: out};
   }
+
+  // حسابات الأساتذة
+  if (path === "staff" && req.method === "GET") {
+    const {results} = await env.DB.prepare("SELECT s.id, s.doctor, s.username, s.active, s.created, (s.totp IS NOT NULL) AS has2fa, d.name FROM staff s JOIN doctors d ON d.id = s.doctor ORDER BY d.name").all();
+    return {staff: results};
+  }
+  if (path === "staff" && req.method === "POST") {
+    const b = await body(req);
+    if (b.delete) { await env.DB.batch([env.DB.prepare("DELETE FROM staff WHERE id = ?").bind(Number(b.id)), env.DB.prepare("DELETE FROM admin_sessions WHERE staff_id = ?").bind(Number(b.id))]); return {ok: true}; }
+    if (b.id) {
+      const q = [];
+      if (typeof b.active === "boolean") q.push(env.DB.prepare("UPDATE staff SET active = ? WHERE id = ?").bind(b.active ? 1 : 0, Number(b.id)));
+      if (b.reset2fa) q.push(env.DB.prepare("UPDATE staff SET totp = NULL, totp_pending = NULL WHERE id = ?").bind(Number(b.id)));
+      if (b.password) { if (String(b.password).length < 10) throw new Fail(400, "password", "كلمة سر الأستاذ لازم 10 بالأقل."); q.push(env.DB.prepare("UPDATE staff SET pass = ? WHERE id = ?").bind(await hashPass(String(b.password)), Number(b.id))); }
+      if (b.active === false || b.reset2fa || b.password) q.push(env.DB.prepare("DELETE FROM admin_sessions WHERE staff_id = ?").bind(Number(b.id)));
+      if (q.length) await env.DB.batch(q);
+      return {ok: true};
+    }
+    const doctor = Number(b.doctor), username = cleanPhone(b.username), password = String(b.password || "");
+    if (!(await env.DB.prepare("SELECT 1 FROM doctors WHERE id = ?").bind(doctor).first())) throw new Fail(400, "bad", "اختار الأستاذ.");
+    if (!username) throw new Fail(400, "bad", "رقم الجوال مو صحيح.");
+    if (password.length < 10) throw new Fail(400, "password", "كلمة سر الأستاذ لازم 10 بالأقل.");
+    if (await env.DB.prepare("SELECT 1 FROM staff WHERE doctor = ? OR username = ?").bind(doctor, username).first()) throw new Fail(409, "exists", "هالأستاذ أو الرقم عنده حساب من قبل.");
+    await env.DB.prepare("INSERT INTO staff (doctor, username, pass, created) VALUES (?, ?, ?, ?)").bind(doctor, username, await hashPass(password), now()).run();
+    return {ok: true};
+  }
+  if (path === "audit" && req.method === "GET") {
+    const {results} = await env.DB.prepare("SELECT * FROM audit ORDER BY at DESC LIMIT 200").all();
+    return {audit: results};
+  }
+  if (path === "news" && req.method === "GET") return {news: (await env.DB.prepare("SELECT * FROM news ORDER BY pinned DESC, created DESC LIMIT 200").all()).results};
+  if (path === "news" && req.method === "POST") return saveNews(env, await body(req), me);
+  if (path === "chats" && req.method === "GET") return chatThreads(env, null);
+  if (path === "chat" && req.method === "GET") return chatRead(env, cleanCourse(url.searchParams.get("course")), Number(url.searchParams.get("student")), true);
+  if (path === "chat" && req.method === "POST") { const b = await body(req); return chatSend(env, cleanCourse(b.course), Number(b.student), b.body, 1, "الإدارة"); }
 
   if (path === "videos" && req.method === "GET") {
     await refreshPending(env);
@@ -774,4 +864,103 @@ async function saveRow(env, b) {
     await db.batch([db.prepare("DELETE FROM course_majors WHERE course = ?").bind(key), ...r.majors.map(Number).filter(m => ok.includes(m)).map(m => db.prepare("INSERT OR IGNORE INTO course_majors (course, major) VALUES (?, ?)").bind(key, m))]);
   }
   return {ok: true, key};
+}
+
+// ===== داشبورد الأستاذ: مواده بس، وبدون أرقام المشتركين أو المشاهدات أو الفلوس =====
+async function teacher(req, env, url, path, me) {
+  const mine = c => me.courses.includes(c);
+  const own = async id => { const v = await env.DB.prepare("SELECT id, course FROM videos WHERE id = ?").bind(String(id || "")).first(); if (!v || !mine(v.course)) throw new Fail(403, "noaccess", "هالمحاضرة مو من موادك."); return v; };
+  if (path === "videos" && req.method === "GET") {
+    if (!me.courses.length) return {videos: []};
+    await refreshPending(env, me.courses);
+    const {results} = await env.DB.prepare(`SELECT id, course, title, sort, size, duration, ready, created FROM videos WHERE course IN (${me.courses.map(() => "?").join(",")}) ORDER BY course, sort, created`).bind(...me.courses).all();
+    const chaps = await chaptersFor(env, results.map(v => v.id));
+    return {videos: results.map(v => ({...v, chapters: chaps[v.id] || []}))};
+  }
+  if (path === "upload" && req.method === "POST") {
+    if (!mine(cleanCourse(url.searchParams.get("course")))) throw new Fail(403, "noaccess", "ترفع بس لموادك.");
+    return owner(req, env, url, path, me);
+  }
+  if (path === "video" && req.method === "POST") {
+    const b = await req.clone().json().catch(() => ({}));
+    await own(b.id);
+    if (!b.delete && !mine(cleanCourse(b.course))) throw new Fail(403, "noaccess", "تنقلها بس لموادك.");
+    return owner(req, env, url, path, me);
+  }
+  if (path === "chapters" && req.method === "POST") {
+    const b = await req.clone().json().catch(() => ({}));
+    await own(b.video);
+    return owner(req, env, url, path, me);
+  }
+  if (path === "ratings" && req.method === "GET") {
+    if (!me.courses.length) return {ratings: []};
+    const {results} = await env.DB.prepare(`SELECT r.id, r.course, r.stars, r.tags, r.comment, r.status, r.reply, r.created, u.name FROM ratings r JOIN users u ON u.id = r.user_id WHERE r.course IN (${me.courses.map(() => "?").join(",")}) AND r.status != 'hidden' ORDER BY r.created DESC LIMIT 300`).bind(...me.courses).all();
+    return {ratings: results.map(r => ({...r, tags: JSON.parse(r.tags || "[]")}))};
+  }
+  // الأستاذ يرد بس، النشر والإخفاء للإدارة
+  if (path === "rating" && req.method === "POST") {
+    const b = await body(req);
+    const r = await env.DB.prepare("SELECT course FROM ratings WHERE id = ?").bind(Number(b.id)).first();
+    if (!r || !mine(r.course)) throw new Fail(403, "noaccess", "هالتقييم مو على موادك.");
+    await env.DB.prepare("UPDATE ratings SET reply = ? WHERE id = ?").bind(String(b.reply || "").trim().slice(0, 500) || null, Number(b.id)).run();
+    return {ok: true};
+  }
+  if (path === "news" && req.method === "GET") {
+    const {results} = await env.DB.prepare("SELECT * FROM news WHERE staff_id = ? ORDER BY created DESC LIMIT 100").bind(me.id).all();
+    return {news: results};
+  }
+  if (path === "news" && req.method === "POST") {
+    const b = await body(req);
+    if (b.id) { const n = await env.DB.prepare("SELECT staff_id FROM news WHERE id = ?").bind(Number(b.id)).first(); if (!n || n.staff_id !== me.id) throw new Fail(403, "noaccess", "هالخبر مو لك."); }
+    if (!b.delete && (b.scope !== "course" || !mine(cleanCourse(b.ref)))) throw new Fail(403, "noaccess", "تنشر بس لطلاب موادك.");
+    return saveNews(env, {...b, pinned: false}, me);
+  }
+  if (path === "chats" && req.method === "GET") return chatThreads(env, me.courses);
+  if (path === "chat" && req.method === "GET") { const c = cleanCourse(url.searchParams.get("course")); if (!mine(c)) throw new Fail(403, "noaccess", "مو من موادك."); return chatRead(env, c, Number(url.searchParams.get("student")), true); }
+  if (path === "chat" && req.method === "POST") { const b = await body(req); const c = cleanCourse(b.course); if (!mine(c)) throw new Fail(403, "noaccess", "مو من موادك."); return chatSend(env, c, Number(b.student), b.body, 1, me.name); }
+  throw new Fail(403, "noaccess", "هالشي للإدارة بس.");
+}
+
+// ===== الأخبار =====
+async function saveNews(env, b, me) {
+  if (b.delete) { await env.DB.prepare("DELETE FROM news WHERE id = ?").bind(Number(b.id)).run(); newsCache = null; return {ok: true}; }
+  const scope = String(b.scope || ""), title = String(b.title || "").trim().slice(0, 150), text = String(b.body || "").trim().slice(0, 3000) || null;
+  if (!["all", "uni", "course"].includes(scope)) throw new Fail(400, "bad", "اختار لمين الخبر.");
+  if (!title) throw new Fail(400, "bad", "اكتب عنوان الخبر.");
+  let ref = null;
+  if (scope === "uni") { ref = String(b.ref || ""); if (!(await env.DB.prepare("SELECT 1 FROM universities WHERE id = ?").bind(ref).first())) throw new Fail(400, "bad", "اختار الجامعة."); }
+  if (scope === "course") { ref = cleanCourse(b.ref); if (!(await env.DB.prepare("SELECT 1 FROM courses WHERE id = ?").bind(ref).first())) throw new Fail(400, "bad", "اختار المادة."); }
+  const until = b.until ? Number(b.until) || null : null;
+  if (b.id) await env.DB.prepare("UPDATE news SET scope = ?, ref = ?, title = ?, body = ?, pinned = ?, until = ? WHERE id = ?").bind(scope, ref, title, text, b.pinned ? 1 : 0, until, Number(b.id)).run();
+  else await env.DB.prepare("INSERT INTO news (scope, ref, title, body, pinned, author, staff_id, created, until) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").bind(scope, ref, title, text, b.pinned ? 1 : 0, me.name, me.id ?? null, now(), until).run();
+  newsCache = null;
+  return {ok: true};
+}
+let newsCache = null;
+async function newsFor(env, uni, courses = []) {
+  if (!newsCache || newsCache.at < Date.now() - 60000) {
+    const {results} = await env.DB.prepare("SELECT id, scope, ref, title, body, pinned, author, created FROM news WHERE until IS NULL OR until > ? ORDER BY pinned DESC, created DESC LIMIT 300").bind(now()).all();
+    newsCache = {at: Date.now(), list: results};
+  }
+  return newsCache.list.filter(n => n.scope === "all" || (n.scope === "uni" && n.ref === uni) || (n.scope === "course" && courses.includes(n.ref))).slice(0, 30);
+}
+
+// ===== الشات بين الطالب والأستاذ =====
+async function chatThreads(env, courses) {
+  if (courses && !courses.length) return {threads: []};
+  const where = courses ? `WHERE m.course IN (${courses.map(() => "?").join(",")})` : "";
+  const {results} = await env.DB.prepare(`WITH t AS (SELECT course, student, MAX(id) AS last, SUM(from_staff = 0 AND seen = 0) AS unread FROM messages m ${where} GROUP BY course, student) SELECT t.course, t.student, t.last, t.unread, u.name, x.body AS preview, x.created AS at FROM t JOIN users u ON u.id = t.student JOIN messages x ON x.id = t.last ORDER BY t.last DESC LIMIT 200`).bind(...(courses || [])).all();
+  return {threads: results};
+}
+async function chatRead(env, course, student, asStaff) {
+  const {results} = await env.DB.prepare("SELECT id, from_staff, author, body, image, created FROM messages WHERE course = ? AND student = ? ORDER BY id DESC LIMIT 200").bind(course, student).all();
+  await env.DB.prepare("UPDATE messages SET seen = 1 WHERE course = ? AND student = ? AND from_staff = ? AND seen = 0").bind(course, student, asStaff ? 0 : 1).run();
+  return {messages: results.reverse()};
+}
+async function chatSend(env, course, student, text, fromStaff, author) {
+  text = String(text || "").trim().slice(0, 2000);
+  if (!text) throw new Fail(400, "bad", "اكتب رسالتك.");
+  if (fromStaff && !(await env.DB.prepare("SELECT 1 FROM messages WHERE course = ? AND student = ? LIMIT 1").bind(course, student).first())) throw new Fail(404, "none", "ما فيه محادثة مع هالطالب.");
+  await env.DB.prepare("INSERT INTO messages (course, student, from_staff, author, body, created) VALUES (?, ?, ?, ?, ?, ?)").bind(course, student, fromStaff, author, text, now()).run();
+  return {ok: true};
 }
