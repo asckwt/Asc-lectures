@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "الطالب الأكاديمي",
+    "name": "الأكاديمي",
     "slug": "asc-student",
     "version": "1.0.0",
     "orientation": "default",
@@ -61,6 +61,10 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "locales": {
+      "ar": "./locales/ar.json",
+      "en": "./locales/en.json"
     }
   }
 }
