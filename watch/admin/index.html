@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="base-uri 'self'; object-src 'none'"><meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex, nofollow">
-<title>إدارة المحاضرات | الطالب الأكاديمي</title>
+<title>لوحة التحكم | الطالب الأكاديمي</title>
 <meta name="theme-color" content="#07005E">
 <link rel="icon" href="../../icon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -56,9 +56,23 @@ label{display:grid;gap:3px;font-weight:600;font-size:13px}
 @media (max-width:560px){.vrow{grid-template-columns:56px 1fr}.vrow .row{grid-column:1/-1}}
 .vrow input{width:100%}
 progress{width:100%;height:12px}
+.kpis{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:grid;gap:2px}
+.kpi span{color:var(--muted);font-size:13px}
+.kpi b{font:800 26px var(--display);line-height:1.3}
+.kpi small{color:var(--muted);font-size:12px}
+.kpi.warn b{color:var(--warn)}
+.cols{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.tbl{width:100%;border-collapse:collapse;font-size:14px}
+.tbl td{padding:6px 4px;border-top:1px solid var(--line)}
+.tbl td.n{text-align:end;font-family:var(--display);font-weight:700;white-space:nowrap}
+.bars{display:flex;align-items:flex-end;gap:4px;height:90px;direction:ltr}
+.bars div{flex:1;background:var(--turq);border-radius:4px 4px 0 0;min-height:2px;position:relative}
+.bars div:hover::after{content:attr(data-t);position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:var(--fg);color:var(--bg);font-size:11px;padding:2px 6px;border-radius:6px;white-space:nowrap}
+.badge.proc{color:var(--warn)}.badge.fail{color:var(--bad)}
 </style>
 </head><body>
-<header><div class="wrap"><div class="row"><img src="../../tools/logo-horizontal-color-on-navy.svg" alt="الطالب الأكاديمي"><b>إدارة المحاضرات</b></div><button class="btn o sm" id="out" style="color:#fff;border-color:rgba(255,255,255,.3)" hidden>خروج</button></div></header>
+<header><div class="wrap"><div class="row"><img src="../../tools/logo-horizontal-color-on-navy.svg" alt="الطالب الأكاديمي"><b>لوحة التحكم</b></div><button class="btn o sm" id="out" style="color:#fff;border-color:rgba(255,255,255,.3)" hidden>خروج</button></div></header>
 <main class="wrap">
 
 <form class="card" id="gate" style="display:grid;gap:12px;max-width:420px">
@@ -69,9 +83,19 @@ progress{width:100%;height:12px}
 </form>
 
 <div id="app" hidden style="display:grid;gap:16px">
-  <div class="tabs" role="tablist"><button data-tab="users" aria-selected="true">الطلاب</button><button data-tab="videos" aria-selected="false">المحاضرات</button></div>
+  <div class="tabs" role="tablist"><button data-tab="dash" aria-selected="true">الملخص</button><button data-tab="users" aria-selected="false">الطلاب</button><button data-tab="videos" aria-selected="false">المحاضرات</button></div>
 
-  <section id="t-users" style="display:grid;gap:12px">
+  <section id="t-dash" style="display:grid;gap:12px">
+    <div class="kpis" id="kpis"></div>
+    <div class="cols">
+      <div class="card" style="display:grid;gap:8px"><h2>المشاهدات آخر 14 يوم</h2><div class="bars" id="daily"></div></div>
+      <div class="card" style="display:grid;gap:8px"><h2>اشتراكات تخلص خلال أسبوعين</h2><table class="tbl" id="expiring"></table></div>
+      <div class="card" style="display:grid;gap:8px"><h2>أكثر المحاضرات مشاهدة (شهر)</h2><table class="tbl" id="top"></table></div>
+      <div class="card" style="display:grid;gap:8px"><h2>المشتركين بكل مادة</h2><table class="tbl" id="bycourse"></table></div>
+    </div>
+  </section>
+
+  <section id="t-users" hidden style="display:grid;gap:12px">
     <div class="stats" id="ustats"></div>
     <div class="row"><input id="q" placeholder="دوّر بالاسم أو الرقم أو المادة" style="flex:1;min-width:200px"><select id="f"><option value="">الكل</option><option value="pending">بانتظار التفعيل</option><option value="active">مفعّل</option><option value="blocked">موقوف</option></select></div>
     <div id="ulist" style="display:grid;gap:10px"></div>
@@ -88,7 +112,7 @@ progress{width:100%;height:12px}
       <label>ملف الفيديو (MP4)<input name="file" type="file" accept="video/mp4,video/*" required></label>
       <progress id="prog" value="0" max="1" hidden></progress>
       <p class="msg" id="up-msg"></p>
-      <div class="row"><button class="btn p" type="submit">ارفع</button><span class="muted" style="font-size:13px">خل الصفحة مفتوحة لين يخلص الرفع. الأفضل MP4 (H.264) عشان يشتغل على كل الأجهزة.</span></div>
+      <div class="row"><button class="btn p" type="submit">ارفع</button><button class="btn o sm" type="button" id="pause" hidden>إيقاف مؤقت</button><span class="muted" style="font-size:13px">الفيديو يروح على طول لـ Cloudflare. لو انقطع النت يكمل بروحه، ولو سكرت الصفحة ارجع اختار نفس الملف ويكمل من وين وقف.</span></div>
     </form>
     <div id="vlist" style="display:grid;gap:12px"></div>
   </section>
@@ -96,10 +120,11 @@ progress{width:100%;height:12px}
 <datalist id="courses"></datalist>
 </main>
 
+<script src="https://cdn.jsdelivr.net/npm/tus-js-client@4.3.1/dist/tus.min.js"></script>
 <script>
 (() => {
 const API = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) ? "http://localhost:8799" : "https://asc-videos.m7mdaltalab.workers.dev";
-const PART = 50 * 1024 * 1024;
+const PART = 50 * 1024 * 1024; // Cloudflare يبي الأجزاء من مضاعفات 256 كيلو
 const $ = id => document.getElementById(id);
 const el = (tag, props = {}, ...kids) => { const e = document.createElement(tag); Object.assign(e, props); e.append(...kids.filter(k => k != null)); return e; };
 const ss = {get: k => { try { return sessionStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { v == null ? sessionStorage.removeItem(k) : sessionStorage.setItem(k, v); } catch {} }};
@@ -138,10 +163,34 @@ async function start() {
   try { await loadUsers(); } catch (err) { return; }
   $("gate").hidden = true; $("app").hidden = false; $("out").hidden = false;
   loadVideos().catch(() => {});
+  loadStats().catch(() => {});
+}
+
+// ===== الملخص =====
+const dayName = s => new Date(s * 1000).toLocaleDateString("ar-KW", {weekday: "short", day: "numeric", month: "numeric", numberingSystem: "latn", timeZone: "UTC"});
+const kpi = (label, value, small, warn) => el("div", {className: "kpi" + (warn ? " warn" : "")}, el("span", {textContent: label}), el("b", {textContent: value}), small ? el("small", {textContent: small}) : null);
+const rows = (box, list, cells, empty) => box.replaceChildren(...(list.length ? list.map(r => el("tr", {}, ...cells(r).map((c, i, a) => el("td", {className: i === a.length - 1 ? "n" : "", textContent: c})))) : [el("tr", {}, el("td", {className: "muted", textContent: empty}))]));
+async function loadStats() {
+  const s = await call("stats");
+  $("kpis").replaceChildren(
+    kpi("طلاب مفعّلين", s.users.active, `+${s.users.newWeek} تسجيل هالأسبوع`),
+    kpi("بانتظار التفعيل", s.users.pending, s.users.pending ? "روح تبويب الطلاب وفعّلهم" : "ما فيه أحد ينتظر", s.users.pending > 0),
+    kpi("اشتراكات تخلص قريب", s.expiring.length, "خلال أسبوعين", s.expiring.length > 0),
+    kpi("مشاهدات هالأسبوع", s.views.week, `${s.views.watchersWeek} طالب شافوا · ${s.views.month} بالشهر`),
+    kpi("المحاضرات", s.videos.count, `${s.videos.hours} ساعة` + (s.videos.processing ? ` · ${s.videos.processing} تتجهز` : "")),
+    kpi("موقوفين", s.users.blocked));
+  const days = []; const today = Math.floor((now() + 10800) / day);
+  for (let d = today - 13; d <= today; d++) days.push({day: d * day, n: (s.daily.find(x => x.day === d * day) || {}).n || 0});
+  const max = Math.max(1, ...days.map(d => d.n));
+  $("daily").replaceChildren(...days.map(d => { const b = el("div"); b.style.height = (d.n / max * 100) + "%"; b.dataset.t = `${dayName(d.day)}: ${d.n}`; return b; }));
+  rows($("expiring"), s.expiring, r => [r.name, r.course, fmt(r.until)], "ما فيه اشتراكات تخلص قريب.");
+  rows($("top"), s.top, r => [`${r.course} · ${r.title}`, r.n], "ما فيه مشاهدات للحين.");
+  rows($("bycourse"), s.byCourse, r => [r.course, r.n], "ما فيه مشتركين للحين.");
 }
 document.querySelectorAll("[data-tab]").forEach(b => b.onclick = () => {
   document.querySelectorAll("[data-tab]").forEach(x => x.setAttribute("aria-selected", x === b));
-  $("t-users").hidden = b.dataset.tab !== "users"; $("t-videos").hidden = b.dataset.tab !== "videos";
+  ["dash", "users", "videos"].forEach(t => $("t-" + t).hidden = b.dataset.tab !== t);
+  if (b.dataset.tab === "dash") loadStats().catch(() => {});
 });
 
 // ===== الطلاب =====
@@ -226,7 +275,7 @@ async function loadVideos() {
     const list = el("div", {className: "vlist"});
     by[code].forEach(v => {
       const sort = el("input", {type: "number", value: v.sort}), title = el("input", {value: v.title});
-      const msg = el("span", {className: "muted", style: "font-size:12px", textContent: v.ready ? `${mb(v.size)} · ${v.views} مشاهدة` : "رفع ما كمل"});
+      const msg = el("span", {className: "muted", style: "font-size:12px", textContent: v.ready === 1 ? `${Math.round(v.duration / 60)} دقيقة · ${v.views} مشاهدة` : v.ready === -1 ? "فشل التجهيز، احذفه وارفعه مرة ثانية" : "يتجهز… (أو الرفع ما كمل)"});
       const save = el("button", {type: "button", className: "btn o sm", textContent: "حفظ"});
       save.onclick = async () => { save.disabled = true; try { await call("video", {id: v.id, course: v.course, title: title.value, sort: sort.value}); msg.textContent = "انحفظ ✓"; loadVideos(); } catch (e) { msg.textContent = e.message; } save.disabled = false; };
       const del = el("button", {type: "button", className: "btn r sm", textContent: "حذف"});
@@ -237,36 +286,56 @@ async function loadVideos() {
   }));
 }
 
+// الرفع: يروح على طول من جهازك لـ Cloudflare على أجزاء، ويكمل بروحه لو انقطع النت
+let upload = null;
+$("pause").onclick = () => {
+  if (!upload) return;
+  if ($("pause").dataset.paused) { delete $("pause").dataset.paused; $("pause").textContent = "إيقاف مؤقت"; upload.start(); }
+  else { $("pause").dataset.paused = 1; $("pause").textContent = "كمّل الرفع"; upload.abort(); $("up-msg").textContent = "الرفع واقف، اضغط كمّل الرفع."; }
+};
 $("up").onsubmit = async e => {
   e.preventDefault();
   const f = e.target, file = f.file.files[0], msg = $("up-msg"), prog = $("prog"), btn = f.querySelector("[type=submit]");
-  if (!file) return;
+  if (!file || !window.tus) { msg.className = "msg bad"; msg.textContent = file ? "ما تحمّلت أداة الرفع، حدّث الصفحة." : ""; return; }
+  const course = f.course.value.trim().toUpperCase(), title = f.title.value.trim();
+  if (!course || !title) return;
   btn.disabled = true; prog.hidden = false; prog.value = 0; msg.className = "msg"; msg.textContent = "يبدأ الرفع…";
-  let job = null;
   const warn = ev => { ev.preventDefault(); ev.returnValue = ""; };
   addEventListener("beforeunload", warn);
-  try {
-    job = await call("upload/start", {course: f.course.value.trim().toUpperCase(), title: f.title.value.trim(), sort: f.sort.value, type: file.type || "video/mp4", size: file.size});
-    const parts = [], total = Math.max(1, Math.ceil(file.size / PART)), t0 = Date.now();
-    for (let i = 0; i < total; i++) {
-      const blob = file.slice(i * PART, Math.min(file.size, (i + 1) * PART));
-      let tries = 0;
-      for (;;) {
-        try { parts.push(await call(`upload/part?id=${job.id}&uploadId=${encodeURIComponent(job.uploadId)}&n=${i + 1}`, blob, "PUT")); break; }
-        catch (err) { if (++tries >= 4) throw err; msg.textContent = `انقطع الاتصال، نعيد المحاولة (${tries})…`; await new Promise(r => setTimeout(r, 2000 * tries)); }
-      }
-      const done = Math.min(file.size, (i + 1) * PART), secs = (Date.now() - t0) / 1000;
-      prog.value = done / file.size;
-      msg.textContent = `${Math.round(done / file.size * 100)}% · ${mb(done)} من ${mb(file.size)}` + (i + 1 < total ? ` · باقي تقريباً ${Math.ceil(secs / done * (file.size - done) / 60)} دقيقة` : "");
-    }
-    await call("upload/done", {id: job.id, uploadId: job.uploadId, parts});
-    msg.className = "msg ok"; msg.textContent = "انرفعت المحاضرة ✓ وصارت تطلع للمشتركين بالمادة.";
-    f.title.value = ""; f.file.value = ""; f.sort.value = Number(f.sort.value) + 1;
-    loadVideos();
-  } catch (err) {
-    msg.className = "msg bad"; msg.textContent = "ما كمل الرفع: " + err.message;
-    if (job) call("upload/done", {id: job.id, uploadId: job.uploadId, abort: true}).catch(() => {});
-  } finally { btn.disabled = false; removeEventListener("beforeunload", warn); }
+  const t0 = Date.now(); let b0 = null;
+  const finish = () => { btn.disabled = false; $("pause").hidden = true; delete $("pause").dataset.paused; $("pause").textContent = "إيقاف مؤقت"; removeEventListener("beforeunload", warn); upload = null; };
+  upload = new tus.Upload(file, {
+    endpoint: `${API}/api/admin/upload?${new URLSearchParams({course, title, sort: f.sort.value || 0})}`,
+    chunkSize: PART,
+    retryDelays: [0, 2000, 5000, 10000, 20000, 30000, 60000],
+    metadata: {filename: file.name, filetype: file.type || "video/mp4"},
+    // كلمة سر الإدارة تروح لخادمنا بس، مو لـ Cloudflare
+    onBeforeRequest: req => { if (req.getURL().startsWith(API)) req.setHeader("Authorization", "Bearer " + pass); },
+    onProgress: (done, total) => {
+      if (b0 === null) b0 = done;
+      prog.value = done / total;
+      const secs = (Date.now() - t0) / 1000, rate = (done - b0) / Math.max(secs, 1);
+      msg.className = "msg"; msg.textContent = `${Math.round(done / total * 100)}% · ${mb(done)} من ${mb(total)}` + (rate > 0 && done < total ? ` · باقي تقريباً ${Math.max(1, Math.ceil((total - done) / rate / 60))} دقيقة` : "");
+    },
+    onShouldRetry: (err, n) => { msg.textContent = `انقطع الاتصال، نعيد المحاولة (${n + 1})…`; const s = err.originalResponse?.getStatus?.(); return !s || s === 429 || s >= 500; },
+    onError: err => {
+      const s = err.originalResponse?.getStatus?.();
+      let m = "ما كمل الرفع. اضغط ارفع مرة ثانية بنفس الملف ويكمل من وين وقف.";
+      try { const j = JSON.parse(err.originalResponse.getBody()); if (j.message) m = j.message; } catch {}
+      if (s === 401) { pass = null; ss.set("asc-admin", null); gate(m); }
+      msg.className = "msg bad"; msg.textContent = m; finish();
+    },
+    onSuccess: () => {
+      prog.value = 1; msg.className = "msg ok"; msg.textContent = "انرفعت ✓ Cloudflare يجهّزها الحين بكل الجودات (عادةً دقايق)، وبعدها تطلع للمشتركين بروحها.";
+      f.title.value = ""; f.file.value = ""; f.sort.value = Number(f.sort.value) + 1;
+      finish(); loadVideos(); setTimeout(() => loadVideos().catch(() => {}), 60000);
+    },
+  });
+  // لو نفس الملف انرفع جزء منه قبل، نكمل من هناك
+  const prev = await upload.findPreviousUploads().catch(() => []);
+  if (prev.length) { upload.resumeFromPreviousUpload(prev[0]); msg.textContent = "لقينا رفع قديم لنفس الملف، نكمل من وين وقف…"; }
+  $("pause").hidden = false;
+  upload.start();
 };
 
 start();

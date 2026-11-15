@@ -1,7 +1,8 @@
 # يرفع خادم المحاضرات المحمية (videos/worker.js) على Cloudflare كل ما تغيّر.
-# أول مرة ينشئ بنفسه: مخزن الفيديو (R2) وقاعدة البيانات (D1) ومفتاح توقيع الروابط.
+# أول مرة ينشئ بنفسه: قاعدة البيانات (D1) ومفتاح توقيع روابط المشاهدة في Cloudflare Stream.
+# قبلها لازم يكون Stream مفعّل في حساب Cloudflare (dash.cloudflare.com > Stream).
 # يحتاج في إعدادات المستودع (Settings > Secrets and variables > Actions):
-#   CLOUDFLARE_API_TOKEN    نفس توكن المساعد، بس لازم يكون فيه صلاحية D1 و R2 (Edit)
+#   CLOUDFLARE_API_TOKEN    نفس توكن المساعد، بس لازم يكون فيه صلاحية D1: Edit و Stream: Edit
 #   CLOUDFLARE_ACCOUNT_ID   رقم حساب Cloudflare
 #   VIDEOS_ADMIN_PASSWORD   كلمة سر لوحة الإدارة (asckwt.com/watch/admin)
 name: Deploy lecture videos server
@@ -31,10 +32,6 @@ jobs:
       - if: env.READY == 'true'
         uses: actions/setup-node@v4
         with: {node-version: 22}
-      - name: مخزن الفيديو (R2)
-        if: env.READY == 'true'
-        run: |
-          if $WRANGLER r2 bucket list | grep -q "asc-videos"; then echo "موجود"; else $WRANGLER r2 bucket create asc-videos; fi
       - name: قاعدة البيانات (D1)
         if: env.READY == 'true'
         run: |
@@ -47,11 +44,17 @@ jobs:
           $WRANGLER d1 execute asc-videos --remote --file schema.sql --yes
       - name: رفع الخادم
         if: env.READY == 'true'
-        run: $WRANGLER deploy
-      - name: الأسرار
+        run: $WRANGLER deploy --var CF_ACCOUNT_ID:$CLOUDFLARE_ACCOUNT_ID
+      - name: الأسرار ومفتاح Stream
         if: env.READY == 'true'
         run: |
           printf '%s' "$ADMIN_PASSWORD" | $WRANGLER secret put ADMIN_PASSWORD
-          if ! $WRANGLER secret list --format json | grep -q '"SIGNING_KEY"'; then
-            openssl rand -base64 48 | tr -d '\n' | $WRANGLER secret put SIGNING_KEY
+          printf '%s' "$CLOUDFLARE_API_TOKEN" | $WRANGLER secret put CF_API_TOKEN
+          if ! $WRANGLER secret list --format json | grep -q '"STREAM_KEY_ID"'; then
+            r=$(curl -sS -X POST -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/stream/keys")
+            if [ "$(echo "$r" | jq -r .success)" != "true" ]; then
+              echo "::error::ما قدرنا ننشئ مفتاح Stream. تأكد إن Stream مفعّل وإن التوكن فيه صلاحية Stream: Edit"; echo "$r" | jq -c .errors; exit 1
+            fi
+            echo "$r" | jq -r .result.id | tr -d '\n' | $WRANGLER secret put STREAM_KEY_ID
+            echo "$r" | jq -r .result.jwk | tr -d '\n' | $WRANGLER secret put STREAM_KEY_JWK
           fi

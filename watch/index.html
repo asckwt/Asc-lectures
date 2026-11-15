@@ -59,6 +59,9 @@ input:focus{outline:2px solid var(--turq);outline-offset:1px;border-color:transp
 .stage video{width:100%;height:100%;display:block;background:#000}
 .stage .mark{position:absolute;pointer-events:none;color:rgba(255,255,255,.55);font:600 clamp(11px,2.2vw,15px) var(--body);text-shadow:0 0 3px rgba(0,0,0,.7);white-space:nowrap;transition:top 1.2s,left 1.2s;direction:ltr}
 .stage:fullscreen{border-radius:0;aspect-ratio:auto}
+.stage.pseudo{position:fixed;inset:0;z-index:1000;border-radius:0;aspect-ratio:auto;width:100vw;height:100vh;height:100dvh}
+.list .p{margin-inline-start:auto;font:500 12px var(--body);color:var(--muted);white-space:nowrap}
+.list .p.done{color:var(--ok)}
 .stage .fs{position:absolute;top:10px;inset-inline-start:10px;background:rgba(0,0,0,.55);color:#fff;border:0;border-radius:9px;padding:6px 10px;font:600 13px var(--body);cursor:pointer}
 .now{font-family:var(--display);font-weight:700;margin:10px 0 0}
 .pend{display:grid;gap:12px;text-align:center;justify-items:center}
@@ -124,6 +127,7 @@ footer a{color:inherit}
 </main>
 <footer><div class="wrap">الطالب الأكاديمي · <a href="../">asckwt.com</a> · <a href="../privacy/">الخصوصية</a> · المحاضرات للمشتركين بس، ونشرها أو تسجيلها ممنوع.</div></footer>
 
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.20/dist/hls.min.js"></script>
 <script>
 (() => {
 const API = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) ? "http://localhost:8799" : "https://asc-videos.m7mdaltalab.workers.dev";
@@ -226,6 +230,7 @@ function renderCourses() {
       const n = document.createElement("span"); n.className = "n"; n.textContent = i + 1;
       const t = document.createElement("span"); t.textContent = v.title;
       b.append(n, t); b.dataset.id = v.id;
+      const pr = document.createElement("span"); pr.className = "p"; b.append(pr); progressLabel(pr, v);
       b.onclick = () => play(v, c.code, b);
       li.append(b); ul.append(li);
     });
@@ -233,46 +238,96 @@ function renderCourses() {
   }
 }
 
-// المشغّل: رابط موقّع يشتغل 4 ساعات، ولو انتهى يتجدد بروحه ويكمل من نفس المكان
+const clock = t => { t = Math.floor(t); const h = Math.floor(t / 3600), m = Math.floor(t / 60) % 60, x = String(t % 60).padStart(2, "0"); return h ? `${h}:${String(m).padStart(2, "0")}:${x}` : `${m}:${x}`; };
+function progressLabel(el, v) {
+  if (!v.pos || !v.duration) { el.textContent = v.duration ? `${Math.round(v.duration / 60)} د` : ""; el.className = "p"; return; }
+  const done = v.pos >= v.duration - 30;
+  el.className = "p" + (done ? " done" : "");
+  el.textContent = done ? "✓ خلصتها" : `كمّل من ${clock(v.pos)}`;
+}
+
+// المشغّل: جودة تتغير حسب النت (HLS)، ورابط موقّع يشتغل 4 ساعات، ولو انتهى يتجدد بروحه ويكمل من نفس المكان
 const vid = $("vid");
-let current = null, renewing = false;
-async function play(v, code, btn, resumeAt = 0) {
+let current = null, renewing = false, hls = null;
+function load_src(url, at) {
+  if (hls) { hls.destroy(); hls = null; }
+  const seek = () => { if (at > 0) vid.currentTime = at; };
+  if (window.Hls && Hls.isSupported()) {
+    hls = new Hls({maxBufferLength: 30, capLevelToPlayerSize: true});
+    hls.on(Hls.Events.MANIFEST_PARSED, () => { seek(); vid.play().catch(() => {}); });
+    hls.on(Hls.Events.ERROR, (_, d) => {
+      if (!d.fatal) return;
+      if (d.type === Hls.ErrorTypes.NETWORK_ERROR) renew();
+      else if (d.type === Hls.ErrorTypes.MEDIA_ERROR) hls.recoverMediaError();
+    });
+    hls.loadSource(url); hls.attachMedia(vid);
+  } else {
+    // سفاري والآيفون يشغّلون HLS بروحهم
+    vid.src = url;
+    vid.addEventListener("loadedmetadata", seek, {once: true});
+    vid.play().catch(() => {});
+  }
+}
+async function play(v, code, btn, resumeAt) {
+  if (current && current.v.id !== v.id) saveProgress();
   document.querySelectorAll(".list button").forEach(x => x.setAttribute("aria-current", x === btn));
   $("player").hidden = false;
   $("now").textContent = `${code} · ${v.title}`;
   current = {v, code, btn};
+  const fresh = resumeAt === undefined;
+  if (fresh) resumeAt = v.pos && v.duration && v.pos < v.duration - 30 ? Math.max(0, v.pos - 3) : 0;
   try {
     const r = await call("play", {video: v.id});
     $("mark").textContent = r.mark;
-    vid.src = r.url;
-    if (resumeAt) vid.addEventListener("loadedmetadata", () => { vid.currentTime = resumeAt; }, {once: true});
-    vid.play().catch(() => {});
-    if (!resumeAt) $("player").scrollIntoView({behavior: "smooth", block: "start"});
+    load_src(r.url, resumeAt);
+    if (fresh) $("player").scrollIntoView({behavior: "smooth", block: "start"});
   } catch (err) {
     $("now").textContent = err.message;
     if (err.status === 401 || err.status === 403) setTimeout(load, 1500);
   }
 }
-vid.addEventListener("error", () => {
+function renew() {
   if (!current || renewing) return;
   renewing = true;
-  const at = vid.currentTime || 0;
-  play(current.v, current.code, current.btn, at).finally(() => setTimeout(() => renewing = false, 5000));
-});
+  play(current.v, current.code, current.btn, vid.currentTime || 0).finally(() => setTimeout(() => renewing = false, 5000));
+}
+vid.addEventListener("error", () => { if (!hls) renew(); });
+
+// نحفظ وين وقف الطالب كل 15 ثانية، وإذا وقّف الفيديو أو طلع من الصفحة
+let lastSaved = 0;
+function saveProgress() {
+  if (!current || !token || !vid.currentTime) return;
+  const pos = Math.floor(vid.currentTime);
+  if (Math.abs(pos - lastSaved) < 5) return;
+  lastSaved = pos;
+  current.v.pos = pos; if (vid.duration) current.v.duration = Math.round(vid.duration);
+  progressLabel(current.btn.querySelector(".p"), current.v);
+  fetch(API + "/api/progress", {method: "POST", keepalive: true, headers: {"Content-Type": "application/json", Authorization: "Bearer " + token}, body: JSON.stringify({video: current.v.id, pos})}).catch(() => {});
+}
+vid.addEventListener("timeupdate", () => { if (Math.abs(vid.currentTime - lastSaved) >= 15) saveProgress(); });
+vid.addEventListener("pause", saveProgress);
+vid.addEventListener("ended", saveProgress);
+addEventListener("pagehide", saveProgress);
+document.addEventListener("visibilitychange", () => { if (document.hidden) saveProgress(); });
 
 // العلامة المائية (اسم الطالب ورقمه) تتحرك كل شوي
 const mark = $("mark");
 function moveMark() { mark.style.top = (8 + Math.random() * 74) + "%"; mark.style.left = (4 + Math.random() * 60) + "%"; }
 moveMark(); setInterval(moveMark, 12000);
 
-// ملء الشاشة للمشغّل كامل عشان العلامة المائية تبقى ظاهرة
+// ملء الشاشة للمشغّل كامل عشان العلامة المائية تبقى ظاهرة.
+// الآيفون ما يدعم هالشي، فنكبّر المشغّل على كامل الشاشة داخل الصفحة بدل مشغّل أبل (اللي يخفي العلامة).
 const stage = $("stage");
+const pseudo = on => { stage.classList.toggle("pseudo", on); document.body.style.overflow = on ? "hidden" : ""; $("fs").textContent = on ? "✕ تصغير" : "⛶ ملء الشاشة"; };
 $("fs").onclick = () => {
-  if (document.fullscreenElement) return document.exitFullscreen();
-  if (stage.requestFullscreen) stage.requestFullscreen().catch(() => vid.webkitEnterFullscreen && vid.webkitEnterFullscreen());
-  else if (stage.webkitRequestFullscreen) stage.webkitRequestFullscreen();
-  else if (vid.webkitEnterFullscreen) vid.webkitEnterFullscreen();
+  if (document.fullscreenElement || document.webkitFullscreenElement) return (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+  if (stage.classList.contains("pseudo")) return pseudo(false);
+  const go = stage.requestFullscreen || stage.webkitRequestFullscreen;
+  if (go) { const p = go.call(stage); if (p && p.catch) p.catch(() => pseudo(true)); }
+  else pseudo(true);
 };
+vid.addEventListener("webkitbeginfullscreen", () => { vid.webkitExitFullscreen(); setTimeout(() => { pseudo(true); vid.play().catch(() => {}); }, 300); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && stage.classList.contains("pseudo")) pseudo(false); });
 stage.addEventListener("contextmenu", e => e.preventDefault());
 stage.addEventListener("dragstart", e => e.preventDefault());
 
