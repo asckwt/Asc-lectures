@@ -6,8 +6,8 @@
 // الأسرار في Cloudflare: ADMIN_PASSWORD (كلمة سر لوحة الإدارة)، CF_API_TOKEN و CF_ACCOUNT_ID (للكلام مع Stream)،
 // و STREAM_KEY_ID و STREAM_KEY_JWK (مفتاح توقيع روابط المشاهدة). كلها تنحط تلقائياً من GitHub.
 
-import {PDFDocument, rgb, degrees} from "pdf-lib";
-import fontkit from "@pdf-lib/fontkit";
+import {PDFDocument, rgb, degrees} from "@cantoo/pdf-lib";
+import fontkit from "@cantoo/fontkit";
 import FONT from "./fonts/IBMPlexSansArabic-SemiBold.ttf";
 
 const ORIGINS = ["https://www.asckwt.com", "https://asckwt.com"];
@@ -1108,8 +1108,8 @@ async function watermark(src, name, phone) {
   name = plain(name); phone = plain(phone);
   const doc = await PDFDocument.load(src, {updateMetadata: false});
   doc.registerFontkit(fontkit);
-  // الخط كامل: تقطيعه (subset) يخرّب الحروف العربية بـ pdf-lib
-  const font = await doc.embedFont(FONT, {subset: false});
+  // الخط يتقطّع (subset): ينحط بس الحروف اللي انكتبت، فالملف أصغر وأسرع
+  const font = await doc.embedFont(FONT, {subset: true});
   const ink = rgb(0.027, 0, 0.37);
   // الاسم والرقم ينرسمون كل واحد لحاله: لو انكتبوا سطر واحد ينقلب ترتيب الأرقام
   const line = (page, x, y, size, opacity, angle, parts) => {

@@ -27,7 +27,7 @@
       "package": "com.asckwt.student"
     },
     "web": {
-      "output": "single",
+      "output": "static",
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
@@ -60,7 +60,8 @@
     ],
     "experiments": {
       "typedRoutes": true,
-      "reactCompiler": true
+      "reactCompiler": true,
+      "baseUrl": "/watch"
     },
     "locales": {
       "ar": "./locales/ar.json",

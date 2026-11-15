@@ -1,0 +1,47 @@
+# موقع الطالب (asckwt.com/watch) ينبني من كود التطبيق (mobile/).
+# بكل طلب دمج: يتأكد إن الكود سليم (TypeScript و lint).
+# بعد الدمج بـ main: يبني الموقع ويحطه بـ watch/ (لوحة الإدارة watch/admin ما تنلمس) ويرفعه.
+name: Build student site
+on:
+  push:
+    branches: [main]
+    paths: [mobile/**, .github/workflows/build-watch.yml]
+  pull_request:
+    paths: [mobile/**, .github/workflows/build-watch.yml]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: build-watch-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: mobile/package-lock.json
+      - run: npm ci
+      - name: Check code
+        run: |
+          npx tsc --noEmit
+          npx expo lint
+      - name: Build site into watch/
+        if: github.event_name != 'pull_request'
+        run: node scripts/build-web.mjs
+      - name: Commit if changed
+        if: github.event_name != 'pull_request'
+        working-directory: .
+        run: |
+          git add -A watch
+          if git diff --cached --quiet; then exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Rebuild student site"
+          git push

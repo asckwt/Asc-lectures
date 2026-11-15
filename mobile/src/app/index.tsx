@@ -2,13 +2,14 @@
 import { Image } from 'expo-image';
 import { Link, Redirect, router } from 'expo-router';
 import { useState } from 'react';
-import { Alert, Linking, Pressable, RefreshControl, ScrollView, View } from 'react-native';
+import { Linking, Pressable, RefreshControl, ScrollView, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ago, clock, date, mins, waLink } from '@/lib/api';
 import { useAuth, type Me } from '@/lib/auth';
-import { openFile, printFile, shareFile } from '@/lib/files';
+import { confirm, notify } from '@/lib/dialog';
+import { canShare, openFile, printFile, shareFile } from '@/lib/files';
 import { brand, font, useColors } from '@/lib/theme';
-import { Btn, Card, Chip, T } from '@/lib/ui';
+import { Btn, Card, Chip, Page, T } from '@/lib/ui';
 
 export default function Home() {
   const { me, refresh, logout } = useAuth();
@@ -16,6 +17,8 @@ export default function Home() {
   const top = useSafeAreaInsets().top;
   const [busy, setBusy] = useState(false);
   const [allNews, setAllNews] = useState(false);
+  // الكمبيوتر: الأخبار عمود جنب المواد
+  const wide = useWindowDimensions().width >= 1000;
   if (!me) return <Redirect href="/login" />;
   const first = me.user.name.split(' ')[0];
   const hi = `السلام عليكم، أنا ${me.user.name} ورقمي ${me.user.phone}`;
@@ -23,10 +26,11 @@ export default function Home() {
   return (
     <ScrollView style={{ backgroundColor: c.bg }} contentContainerStyle={{ paddingBottom: 40 }}
       refreshControl={<RefreshControl refreshing={busy} onRefresh={async () => { setBusy(true); await refresh(); setBusy(false); }} />}>
-      <View style={{ backgroundColor: brand.navy, paddingTop: top + 12, paddingHorizontal: 16, paddingBottom: 22, gap: 12 }}>
+      <View style={{ backgroundColor: brand.navy, paddingTop: top + 12, paddingBottom: 22 }}>
+       <Page wide style={{ paddingVertical: 0, gap: 12 }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
           <Image source={require('../../assets/images/logo-on-navy.png')} style={{ width: 150, height: 36 }} contentFit="contain" accessibilityLabel="الطالب الأكاديمي" />
-          <Pressable accessibilityRole="button" onPress={() => Alert.alert('تسجيل خروج', 'تبي تطلع من حسابك؟', [{ text: 'لا' }, { text: 'إيه', style: 'destructive', onPress: logout }])} style={{ minHeight: 44, justifyContent: 'center', paddingHorizontal: 10 }}>
+          <Pressable accessibilityRole="button" onPress={() => confirm('تسجيل خروج', 'تبي تطلع من حسابك؟', 'إيه', logout)} style={{ minHeight: 44, justifyContent: 'center', paddingHorizontal: 10 }}>
             <T style={{ color: '#fff', fontSize: 13 }}>تسجيل خروج</T>
           </Pressable>
         </View>
@@ -35,9 +39,11 @@ export default function Home() {
           <NavPill label="القروبات" onPress={() => router.push('/groups')} />
           <NavPill label="الشكاوي والاقتراحات" onPress={() => router.push('/support')} />
         </View>
+       </Page>
       </View>
-      <View style={{ padding: 16, gap: 18 }}>
-        {me.news.length > 0 && (
+      <Page wide style={wide ? { flexDirection: 'row', alignItems: 'flex-start', gap: 22 } : { gap: 18 }}>
+       {me.news.length > 0 && (
+        <View style={wide ? { width: 360, order: 1 } as object : undefined}>
           <Card>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
               <T kind="h2">📣 الأخبار</T>
@@ -52,7 +58,9 @@ export default function Home() {
               </View>
             ))}
           </Card>
-        )}
+        </View>
+       )}
+       <View style={wide ? { flex: 1, gap: 18 } : { gap: 18 }}>
         {me.user.status !== 'active' ? (
           <Card style={{ alignItems: 'center' }}>
             <T style={{ fontSize: 40 }}>⏳</T>
@@ -67,7 +75,8 @@ export default function Home() {
             <Btn kind="wa" title="كلمنا بالواتساب" onPress={() => Linking.openURL(waLink(`${hi}، ما طلعت لي مواد بالتطبيق.`))} />
           </Card>
         ) : me.courses.map(course => <CourseCard key={course.code} course={course} me={me} />)}
-      </View>
+       </View>
+      </Page>
     </ScrollView>
   );
 }
@@ -82,7 +91,7 @@ function CourseCard({ course, me }: { course: Me['courses'][number]; me: Me }) {
   const group = me.groups.find(g => g.course === course.code);
   const run = async (key: string, fn: () => Promise<void>) => {
     setFileBusy(key);
-    try { await fn(); } catch (e) { Alert.alert('ما زبطت', (e as Error).message || 'جرّب مرة ثانية.'); }
+    try { await fn(); } catch (e) { notify('ما زبطت', (e as Error).message || 'جرّب مرة ثانية.'); }
     setFileBusy('');
   };
   return (
@@ -92,15 +101,15 @@ function CourseCard({ course, me }: { course: Me['courses'][number]; me: Me }) {
         <T kind="small">اشتراكك لين {date(course.until)}</T>
       </View>
       <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap' }}>
-        <Link href={{ pathname: '/course/[id]', params: { id: course.code } }} asChild><Btn small kind="outline" title="صفحة المادة" /></Link>
-        <Link href={{ pathname: '/chat/[course]', params: { course: course.code } }} asChild><Btn small kind="outline" title={`💬 اسأل الأستاذ${me.unread ? ` (${me.unread})` : ''}`} /></Link>
+        <Link href={{ pathname: '/course', params: { id: course.code } }} asChild><Btn small kind="outline" title="صفحة المادة" /></Link>
+        <Link href={{ pathname: '/chat', params: { course: course.code } }} asChild><Btn small kind="outline" title={`💬 اسأل الأستاذ${me.unread ? ` (${me.unread})` : ''}`} /></Link>
         {group && <Btn small kind="wa" title="قروب المادة 🔒" onPress={() => Linking.openURL(group.url)} />}
       </View>
       {course.videos.length === 0 && <T kind="small">المحاضرات بتنزل هني قريب.</T>}
       {course.videos.map((v, i) => {
         const done = v.duration && v.pos >= v.duration - 30;
         return (
-          <Pressable key={v.id} accessibilityRole="button" onPress={() => router.push({ pathname: '/lecture/[id]', params: { id: v.id, course: course.code } })}
+          <Pressable key={v.id} accessibilityRole="button" onPress={() => router.push({ pathname: '/lecture', params: { id: v.id, course: course.code } })}
             style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: 12, borderWidth: 1, borderColor: pressed ? brand.turq : c.line, borderRadius: 14, padding: 12, minHeight: 56 })}>
             <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: c.bg, alignItems: 'center', justifyContent: 'center' }}><T style={{ fontFamily: font.display, fontSize: 13 }}>{i + 1}</T></View>
             <View style={{ flex: 1 }}>
@@ -120,7 +129,7 @@ function CourseCard({ course, me }: { course: Me['courses'][number]; me: Me }) {
               <View style={{ flexDirection: 'row', gap: 6, flexWrap: 'wrap' }}>
                 <Btn small kind="outline" title="فتح" busy={fileBusy === f.id + 'o'} onPress={() => run(f.id + 'o', () => openFile(f.id, f.title))} />
                 <Btn small kind="outline" title="طباعة" busy={fileBusy === f.id + 'p'} onPress={() => run(f.id + 'p', () => printFile(f.id, f.title))} />
-                <Btn small kind="outline" title="مشاركة" busy={fileBusy === f.id + 's'} onPress={() => run(f.id + 's', () => shareFile(f.id, f.title))} />
+                <Btn small kind="outline" title={canShare() ? 'مشاركة' : 'تنزيل'} busy={fileBusy === f.id + 's'} onPress={() => run(f.id + 's', () => shareFile(f.id, f.title))} />
               </View>
             </View>
           ))}

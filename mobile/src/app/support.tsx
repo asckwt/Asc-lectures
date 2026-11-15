@@ -4,7 +4,7 @@ import { Pressable, ScrollView, View } from 'react-native';
 import { ago, call } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { brand, useColors } from '@/lib/theme';
-import { Btn, Card, Field, Msg, Stars, T } from '@/lib/ui';
+import { Btn, Card, Field, Msg, Stars, T, column } from '@/lib/ui';
 
 const KINDS = [['suggestion', '💡 اقتراح'], ['complaint', '😕 شكوى'], ['tech', '🛠️ مشكلة تقنية'], ['payment', '💳 الدفع والاشتراك']] as const;
 const ST: Record<string, string> = { open: 'وصلتنا', working: 'نشتغل عليها', solved: 'انحلت ✓' };
@@ -31,7 +31,7 @@ export default function Support() {
     <Pressable key={label} accessibilityRole="radio" accessibilityState={{ checked: on }} onPress={onPress} style={{ minHeight: 48, paddingHorizontal: 12, borderRadius: 14, borderWidth: 1.5, borderColor: on ? c.ink : c.line, justifyContent: 'center', flexGrow: 1, flexBasis: '45%' }}><T bold>{label}</T></Pressable>
   );
   return (
-    <ScrollView style={{ backgroundColor: c.bg }} contentContainerStyle={{ padding: 16, gap: 14, paddingBottom: 40 }} keyboardShouldPersistTaps="handled">
+    <ScrollView style={{ backgroundColor: c.bg }} contentContainerStyle={{ ...column, padding: 16, gap: 14, paddingBottom: 40 }} keyboardShouldPersistTaps="handled">
       <Card>
         <T kind="h2">رسالة جديدة</T>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>{KINDS.map(([k, l]) => pill(kind === k, l, () => setKind(k)))}</View>

@@ -7,7 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { call, waLink } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { brand, font, useColors } from '@/lib/theme';
-import { Btn, Card, Field, Msg, T } from '@/lib/ui';
+import { Btn, Card, Field, Msg, T, column } from '@/lib/ui';
 
 type Cat = { universities: { id: string; name: string }[]; majors: { id: number; uni: string; name: string }[] };
 
@@ -38,12 +38,14 @@ export default function Login() {
   return (
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1, backgroundColor: c.bg }}>
       <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingBottom: 40 }}>
-        <View style={{ backgroundColor: brand.navy, paddingTop: top + 18, paddingHorizontal: 16, paddingBottom: 28, gap: 10 }}>
+        <View style={{ backgroundColor: brand.navy, paddingTop: top + 18, paddingBottom: 28 }}>
+         <View style={{ ...column, maxWidth: 520, paddingHorizontal: 16, gap: 10 }}>
           <Image source={require('../../assets/images/logo-on-navy.png')} style={{ width: 170, height: 44 }} contentFit="contain" accessibilityLabel="الطالب الأكاديمي" />
           <T kind="h1" color="#fff">محاضرات المشتركين</T>
           <T color="#D9D7F3">سجّل دخولك وشوف محاضرات موادك وملفاتها.</T>
+         </View>
         </View>
-        <View style={{ padding: 16 }}>
+        <View style={{ ...column, maxWidth: 520, padding: 16 }}>
           <Card style={{ gap: 14 }}>
             <View accessibilityRole="tablist" style={{ flexDirection: 'row', backgroundColor: c.bg, borderRadius: 12, padding: 4 }}>
               {(['login', 'signup'] as const).map(k => (

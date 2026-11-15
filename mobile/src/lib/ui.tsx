@@ -50,7 +50,7 @@ export function Field({ label, style, ...p }: TextInputProps & { label: string }
   return (
     <View style={{ gap: 4 }}>
       <T kind="label">{label}</T>
-      <TextInput placeholderTextColor={c.muted} {...p} style={[{ fontFamily: font.body, fontSize: 16, color: c.fg, backgroundColor: c.bg, borderColor: c.line, borderWidth: 1.5, borderRadius: 12, paddingHorizontal: 12, paddingVertical: 10, minHeight: 48, textAlign: 'left' }, style]} />
+      <TextInput placeholderTextColor={c.muted} accessibilityLabel={label} {...p} style={[{ fontFamily: font.body, fontSize: 16, color: c.fg, backgroundColor: c.bg, borderColor: c.line, borderWidth: 1.5, borderRadius: 12, paddingHorizontal: 12, paddingVertical: 10, minHeight: 48, textAlign: 'left' }, style]} />
     </View>
   );
 }
@@ -69,3 +69,10 @@ export function Loading() {
 const styles = StyleSheet.create({
   btn: { borderRadius: 12, alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, flexDirection: 'row' },
 });
+
+// عمود المحتوى: على الجوال عرض الشاشة، وعلى الكمبيوتر بالوسط بعرض مريح للقراية
+export function Page({ wide, style, ...p }: ViewProps & { wide?: boolean }) {
+  return <View {...p} style={[{ width: '100%', maxWidth: wide ? 1080 : 760, alignSelf: 'center', padding: 16, gap: 14 }, style]} />;
+}
+// نفس عرض Page لمحتوى ScrollView
+export const column = { width: '100%', maxWidth: 760, alignSelf: 'center' } as const;

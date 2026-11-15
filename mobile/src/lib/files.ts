@@ -25,3 +25,6 @@ export async function shareFile(id: string, title: string) {
   const f = await local(id, title);
   await Sharing.shareAsync(f.uri, { mimeType: 'application/pdf', UTI: 'com.adobe.pdf', dialogTitle: title });
 }
+export const canShare = () => true;
+// بايتات صورة محلية (بعد التصغير) عشان نرفعها
+export const readLocal = (uri: string) => new File(uri).bytes();

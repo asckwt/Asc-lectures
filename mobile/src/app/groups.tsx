@@ -4,7 +4,7 @@ import { Linking, Pressable, ScrollView, View } from 'react-native';
 import { call } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { brand, useColors } from '@/lib/theme';
-import { Card, Loading, Msg, T } from '@/lib/ui';
+import { Card, Loading, Msg, T, column } from '@/lib/ui';
 
 export default function Groups() {
   const { me } = useAuth();
@@ -28,7 +28,7 @@ export default function Groups() {
   const list = pub.filter((g: any) => g.uni === cur);
   const sec = (title: string, items: any[], sub: (g: any) => string) => items.length ? <Card key={title}><T kind="h2">{title}</T>{items.map(g => row(g, sub(g)))}</Card> : null;
   return (
-    <ScrollView style={{ backgroundColor: c.bg }} contentContainerStyle={{ padding: 16, gap: 14, paddingBottom: 40 }}>
+    <ScrollView style={{ backgroundColor: c.bg }} contentContainerStyle={{ ...column, padding: 16, gap: 14, paddingBottom: 40 }}>
       {!!me?.groups.length && <Card><T kind="h2">🔒 قروبات موادك الخاصة</T><T kind="small">للمشتركين بس، فيها الأستاذ وتنبيهات المادة.</T>{me.groups.map(g => row(g, g.course))}</Card>}
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
         {unis.map((u: any) => <Pressable key={u.id} accessibilityRole="button" accessibilityState={{ selected: u.id === cur }} onPress={() => setUni(u.id)} style={{ minHeight: 44, paddingHorizontal: 14, borderRadius: 999, borderWidth: 1.5, borderColor: u.id === cur ? brand.navy : c.line, backgroundColor: u.id === cur ? brand.navy : c.surface, justifyContent: 'center' }}><T style={{ color: u.id === cur ? '#fff' : c.fg }}>{u.name}</T></Pressable>)}
