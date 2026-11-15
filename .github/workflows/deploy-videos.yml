@@ -11,6 +11,11 @@ on:
     branches: [main]
     paths: [videos/worker.js, videos/wrangler.toml, videos/schema.sql, .github/workflows/deploy-videos.yml]
   workflow_dispatch:
+    inputs:
+      reset_2fa:
+        description: "صفّر التحقق بخطوتين للإدارة (لو ضاع جوالك). أول دخول بعدها يطلع لك رمز QR جديد."
+        type: boolean
+        default: false
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -42,6 +47,9 @@ jobs:
           fi
           sed -i "s/^database_id = .*/database_id = \"$id\"/" wrangler.toml
           $WRANGLER d1 execute asc-videos --remote --file schema.sql --yes
+      - name: تصفير التحقق بخطوتين
+        if: env.READY == 'true' && inputs.reset_2fa
+        run: $WRANGLER d1 execute asc-videos --remote --yes --command "DELETE FROM settings WHERE k IN ('totp','totp_pending'); DELETE FROM admin_sessions;"
       - name: رفع الخادم
         if: env.READY == 'true'
         run: $WRANGLER deploy --var CF_ACCOUNT_ID:$CLOUDFLARE_ACCOUNT_ID

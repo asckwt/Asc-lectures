@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="base-uri 'self'; object-src 'none'"><meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; worker-src 'self' blob:; img-src 'self' data:; connect-src 'self' https://asc-videos.m7mdaltalab.workers.dev https://*.cloudflarestream.com https://*.videodelivery.net https://upload.cloudflarestream.com http://localhost:*; media-src 'none'"><meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex, nofollow">
 <title>لوحة التحكم | الطالب الأكاديمي</title>
 <meta name="theme-color" content="#07005E">
@@ -78,6 +78,12 @@ progress{width:100%;height:12px}
 <form class="card" id="gate" style="display:grid;gap:12px;max-width:420px">
   <h2>دخول الإدارة</h2>
   <label>كلمة سر الإدارة<input type="password" name="p" autocomplete="current-password" required></label>
+  <div id="setup" hidden style="display:grid;gap:8px">
+    <p style="margin:0;font-size:14px">أول مرة: افتح تطبيق <b>Google Authenticator</b> (أو أي تطبيق مصادقة) بجوالك، وصوّر هالرمز. بعدها اكتب الرقم اللي يطلع لك.</p>
+    <div id="qr" style="background:#fff;padding:10px;border-radius:12px;justify-self:start"></div>
+    <p class="muted" style="margin:0;font-size:12px">أو اكتب المفتاح يدوي: <bdi dir="ltr" id="secret" style="font-family:monospace;word-break:break-all"></bdi></p>
+  </div>
+  <label id="code-l" hidden>رمز التحقق (6 أرقام من التطبيق)<input name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" dir="ltr"></label>
   <p class="msg bad" id="gate-msg"></p>
   <button class="btn p" type="submit">دخول</button>
 </form>
@@ -121,7 +127,8 @@ progress{width:100%;height:12px}
 <datalist id="courses"></datalist>
 </main>
 
-<script src="https://cdn.jsdelivr.net/npm/tus-js-client@4.3.1/dist/tus.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tus-js-client@4.3.1/dist/tus.min.js" integrity="sha384-UlHjK3F7TCQCEUpnoa1ohMbP2oaWB3Aypv4gMo511vaZ86uUZ0Zv7UzZ0J1zRUT1" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js" integrity="sha384-8FWZA6BGMXhsfO+BLtrJK0We6gg5o1JyO8xQm6peWDEUs17ACA5ziE/NIAkl9z2k" crossorigin="anonymous"></script>
 <script>
 (() => {
 const API = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) ? "http://localhost:8799" : "https://asc-videos.m7mdaltalab.workers.dev";
@@ -157,8 +164,26 @@ fetch("../../").then(r => r.text()).then(t => {
 }).catch(() => {});
 
 function gate(msg = "") { $("gate").hidden = false; $("app").hidden = true; $("out").hidden = true; $("gate-msg").textContent = msg; }
-$("gate").onsubmit = async e => { e.preventDefault(); pass = e.target.p.value; ss.set("asc-admin", pass); start(); };
-$("out").onclick = () => { pass = null; ss.set("asc-admin", null); gate(); };
+// الدخول: كلمة السر + رمز التحقق بخطوتين، والسيرفر يعطي جلسة 12 ساعة
+$("gate").onsubmit = async e => {
+  e.preventDefault();
+  const f = e.target, btn = f.querySelector("[type=submit]"); btn.disabled = true; $("gate-msg").textContent = "";
+  try {
+    const r = await fetch(API + "/api/admin/login", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({password: f.p.value, code: f.code.value})}).catch(() => null);
+    if (!r) throw {message: "ما قدرنا نوصل للسيرفر."};
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) throw {message: j.message || "صار خطأ."};
+    if (j.setup) {
+      $("setup").hidden = false; $("code-l").hidden = false; $("secret").textContent = j.secret.replace(/(.{4})/g, "$1 ").trim();
+      if (window.qrcode) { const q = qrcode(0, "M"); q.addData(j.uri); q.make(); $("qr").replaceChildren(); $("qr").insertAdjacentHTML("beforeend", q.createSvgTag({cellSize: 5, margin: 2})); }
+      f.code.focus(); return;
+    }
+    if (j.need === "code") { $("code-l").hidden = false; f.code.focus(); if (f.code.value) $("gate-msg").textContent = "اكتب الرمز."; return; }
+    pass = j.token; ss.set("asc-admin", pass); f.reset(); $("setup").hidden = true; $("code-l").hidden = true; start();
+  } catch (err) { $("gate-msg").textContent = err.message; }
+  finally { btn.disabled = false; }
+};
+$("out").onclick = () => { call("logout", {}).catch(() => {}); pass = null; ss.set("asc-admin", null); gate(); };
 async function start() {
   if (!pass) return gate();
   try { await loadUsers(); } catch (err) { return; }

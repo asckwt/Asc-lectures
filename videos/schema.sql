@@ -75,3 +75,14 @@ CREATE TABLE IF NOT EXISTS active (
   token TEXT NOT NULL,
   at INTEGER NOT NULL
 );
+-- إعدادات عامة (مثل مفتاح التحقق بخطوتين للإدارة)
+CREATE TABLE IF NOT EXISTS settings (
+  k TEXT PRIMARY KEY,
+  v TEXT NOT NULL
+);
+-- جلسات الإدارة (12 ساعة)
+CREATE TABLE IF NOT EXISTS admin_sessions (
+  token TEXT PRIMARY KEY,
+  exp INTEGER NOT NULL,
+  ua TEXT
+);

@@ -8,7 +8,8 @@
 
 const ORIGINS = ["https://www.asckwt.com", "https://asckwt.com"];
 const MAX_DEVICES = 2;
-const LINK_HOURS = 4;
+const LINK_MINUTES = 30; // رابط المشاهدة قصير عشان لو أحد نسخه ما يفيده، والمشغّل يجدده بروحه
+const ADMIN_HOURS = 12;
 const SESSION_DAYS = 60;
 const PBKDF2_ROUNDS = 100000;
 const MAX_HOURS = 6;
@@ -150,16 +151,17 @@ async function student(req, env, url, path) {
   if (path === "play" && req.method === "POST") {
     const s = await session(req, env);
     if (s.status !== "active") throw new Fail(403, "pending", "حسابك للحين مو مفعّل.");
-    const {video} = await body(req);
+    const {video, renew} = await body(req);
     const v = await env.DB.prepare("SELECT v.id, v.host FROM videos v JOIN access a ON a.course = v.course WHERE v.id = ? AND v.ready = 1 AND a.user_id = ? AND a.until > ?").bind(String(video || ""), s.user_id, now()).first();
     if (!v) throw new Fail(403, "noaccess", "هالمحاضرة مو ضمن اشتراكك.");
     await env.DB.batch([
-      env.DB.prepare("INSERT INTO views (user_id, video_id, at) VALUES (?, ?, ?)").bind(s.user_id, v.id, now()),
+      // تجديد الرابط مو مشاهدة جديدة
+      renew ? env.DB.prepare("SELECT 1") : env.DB.prepare("INSERT INTO views (user_id, video_id, at) VALUES (?, ?, ?)").bind(s.user_id, v.id, now()),
       // فيديو واحد بنفس الوقت: هالجهاز صار هو اللي يشغّل، وأي جهاز ثاني يوقف
       env.DB.prepare("INSERT INTO active (user_id, token, at) VALUES (?, ?, ?) ON CONFLICT (user_id) DO UPDATE SET token = excluded.token, at = excluded.at").bind(s.user_id, s.token, now()),
     ]);
-    const token = await streamToken(env, v.id, now() + LINK_HOURS * 3600);
-    return {url: `${v.host}/${token}/manifest/video.m3u8`, mark: `${s.name} · ${s.phone}`};
+    const token = await streamToken(env, v.id, now() + LINK_MINUTES * 60);
+    return {url: `${v.host}/${token}/manifest/video.m3u8`, mark: `${s.name} · ${s.phone}`, ttl: LINK_MINUTES * 60};
   }
   // وين وقف الطالب بكل محاضرة، عشان يكمل من نفس المكان ولو من جهاز ثاني
   if (path === "progress" && req.method === "POST") {
@@ -180,7 +182,9 @@ async function login(env, req, phone, password, device) {
   device = String(device || "").slice(0, 64);
   if (!phone || !password || device.length < 8) throw new Fail(400, "bad", "اكتب رقم جوالك وكلمة السر.");
   const u = await env.DB.prepare("SELECT id, name, phone, pass, status FROM users WHERE phone = ?").bind(phone).first();
-  if (!u || !(await checkPass(password, u.pass))) throw new Fail(401, "wrong", "رقم الجوال أو كلمة السر غلط.");
+  // نحسب الهاش حتى لو الرقم مو موجود، عشان ما يعرف أحد من سرعة الرد إذا الرقم مسجّل أو لا
+  if (!u) { await hashPass(password); throw new Fail(401, "wrong", "رقم الجوال أو كلمة السر غلط."); }
+  if (!(await checkPass(password, u.pass))) throw new Fail(401, "wrong", "رقم الجوال أو كلمة السر غلط.");
   if (u.status === "blocked") throw new Fail(403, "blocked", "حسابك موقوف، تواصل معنا بالواتساب.");
   // الأجهزة تنقفل على الحساب: تسجيل الخروج ما يفكها، بس الإدارة تصفّرها
   const ua = (req.headers.get("User-Agent") || "").slice(0, 200);
@@ -235,10 +239,69 @@ async function refreshPending(env, codes) {
 
 // ===== لوحة الإدارة =====
 
+// ===== التحقق بخطوتين للإدارة (TOTP، مثل Google Authenticator) =====
+
+const B32 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+function b32decode(s) {
+  let bits = 0, val = 0; const out = [];
+  for (const c of s.replace(/=+$/, "").toUpperCase()) { val = (val << 5) | B32.indexOf(c); bits += 5; if (bits >= 8) { out.push((val >>> (bits - 8)) & 255); bits -= 8; } }
+  return new Uint8Array(out);
+}
+function b32encode(bytes) {
+  let bits = 0, val = 0, out = "";
+  for (const b of bytes) { val = (val << 8) | b; bits += 8; while (bits >= 5) { out += B32[(val >>> (bits - 5)) & 31]; bits -= 5; } }
+  return bits ? out + B32[(val << (5 - bits)) & 31] : out;
+}
+async function totp(secret, step) {
+  const key = await crypto.subtle.importKey("raw", b32decode(secret), {name: "HMAC", hash: "SHA-1"}, false, ["sign"]);
+  const msg = new ArrayBuffer(8); new DataView(msg).setUint32(4, step);
+  const h = new Uint8Array(await crypto.subtle.sign("HMAC", key, msg));
+  const o = h[19] & 15;
+  return String((((h[o] & 127) << 24) | (h[o + 1] << 16) | (h[o + 2] << 8) | h[o + 3]) % 1e6).padStart(6, "0");
+}
+async function checkCode(secret, code) {
+  code = String(code || "").replace(/\D/g, "");
+  if (code.length !== 6) return false;
+  const step = Math.floor(now() / 30);
+  for (const d of [-1, 0, 1]) if (sameText(await totp(secret, step + d), code)) return true;
+  return false;
+}
+const setting = async (env, k) => (await env.DB.prepare("SELECT v FROM settings WHERE k = ?").bind(k).first())?.v || null;
+const setSetting = (env, k, v) => env.DB.prepare("INSERT INTO settings (k, v) VALUES (?, ?) ON CONFLICT (k) DO UPDATE SET v = excluded.v").bind(k, v).run();
+
+// دخول الإدارة: كلمة السر + رمز من التطبيق، ويعطي جلسة تشتغل 12 ساعة
+async function adminLogin(req, env) {
+  await limit(env, req, "admin-login");
+  const b = await body(req);
+  if (!env.ADMIN_PASSWORD || !sameText(String(b.password || ""), env.ADMIN_PASSWORD)) throw new Fail(401, "admin", "كلمة سر الإدارة غلط.");
+  let secret = await setting(env, "totp");
+  if (!secret) {
+    // أول مرة: نجهّز مفتاح ويربطه المدير بتطبيق المصادقة، وما يتفعّل إلا لما يدخل رمز صح
+    let pending = await setting(env, "totp_pending");
+    if (!pending) { pending = b32encode(crypto.getRandomValues(new Uint8Array(20))); await setSetting(env, "totp_pending", pending); }
+    if (!b.code) return {setup: true, secret: pending, uri: `otpauth://totp/${encodeURIComponent("الطالب الأكاديمي:الإدارة")}?secret=${pending}&issuer=${encodeURIComponent("الطالب الأكاديمي")}`};
+    if (!(await checkCode(pending, b.code))) throw new Fail(401, "code", "الرمز غلط. تأكد إن وقت جوالك مضبوط وجرّب الرمز الجديد.");
+    await setSetting(env, "totp", pending);
+    await env.DB.prepare("DELETE FROM settings WHERE k = 'totp_pending'").run();
+  } else {
+    if (!b.code) return {need: "code"};
+    if (!(await checkCode(secret, b.code))) throw new Fail(401, "code", "الرمز غلط أو انتهى، جرّب الرمز الجديد.");
+  }
+  const token = rand(32);
+  await env.DB.batch([
+    env.DB.prepare("DELETE FROM admin_sessions WHERE exp < ?").bind(now()),
+    env.DB.prepare("INSERT INTO admin_sessions (token, exp, ua) VALUES (?, ?, ?)").bind(await sha256(token), now() + ADMIN_HOURS * 3600, (req.headers.get("User-Agent") || "").slice(0, 200)),
+  ]);
+  return {token};
+}
+
 async function admin(req, env, url, path) {
-  const pass = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
+  if (path === "login" && req.method === "POST") return adminLogin(req, env);
   await limit(env, req, "admin", "ADMIN_LIMITER");
-  if (!env.ADMIN_PASSWORD || !pass || !sameText(pass, env.ADMIN_PASSWORD)) throw new Fail(401, "admin", "كلمة سر الإدارة غلط.");
+  const t = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
+  const ok = t && await env.DB.prepare("SELECT 1 FROM admin_sessions WHERE token = ? AND exp > ?").bind(await sha256(t), now()).first();
+  if (!ok) throw new Fail(401, "admin", "انتهت جلسة الإدارة، سجّل دخولك مرة ثانية.");
+  if (path === "logout" && req.method === "POST") { await env.DB.prepare("DELETE FROM admin_sessions WHERE token = ?").bind(await sha256(t)).run(); return {ok: true}; }
 
   // ملخص الداشبورد
   if (path === "stats" && req.method === "GET") {

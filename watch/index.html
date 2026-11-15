@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="base-uri 'self'; object-src 'none'"><meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; worker-src 'self' blob:; img-src 'self' data:; connect-src 'self' https://asc-videos.m7mdaltalab.workers.dev https://*.cloudflarestream.com http://localhost:*; media-src 'self' blob: https://*.cloudflarestream.com http://localhost:*"><meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="robots" content="noindex">
 <title>محاضرات المشتركين | الطالب الأكاديمي</title>
 <meta name="description" content="شاهد محاضرات المواد اللي مشترك فيها مع الطالب الأكاديمي.">
@@ -127,7 +127,7 @@ footer a{color:inherit}
 </main>
 <footer><div class="wrap">الطالب الأكاديمي · <a href="../">asckwt.com</a> · <a href="../privacy/">الخصوصية</a> · المحاضرات للمشتركين بس، ونشرها أو تسجيلها ممنوع.</div></footer>
 
-<script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.20/dist/hls.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.20/dist/hls.min.js" integrity="sha384-V5ruNBgmYcC3SJRUQeNykAAAgde5gOFq/Hu0CZj7bygDP0yRIhkvX8+w0u/7mRvr" crossorigin="anonymous"></script>
 <script>
 (() => {
 const API = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) ? "http://localhost:8799" : "https://asc-videos.m7mdaltalab.workers.dev";
@@ -246,9 +246,9 @@ function progressLabel(el, v) {
   el.textContent = done ? "✓ خلصتها" : `كمّل من ${clock(v.pos)}`;
 }
 
-// المشغّل: جودة تتغير حسب النت (HLS)، ورابط موقّع يشتغل 4 ساعات، ولو انتهى يتجدد بروحه ويكمل من نفس المكان
+// المشغّل: جودة تتغير حسب النت (HLS)، ورابط موقّع قصير (30 دقيقة) يتجدد بروحه قبل لا ينتهي ويكمل من نفس المكان
 const vid = $("vid");
-let current = null, renewing = false, hls = null, stopped = false;
+let current = null, renewing = false, hls = null, stopped = false, renewTimer = null;
 function load_src(url, at) {
   if (hls) { hls.destroy(); hls = null; }
   const seek = () => { if (at > 0) vid.currentTime = at; };
@@ -277,9 +277,12 @@ async function play(v, code, btn, resumeAt) {
   const fresh = resumeAt === undefined;
   if (fresh) resumeAt = v.pos && v.duration && v.pos < v.duration - 30 ? Math.max(0, v.pos - 3) : 0;
   try {
-    const r = await call("play", {video: v.id});
+    const r = await call("play", {video: v.id, renew: !fresh});
     $("mark").textContent = r.mark;
     load_src(r.url, resumeAt);
+    // نجدد الرابط قبل لا ينتهي بدقيقتين، بس إذا الفيديو شغّال
+    clearTimeout(renewTimer);
+    renewTimer = setTimeout(function tick() { if (vid.paused) { renewTimer = setTimeout(tick, 30000); return; } renew(); }, Math.max(60, (r.ttl || 1800) - 120) * 1000);
     if (fresh) $("player").scrollIntoView({behavior: "smooth", block: "start"});
   } catch (err) {
     $("now").textContent = err.message;
