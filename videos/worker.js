@@ -80,6 +80,8 @@ export default {
       }
       // الكتالوج عام ونفس الشي للكل، فيتخزن دقيقة بالمتصفح وبالذاكرة
       if (path === "catalog" && req.method === "GET") return json(await catalog(env), 200, "public, max-age=60");
+      if (path === "course" && req.method === "GET") return json(await coursePage(env, cleanCourse(url.searchParams.get("id"))), 200, "public, max-age=60");
+      if (path === "doctor" && req.method === "GET") return json(await doctorPage(env, Number(url.searchParams.get("id"))), 200, "public, max-age=60");
       return json(await student(req, env, url, path));
     } catch (e) {
       if (e instanceof Fail) return json({error: e.code, message: e.message}, e.status);
@@ -119,7 +121,18 @@ async function myCourses(env, userId) {
   const codes = access.map(a => a.course);
   await refreshPending(env, codes);
   const {results: vids} = await env.DB.prepare(`SELECT v.id, v.course, v.title, v.duration, p.pos FROM videos v LEFT JOIN progress p ON p.video_id = v.id AND p.user_id = ? WHERE v.ready = 1 AND v.course IN (${codes.map(() => "?").join(",")}) ORDER BY v.course, v.sort, v.created`).bind(userId, ...codes).all();
-  return access.map(a => ({code: a.course, until: a.until, videos: vids.filter(v => v.course === a.course).map(v => ({id: v.id, title: v.title, duration: v.duration || 0, pos: v.pos || 0}))}));
+  const chaps = await chaptersFor(env, vids.map(v => v.id));
+  return access.map(a => ({code: a.course, until: a.until, videos: vids.filter(v => v.course === a.course).map(v => ({id: v.id, title: v.title, duration: v.duration || 0, pos: v.pos || 0, chapters: chaps[v.id] || []}))}));
+}
+async function chaptersFor(env, ids) {
+  const out = {};
+  for (let i = 0; i < ids.length; i += 50) {
+    const part = ids.slice(i, i + 50);
+    if (!part.length) break;
+    const {results} = await env.DB.prepare(`SELECT video_id, t, title FROM chapters WHERE video_id IN (${part.map(() => "?").join(",")}) ORDER BY t`).bind(...part).all();
+    results.forEach(c => (out[c.video_id] ||= []).push({t: c.t, title: c.title}));
+  }
+  return out;
 }
 
 async function student(req, env, url, path) {
@@ -196,6 +209,48 @@ async function student(req, env, url, path) {
     const a = await env.DB.prepare("SELECT token FROM active WHERE user_id = ?").bind(s.user_id).first();
     if (a && a.token !== s.token) return {ok: true, stop: "حسابك قاعد يشغّل محاضرة على جهاز ثاني، فوقّفناها هني. اضغط تشغيل لو تبي تكمل من هالجهاز."};
     return {ok: true};
+  }
+  // المحاضرة المجانية (أول محاضرة بكل مادة، أو المحاضرة التجريبية للدكتور): تشتغل بدون اشتراك ولا حساب
+  if (path === "preview" && req.method === "POST") {
+    await limit(env, req, "preview");
+    const {video} = await body(req);
+    const v = await env.DB.prepare("SELECT id, host, course FROM videos WHERE id = ? AND ready = 1").bind(String(video || "")).first();
+    if (!v || !(await isFree(env, v))) throw new Fail(403, "noaccess", "هالمحاضرة للمشتركين بس.");
+    const token = await streamToken(env, v.id, now() + LINK_MINUTES * 60);
+    return {url: `${v.host}/${token}/manifest/video.m3u8`, mark: "asckwt.com", ttl: LINK_MINUTES * 60, chapters: (await chaptersFor(env, [v.id]))[v.id] || []};
+  }
+  // التقييم: للطالب اللي اشترك بالمادة (حتى لو خلص اشتراكه). نجمتين أو أقل يتراجع قبل لا ينشر
+  if (path === "rate" && req.method === "POST") {
+    const s = await session(req, env);
+    await limit(env, req, "rate");
+    const b = await body(req);
+    const course = cleanCourse(b.course), stars = Math.round(Number(b.stars));
+    if (!(stars >= 1 && stars <= 5)) throw new Fail(400, "stars", "اختار عدد النجوم.");
+    if (!(await env.DB.prepare("SELECT 1 FROM access WHERE user_id = ? AND course = ?").bind(s.user_id, course).first())) throw new Fail(403, "noaccess", "التقييم للمشتركين بالمادة بس.");
+    const tags = (Array.isArray(b.tags) ? b.tags : []).filter(t => TAGS.includes(t)).slice(0, 6);
+    const comment = String(b.comment || "").trim().replace(/\s+/g, " ").slice(0, 500) || null;
+    const status = stars <= 2 ? "pending" : "published";
+    await env.DB.prepare("INSERT INTO ratings (user_id, course, stars, tags, comment, status, created) VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT (user_id, course) DO UPDATE SET stars = excluded.stars, tags = excluded.tags, comment = excluded.comment, status = excluded.status, reply = NULL, created = excluded.created").bind(s.user_id, course, stars, JSON.stringify(tags), comment, status, now()).run();
+    return {ok: true, status};
+  }
+  if (path === "ticket" && req.method === "POST") {
+    const s = await session(req, env);
+    await limit(env, req, "ticket");
+    const b = await body(req);
+    const kind = String(b.kind || ""), message = String(b.message || "").trim().slice(0, 2000);
+    if (!KINDS.includes(kind)) throw new Fail(400, "kind", "اختار نوع الرسالة.");
+    if (message.length < 5) throw new Fail(400, "message", "اكتب رسالتك.");
+    const course = b.course ? cleanCourse(b.course) : null;
+    const {n} = await env.DB.prepare("SELECT COUNT(*) AS n FROM tickets WHERE user_id = ? AND status != 'solved'").bind(s.user_id).first();
+    if (n >= 5) throw new Fail(429, "many", "عندك 5 رسائل للحين ما انحلت، انتظر نرد عليهم.");
+    const {id} = await env.DB.prepare("INSERT INTO tickets (user_id, kind, course, message, created, updated) VALUES (?, ?, ?, ?, ?, ?) RETURNING id").bind(s.user_id, kind, course, message, now(), now()).first();
+    return {ok: true, id};
+  }
+  if (path === "tickets" && req.method === "GET") {
+    const s = await session(req, env);
+    const {results} = await env.DB.prepare("SELECT id, kind, course, message, status, reply, created, updated FROM tickets WHERE user_id = ? ORDER BY created DESC LIMIT 30").bind(s.user_id).all();
+    const {results: mine} = await env.DB.prepare("SELECT course, stars, tags, comment, status, reply FROM ratings WHERE user_id = ?").bind(s.user_id).all();
+    return {tickets: results, ratings: mine.map(r => ({...r, tags: JSON.parse(r.tags || "[]")}))};
   }
   // السعر النهائي مع خصم المواد وكود الخصم. الحساب كله هني بالسيرفر، مو بالمتصفح
   if (path === "quote" && req.method === "POST") {
@@ -308,6 +363,56 @@ async function catalog(env) {
   };
   catCache = {at: Date.now(), data};
   return data;
+}
+
+const TAGS = ["شرح واضح", "أمثلة كثيرة", "يركّز على الامتحان", "الصوت يبيله تحسين", "سريع شوي", "بطيء شوي"];
+const KINDS = ["suggestion", "complaint", "tech", "payment"];
+const firstName = n => String(n || "").split(" ")[0];
+
+// أول محاضرة بالمادة (أقل ترتيب) مجانية إذا الميزة شغالة، والمحاضرة التجريبية لأي دكتور ظاهر
+async function isFree(env, v) {
+  if (await env.DB.prepare("SELECT 1 FROM doctors WHERE sample = ? AND visible = 1").bind(v.id).first()) return true;
+  if (!(await growth(env)).freeFirst.on) return false;
+  const first = await env.DB.prepare("SELECT v.id FROM videos v JOIN courses c ON c.id = v.course AND c.visible = 1 WHERE v.course = ? AND v.ready = 1 ORDER BY v.sort, v.created LIMIT 1").bind(v.course).first();
+  return first?.id === v.id;
+}
+
+async function ratingSummary(env, courses) {
+  if (!courses.length) return {avg: 0, count: 0, dist: [0, 0, 0, 0, 0]};
+  const {results} = await env.DB.prepare(`SELECT stars, COUNT(*) AS n FROM ratings WHERE status = 'published' AND course IN (${courses.map(() => "?").join(",")}) GROUP BY stars`).bind(...courses).all();
+  const dist = [1, 2, 3, 4, 5].map(st => results.find(r => r.stars === st)?.n || 0);
+  const count = dist.reduce((a, b) => a + b, 0);
+  return {avg: count ? Math.round(dist.reduce((a, n, i) => a + n * (i + 1), 0) / count * 10) / 10 : 0, count, dist};
+}
+async function ratingList(env, courses, n = 20) {
+  if (!courses.length) return [];
+  const {results} = await env.DB.prepare(`SELECT r.course, r.stars, r.tags, r.comment, r.reply, r.created, u.name FROM ratings r JOIN users u ON u.id = r.user_id WHERE r.status = 'published' AND r.course IN (${courses.map(() => "?").join(",")}) ORDER BY (r.comment IS NULL), r.created DESC LIMIT ${n}`).bind(...courses).all();
+  // الاسم الأول بس، عشان خصوصية الطالب
+  return results.map(r => ({course: r.course, name: firstName(r.name), stars: r.stars, tags: JSON.parse(r.tags || "[]"), comment: r.comment, reply: r.reply, created: r.created}));
+}
+
+async function coursePage(env, id) {
+  const c = (await catalog(env)).courses.find(x => x.id === id);
+  if (!c) throw new Fail(404, "none", "المادة مو موجودة.");
+  const [doc, vids, summary, ratings, groups, g] = await Promise.all([
+    c.doctor ? env.DB.prepare("SELECT id, name, bio, photo FROM doctors WHERE id = ? AND visible = 1").bind(c.doctor).first() : null,
+    env.DB.prepare("SELECT id, title, duration FROM videos WHERE course = ? AND ready = 1 ORDER BY sort, created").bind(id).all().then(r => r.results),
+    ratingSummary(env, [id]), ratingList(env, [id]),
+    env.DB.prepare("SELECT title, url FROM wa_groups WHERE scope = 'course' AND ref = ? AND private = 0 ORDER BY sort").bind(id).all().then(r => r.results),
+    growth(env),
+  ]);
+  const chaps = await chaptersFor(env, vids.map(v => v.id));
+  return {course: c, doctor: doc, lectures: vids.map((v, i) => ({...v, free: i === 0 && g.freeFirst.on, questions: (chaps[v.id] || []).length})), rating: summary, ratings, groups};
+}
+
+async function doctorPage(env, id) {
+  const d = await env.DB.prepare("SELECT id, name, bio, photo, sample FROM doctors WHERE id = ? AND visible = 1").bind(id).first();
+  if (!d) throw new Fail(404, "none", "الدكتور مو موجود.");
+  const courses = (await catalog(env)).courses.filter(c => c.doctor === id);
+  const ids = courses.map(c => c.id);
+  const per = await Promise.all(ids.map(c => ratingSummary(env, [c])));
+  const sample = d.sample ? await env.DB.prepare("SELECT id, title, duration FROM videos WHERE id = ? AND ready = 1").bind(d.sample).first() : null;
+  return {doctor: {...d, sample}, courses: courses.map((c, i) => ({id: c.id, code: c.code, title: c.title, lectures: c.lectures, rating: per[i].avg, ratings: per[i].count})), rating: await ratingSummary(env, ids), ratings: await ratingList(env, ids, 10), lectures: courses.reduce((a, c) => a + c.lectures, 0)};
 }
 
 const PLANS = {mid: "price_mid", final: "price_final", full: "price_full"};
@@ -435,6 +540,8 @@ async function admin(req, env, url, path) {
       views: {week: vw?.week || 0, month: vw?.month || 0, total: vw?.total || 0, watchersWeek: vw?.watchers || 0},
       videos: {count: vids?.n || 0, processing: vids?.processing || 0, hours: Math.round((vids?.secs || 0) / 360) / 10},
       expiring: exp.results, top, byCourse, sharing,
+      pendingRatings: (await one("SELECT COUNT(*) AS n FROM ratings WHERE status = 'pending'"))?.n || 0,
+      openTickets: (await one("SELECT COUNT(*) AS n FROM tickets WHERE status != 'solved'"))?.n || 0,
       daily: daily.map(r => ({day: r.d * 86400, n: r.n})),
     };
   }
@@ -460,7 +567,7 @@ async function admin(req, env, url, path) {
     const id = Number(b.id);
     if (!(await env.DB.prepare("SELECT 1 FROM users WHERE id = ?").bind(id).first())) throw new Fail(404, "none", "الطالب مو موجود.");
     if (b.delete) {
-      await env.DB.batch(["DELETE FROM sessions WHERE user_id = ?", "DELETE FROM devices WHERE user_id = ?", "DELETE FROM attempts WHERE user_id = ?", "DELETE FROM active WHERE user_id = ?", "DELETE FROM progress WHERE user_id = ?", "DELETE FROM access WHERE user_id = ?", "DELETE FROM views WHERE user_id = ?", "DELETE FROM users WHERE id = ?"].map(q => env.DB.prepare(q).bind(id)));
+      await env.DB.batch(["DELETE FROM sessions WHERE user_id = ?", "DELETE FROM devices WHERE user_id = ?", "DELETE FROM attempts WHERE user_id = ?", "DELETE FROM active WHERE user_id = ?", "DELETE FROM progress WHERE user_id = ?", "DELETE FROM access WHERE user_id = ?", "DELETE FROM views WHERE user_id = ?", "DELETE FROM ratings WHERE user_id = ?", "DELETE FROM tickets WHERE user_id = ?", "DELETE FROM users WHERE id = ?"].map(q => env.DB.prepare(q).bind(id)));
       return {ok: true};
     }
     const q = [];
@@ -511,7 +618,44 @@ async function admin(req, env, url, path) {
   if (path === "videos" && req.method === "GET") {
     await refreshPending(env);
     const {results} = await env.DB.prepare("SELECT v.id, v.course, v.title, v.sort, v.size, v.duration, v.ready, v.created, (SELECT COUNT(*) FROM views w WHERE w.video_id = v.id) AS views FROM videos v ORDER BY v.course, v.sort, v.created").all();
-    return {videos: results};
+    const chaps = await chaptersFor(env, results.map(v => v.id));
+    return {videos: results.map(v => ({...v, chapters: chaps[v.id] || []}))};
+  }
+
+  // فهرس الأسئلة لمحاضرة: يستبدل القديم كله
+  if (path === "chapters" && req.method === "POST") {
+    const b = await body(req);
+    const v = await env.DB.prepare("SELECT id, duration FROM videos WHERE id = ?").bind(String(b.video || "")).first();
+    if (!v) throw new Fail(404, "none", "الفيديو مو موجود.");
+    const items = (Array.isArray(b.items) ? b.items : []).slice(0, 100).map(x => ({t: Math.max(0, Math.round(Number(x.t))), title: String(x.title || "").trim().slice(0, 120)}));
+    if (items.some(x => !x.title || !Number.isFinite(x.t))) throw new Fail(400, "bad", "كل سؤال يبيله وقت وعنوان.");
+    if (v.duration && items.some(x => x.t > v.duration)) throw new Fail(400, "bad", "في وقت أطول من الفيديو نفسه.");
+    if (new Set(items.map(x => x.t)).size !== items.length) throw new Fail(400, "bad", "في سؤالين بنفس الوقت.");
+    await env.DB.batch([env.DB.prepare("DELETE FROM chapters WHERE video_id = ?").bind(v.id), ...items.map(x => env.DB.prepare("INSERT INTO chapters (video_id, t, title) VALUES (?, ?, ?)").bind(v.id, x.t, x.title))]);
+    return {ok: true};
+  }
+
+  if (path === "ratings" && req.method === "GET") {
+    const {results} = await env.DB.prepare("SELECT r.*, u.name, u.phone FROM ratings r JOIN users u ON u.id = r.user_id ORDER BY CASE r.status WHEN 'pending' THEN 0 ELSE 1 END, r.created DESC LIMIT 300").all();
+    return {ratings: results.map(r => ({...r, tags: JSON.parse(r.tags || "[]")}))};
+  }
+  if (path === "rating" && req.method === "POST") {
+    const b = await body(req);
+    if (!["published", "hidden"].includes(b.status)) throw new Fail(400, "bad", "الحالة مو صحيحة.");
+    const r = await env.DB.prepare("UPDATE ratings SET status = ?, reply = ? WHERE id = ?").bind(b.status, String(b.reply || "").trim().slice(0, 500) || null, Number(b.id)).run();
+    if (!r.meta.changes) throw new Fail(404, "none", "التقييم مو موجود.");
+    return {ok: true};
+  }
+  if (path === "tickets" && req.method === "GET") {
+    const {results} = await env.DB.prepare("SELECT t.*, u.name, u.phone, u.email FROM tickets t JOIN users u ON u.id = t.user_id ORDER BY CASE t.status WHEN 'open' THEN 0 WHEN 'working' THEN 1 ELSE 2 END, t.created DESC LIMIT 300").all();
+    return {tickets: results};
+  }
+  if (path === "ticket" && req.method === "POST") {
+    const b = await body(req);
+    if (!["open", "working", "solved"].includes(b.status)) throw new Fail(400, "bad", "الحالة مو صحيحة.");
+    const r = await env.DB.prepare("UPDATE tickets SET status = ?, reply = ?, updated = ? WHERE id = ?").bind(b.status, String(b.reply || "").trim().slice(0, 2000) || null, now(), Number(b.id)).run();
+    if (!r.meta.changes) throw new Fail(404, "none", "الرسالة مو موجودة.");
+    return {ok: true};
   }
 
   if (path === "video" && req.method === "POST") {
@@ -521,7 +665,7 @@ async function admin(req, env, url, path) {
     if (b.delete) {
       const r = await cf(env, `/${v.id}`, {method: "DELETE"});
       if (!r.ok && r.status !== 404) throw new Fail(502, "cf", "ما قدرنا نحذفه من Cloudflare، جرّب مرة ثانية.");
-      await env.DB.batch(["DELETE FROM videos WHERE id = ?", "DELETE FROM views WHERE video_id = ?", "DELETE FROM progress WHERE video_id = ?"].map(q => env.DB.prepare(q).bind(v.id)));
+      await env.DB.batch(["DELETE FROM videos WHERE id = ?", "DELETE FROM views WHERE video_id = ?", "DELETE FROM progress WHERE video_id = ?", "DELETE FROM chapters WHERE video_id = ?"].map(q => env.DB.prepare(q).bind(v.id)));
       return {ok: true};
     }
     const title = String(b.title || "").trim().slice(0, 150), course = cleanCourse(b.course);

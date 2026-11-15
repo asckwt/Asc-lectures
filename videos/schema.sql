@@ -159,3 +159,40 @@ CREATE TABLE IF NOT EXISTS wa_groups (
   sort INTEGER NOT NULL DEFAULT 0
 );
 CREATE INDEX IF NOT EXISTS wa_groups_uni ON wa_groups(uni, scope, sort);
+
+-- ===== التقييمات والشكاوي وفهرس الأسئلة =====
+-- تقييم واحد لكل طالب بكل مادة. 2 نجوم أو أقل يكون pending لين توافق الإدارة
+CREATE TABLE IF NOT EXISTS ratings (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  course TEXT NOT NULL,
+  stars INTEGER NOT NULL,
+  tags TEXT,
+  comment TEXT,
+  status TEXT NOT NULL, -- published | pending | hidden
+  reply TEXT,
+  created INTEGER NOT NULL,
+  UNIQUE (user_id, course)
+);
+CREATE INDEX IF NOT EXISTS ratings_course ON ratings(course, status);
+-- الشكاوي والاقتراحات: kind = suggestion | complaint | tech | payment
+CREATE TABLE IF NOT EXISTS tickets (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  kind TEXT NOT NULL,
+  course TEXT,
+  message TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'open', -- open | working | solved
+  reply TEXT,
+  created INTEGER NOT NULL,
+  updated INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS tickets_user ON tickets(user_id, created);
+CREATE INDEX IF NOT EXISTS tickets_status ON tickets(status, created);
+-- فهرس الأسئلة داخل كل فيديو: t = الثانية اللي يبدأ فيها السؤال
+CREATE TABLE IF NOT EXISTS chapters (
+  video_id TEXT NOT NULL,
+  t INTEGER NOT NULL,
+  title TEXT NOT NULL,
+  PRIMARY KEY (video_id, t)
+);
