@@ -1,0 +1,9 @@
+{
+  "name": "asc-videos",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@cantoo/fontkit": "2.0.12",
+    "@cantoo/pdf-lib": "2.11.1"
+  }
+}

@@ -1,0 +1,847 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; worker-src 'self' blob:; img-src 'self' data: blob:; connect-src 'self' https://asc-videos.m7mdaltalab.workers.dev https://*.cloudflarestream.com https://*.videodelivery.net https://upload.cloudflarestream.com http://localhost:*; media-src 'none'"><meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex, nofollow">
+<title>لوحة التحكم | الطالب الأكاديمي</title>
+<meta name="theme-color" content="#07005E">
+<link rel="icon" href="../../icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
+<style>
+:root{--navy:#07005E;--yellow:#F7DC6B;--turq:#7DE6D5;--bg:#F6F5FB;--surface:#fff;--fg:#151238;--muted:#5B5878;--line:#E2E0EE;--accent-ink:#07005E;--bad:#B42318;--ok:#067647;--warn:#B54708;
+ --display:"Alexandria","IBM Plex Sans Arabic",Tahoma,sans-serif;--body:"IBM Plex Sans Arabic",Tahoma,"Segoe UI",sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0B0930;--surface:#141142;--fg:#F1F0FA;--muted:#B4B1D3;--line:#2A2663;--accent-ink:#F7DC6B;--bad:#FDA29B;--ok:#75E0A7;--warn:#FEC84B;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0B0930;--surface:#141142;--fg:#F1F0FA;--muted:#B4B1D3;--line:#2A2663;--accent-ink:#F7DC6B;--bad:#FDA29B;--ok:#75E0A7;--warn:#FEC84B;color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.6}
+.wrap{max-width:980px;margin:0 auto;padding-inline:16px}
+header{background:var(--navy);color:#fff;padding:16px 0}
+header .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+header img{height:32px;display:block}
+header b{font-family:var(--display);font-size:17px}
+main{padding-block:20px 48px;display:grid;gap:16px}
+h2{font-family:var(--display);font-weight:700;font-size:18px;margin:0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tabs button{border:1.5px solid var(--line);background:var(--surface);color:var(--fg);font:700 14px var(--display);padding:8px 16px;border-radius:999px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--navy);color:#fff;border-color:var(--navy)}
+input,select{font:inherit;font-size:15px;color:var(--fg);background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;min-width:0}
+input:focus,select:focus{outline:2px solid var(--turq);outline-offset:1px}
+label{display:grid;gap:3px;font-weight:600;font-size:13px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;font:700 14px var(--display);padding:8px 14px;border-radius:10px;background:var(--navy);color:#fff;border:0;cursor:pointer;text-decoration:none;white-space:nowrap}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn.p{background:var(--yellow);color:#07005E}}
+.btn.o{background:transparent;color:var(--accent-ink);border:1.5px solid var(--line)}
+.btn.g{background:#067647;color:#fff}.btn.r{background:transparent;color:var(--bad);border:1.5px solid var(--line)}
+.btn.sm{font-size:13px;padding:5px 10px}
+.btn[disabled]{opacity:.55;cursor:wait}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.grid{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));align-items:end}
+.muted{color:var(--muted)}
+.msg{font-size:14px;margin:0}.msg.bad{color:var(--bad)}.msg.ok{color:var(--ok)}
+.stats{display:flex;gap:10px;flex-wrap:wrap}
+.stats span{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:6px 12px;font-size:14px}
+.stats b{font-family:var(--display)}
+.user{display:grid;gap:10px}
+.user .head{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:baseline}
+.user .head b{font-family:var(--display);font-size:16px}
+.badge{font-size:12px;font-weight:700;padding:1px 9px;border-radius:999px;border:1px solid currentColor}
+.badge.pending{color:var(--warn)}.badge.active{color:var(--ok)}.badge.blocked{color:var(--bad)}
+.acc{display:grid;gap:6px}
+.acc .line{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.acc .line input[list]{width:120px;direction:ltr;text-transform:uppercase}
+.acc .line .old{color:var(--bad);font-size:12px}
+.vlist{display:grid;gap:8px}
+.vrow{display:grid;grid-template-columns:70px 1fr auto;gap:8px;align-items:center}
+@media (max-width:560px){.vrow{grid-template-columns:56px 1fr}.vrow .row{grid-column:1/-1}}
+.vrow input{width:100%}
+progress{width:100%;height:12px}
+.kpis{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:grid;gap:2px}
+.kpi span{color:var(--muted);font-size:13px}
+.kpi b{font:800 26px var(--display);line-height:1.3}
+.kpi small{color:var(--muted);font-size:12px}
+.kpi.warn b{color:var(--warn)}
+.cols{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.tbl{width:100%;border-collapse:collapse;font-size:14px}
+.tbl td{padding:6px 4px;border-top:1px solid var(--line)}
+.tbl td.n{text-align:end;font-family:var(--display);font-weight:700;white-space:nowrap}
+.bars{display:flex;align-items:flex-end;gap:4px;height:90px;direction:ltr}
+.bars div{flex:1;background:var(--turq);border-radius:4px 4px 0 0;min-height:2px;position:relative}
+.bars div:hover::after{content:attr(data-t);position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:var(--fg);color:var(--bg);font-size:11px;padding:2px 6px;border-radius:6px;white-space:nowrap}
+.badge.proc{color:var(--warn)}.badge.fail{color:var(--bad)}
+.ed{display:grid;gap:10px}
+.ed .top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.ed .item{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:8px 0;border-top:1px solid var(--line)}
+.ed .item .t{flex:1;min-width:200px;display:grid}
+.ed .item .t b{font-family:var(--display);font-size:15px}
+.ed .item .t span{color:var(--muted);font-size:13px}
+.ed form{display:grid;gap:10px;background:var(--bg);border:1.5px solid var(--line);border-radius:12px;padding:12px}
+.ed form .grid{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.ed label.chk{display:flex;gap:6px;align-items:center;font-weight:600}
+.ed .multi{display:flex;flex-wrap:wrap;gap:6px 14px}
+.ed textarea{font:inherit;font-size:15px;color:var(--fg);background:var(--surface);border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;min-height:70px}
+.off{opacity:.55}
+.chatcols{grid-template-columns:minmax(0,1fr) minmax(0,2fr)}@media (max-width:700px){.chatcols{grid-template-columns:minmax(0,1fr)}}
+.cnt:not(:empty){background:#E980C2;color:#07005E;border-radius:999px;padding:0 7px;font-size:12px;margin-inline-start:4px}
+.stars{color:#B07A00;letter-spacing:1px}
+.chap{display:grid;gap:6px;grid-column:1/-1}
+.chap textarea{font:inherit;font-size:14px;color:var(--fg);background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;min-height:110px;direction:rtl}
+.gset{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.gset .card{display:grid;gap:8px;align-content:start}
+.gset .card .h{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.gset .card .h b{font-family:var(--display)}
+.gset input[type=number]{width:90px}
+</style>
+</head><body>
+<header><div class="wrap"><div class="row"><img src="../../tools/logo-horizontal-color-on-navy.svg" alt="الطالب الأكاديمي"><b>لوحة التحكم</b></div><button class="btn o sm" id="out" style="color:#fff;border-color:rgba(255,255,255,.3)" hidden>خروج</button></div></header>
+<main class="wrap">
+
+<form class="card" id="gate" style="display:grid;gap:12px;max-width:420px">
+  <h2>دخول الإدارة</h2>
+  <label class="chk" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="is-t"> أنا أستاذ</label>
+  <label id="u-l" hidden>رقم جوالك<input name="u" inputmode="tel" autocomplete="username" dir="ltr"></label>
+  <label><span id="p-l">كلمة سر الإدارة</span><input type="password" name="p" autocomplete="current-password" required></label>
+  <div id="setup" hidden style="display:grid;gap:8px">
+    <p style="margin:0;font-size:14px">أول مرة: افتح تطبيق <b>Google Authenticator</b> (أو أي تطبيق مصادقة) بجوالك، وصوّر هالرمز. بعدها اكتب الرقم اللي يطلع لك.</p>
+    <div id="qr" style="background:#fff;padding:10px;border-radius:12px;justify-self:start"></div>
+    <p class="muted" style="margin:0;font-size:12px">أو اكتب المفتاح يدوي: <bdi dir="ltr" id="secret" style="font-family:monospace;word-break:break-all"></bdi></p>
+  </div>
+  <label id="code-l" hidden>رمز التحقق (6 أرقام من التطبيق)<input name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" dir="ltr"></label>
+  <p class="msg bad" id="gate-msg"></p>
+  <button class="btn p" type="submit">دخول</button>
+</form>
+
+<div id="app" hidden style="display:grid;gap:16px">
+  <div class="tabs" role="tablist"><button data-tab="dash" aria-selected="true">الملخص</button><button data-tab="users" aria-selected="false">الطلاب</button><button data-tab="videos" aria-selected="false">المحاضرات</button><button data-tab="catalog" aria-selected="false">المواد والأسعار</button><button data-tab="promos" aria-selected="false">أكواد الخصم</button><button data-tab="groups" aria-selected="false">القروبات</button><button data-tab="growth" aria-selected="false">التسويق</button><button data-tab="ratings" aria-selected="false">التقييمات <span class="cnt" id="c-ratings"></span></button><button data-tab="tickets" aria-selected="false">الشكاوي والاقتراحات <span class="cnt" id="c-tickets"></span></button><button data-tab="chat" aria-selected="false">الشات <span class="cnt" id="c-chat"></span></button><button data-tab="news" aria-selected="false">الأخبار</button><button data-tab="staff" aria-selected="false">الأساتذة</button><button data-tab="audit" aria-selected="false">سجل التعديلات</button></div>
+
+  <section id="t-dash" style="display:grid;gap:12px">
+    <div class="kpis" id="kpis"></div>
+    <div class="cols">
+      <div class="card" style="display:grid;gap:8px"><h2>المشاهدات آخر 14 يوم</h2><div class="bars" id="daily"></div></div>
+      <div class="card" style="display:grid;gap:8px"><h2>اشتراكات تخلص خلال أسبوعين</h2><table class="tbl" id="expiring"></table></div>
+      <div class="card" style="display:grid;gap:8px"><h2>أكثر المحاضرات مشاهدة (شهر)</h2><table class="tbl" id="top"></table></div>
+      <div class="card" style="display:grid;gap:8px"><h2>المشتركين بكل مادة</h2><table class="tbl" id="bycourse"></table></div>
+      <div class="card" style="display:grid;gap:8px"><h2>محاولات دخول من جهاز ثالث (شهر)</h2><p class="muted" style="margin:0;font-size:13px">ممكن الطالب غيّر جهازه، أو يشارك حسابه.</p><table class="tbl" id="sharing"></table></div>
+    </div>
+  </section>
+
+  <section id="t-users" hidden style="display:grid;gap:12px">
+    <div class="stats" id="ustats"></div>
+    <div class="row"><input id="q" placeholder="دوّر بالاسم أو الرقم أو المادة" style="flex:1;min-width:200px"><select id="f"><option value="">الكل</option><option value="pending">بانتظار التفعيل</option><option value="active">مفعّل</option><option value="blocked">موقوف</option></select></div>
+    <div id="ulist" style="display:grid;gap:10px"></div>
+  </section>
+
+  <section id="t-videos" hidden style="display:grid;gap:12px">
+    <form class="card" id="up" style="display:grid;gap:12px">
+      <h2>ارفع محاضرة</h2>
+      <div class="grid">
+        <label>المادة<input name="course" list="courses" required dir="ltr" style="text-transform:uppercase"></label>
+        <label style="grid-column:span 2">عنوان المحاضرة<input name="title" required placeholder="مثلاً: المحاضرة 1 · Chapter 1"></label>
+        <label>الترتيب<input name="sort" type="number" min="0" value="1"></label>
+      </div>
+      <label>ملف الفيديو (أي صيغة: MP4، MOV، MKV، AVI، WebM…)<input name="file" type="file" accept="video/*,.mkv,.avi,.flv,.mts,.m2ts,.mxf,.3gp" required></label>
+      <progress id="prog" value="0" max="1" hidden></progress>
+      <p class="msg" id="up-msg"></p>
+      <div class="row"><button class="btn p" type="submit">ارفع</button><button class="btn o sm" type="button" id="pause" hidden>إيقاف مؤقت</button><span class="muted" style="font-size:13px">الفيديو يروح على طول لـ Cloudflare. لو انقطع النت يكمل بروحه، ولو سكرت الصفحة ارجع اختار نفس الملف ويكمل من وين وقف.</span></div>
+    </form>
+    <div id="vlist" style="display:grid;gap:12px"></div>
+    <form class="card" id="fup" style="display:grid;gap:12px">
+      <h2>ارفع ملف (PDF)</h2>
+      <div class="grid">
+        <label>المادة<input name="course" list="courses" required dir="ltr" style="text-transform:uppercase"></label>
+        <label style="grid-column:span 2">عنوان الملف<input name="title" required placeholder="مثلاً: ملخص الفصل الأول"></label>
+        <label>الترتيب<input name="sort" type="number" min="0" value="1"></label>
+      </div>
+      <label>الملف (PDF، لين 25 ميغا)<input name="file" type="file" accept="application/pdf,.pdf" required></label>
+      <p class="msg" id="fup-msg"></p>
+      <div class="row"><button class="btn p" type="submit">ارفع الملف</button><span class="muted" style="font-size:13px">كل طالب ينزّل نسخة عليها اسمه ورقمه بكل صفحة، فلو انتشر الملف تعرف من وين.</span></div>
+    </form>
+    <div id="flist" style="display:grid;gap:12px"></div>
+  </section>
+</div>
+  <section id="t-catalog" hidden style="display:grid;gap:12px">
+    <p class="muted" style="margin:0;font-size:14px">رتّبها كذا: الجامعة، بعدها تخصصاتها، بعدها الدكاترة، وآخر شي المواد وأسعارها. أي تغيير يطلع للطلاب خلال دقيقة.</p>
+    <div class="card ed" id="ed-universities"></div>
+    <div class="card ed" id="ed-majors"></div>
+    <div class="card ed" id="ed-doctors"></div>
+    <div class="card ed" id="ed-courses"></div>
+  </section>
+  <section id="t-promos" hidden style="display:grid;gap:12px"><div class="card ed" id="ed-promos"></div></section>
+  <section id="t-groups" hidden style="display:grid;gap:12px">
+    <p class="muted" style="margin:0;font-size:14px">القروب الخاص (للمشتركين) رابطه ما يطلع إلا للطالب المشترك بالمادة. الواتساب ما يسمح نطلّع أحد تلقائياً، فاللي خلص اشتراكهم يطلعون لك تحت عشان تشيلهم.</p>
+    <div class="card ed" id="ed-groups"></div>
+    <div class="card" style="display:grid;gap:8px"><h2>طلاب خلص اشتراكهم (آخر 30 يوم)</h2><table class="tbl" id="expired"></table></div>
+  </section>
+  <section id="t-ratings" hidden style="display:grid;gap:12px">
+    <p class="muted" style="margin:0;font-size:14px">التقييمات بنجمتين أو أقل ما تطلع إلا بعد ما توافق عليها. الباقي ينزل على طول، وتقدر تخفيه.</p>
+    <div class="row"><select id="rf"><option value="pending">تنتظر مراجعتك</option><option value="published">منشورة</option><option value="hidden">مخفية</option><option value="">الكل</option></select></div>
+    <div id="rlist" style="display:grid;gap:10px"></div>
+  </section>
+  <section id="t-tickets" hidden style="display:grid;gap:12px">
+    <div class="row"><select id="tf"><option value="open">جديدة</option><option value="working">قاعدين نشتغل عليها</option><option value="solved">انحلت</option><option value="">الكل</option></select></div>
+    <div id="tlist" style="display:grid;gap:10px"></div>
+  </section>
+  <section id="t-chat" hidden style="display:grid;gap:12px">
+    <div class="cols chatcols">
+      <div class="card" style="display:grid;gap:6px;align-content:start"><h2>المحادثات</h2><div id="threads" style="display:grid;gap:4px"></div></div>
+      <div class="card" style="display:grid;gap:10px;align-content:start" id="thread"><p class="muted" style="margin:0">اختار محادثة.</p></div>
+    </div>
+  </section>
+  <section id="t-news" hidden style="display:grid;gap:12px">
+    <form class="card" id="nform" style="display:grid;gap:10px">
+      <h2>خبر جديد</h2>
+      <div class="grid">
+        <label>لمين<select name="scope"><option value="all">كل الطلاب</option><option value="uni">جامعة</option><option value="course">مادة</option></select></label>
+        <label>الجامعة أو المادة<select name="ref"></select></label>
+        <label>يختفي بعد (اختياري)<input type="date" name="until"></label>
+      </div>
+      <label>العنوان<input name="title" required maxlength="150"></label>
+      <label>التفاصيل (اختياري)<textarea name="body" rows="3" style="font:inherit;font-size:15px;color:var(--fg);background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:8px 10px"></textarea></label>
+      <label class="chk owner-only" style="display:flex;gap:6px;align-items:center"><input type="checkbox" name="pinned"> ثبّته فوق</label>
+      <div class="row"><button class="btn g" type="submit">انشر</button><p class="msg" id="nmsg"></p></div>
+    </form>
+    <div id="nlist" style="display:grid;gap:10px"></div>
+  </section>
+  <section id="t-staff" hidden style="display:grid;gap:12px">
+    <p class="muted" style="margin:0;font-size:14px">كل أستاذ يدخل من نفس الصفحة (يختار "أنا أستاذ") برقمه وكلمة سره ورمز من جواله. يشوف مواده بس: يرفع، يحط الأسئلة، يرد على التقييمات والشات، وينشر أخبار لطلابه. ما يشوف الأسعار ولا المشتركين ولا المشاهدات.</p>
+    <form class="card" id="sform" style="display:grid;gap:10px">
+      <h2>حساب أستاذ جديد</h2>
+      <div class="grid">
+        <label>الأستاذ<select name="doctor" required></select></label>
+        <label>رقم جواله (يدخل فيه)<input name="username" inputmode="tel" dir="ltr" required></label>
+        <label>كلمة سر (10 بالأقل)<input name="password" minlength="10" required></label>
+      </div>
+      <div class="row"><button class="btn g" type="submit">سوّ الحساب</button><p class="msg" id="smsg"></p></div>
+    </form>
+    <div id="slist" style="display:grid;gap:10px"></div>
+  </section>
+  <section id="t-audit" hidden style="display:grid;gap:12px"><div class="card"><table class="tbl" id="alist"></table></div></section>
+  <section id="t-growth" hidden style="display:grid;gap:12px">
+    <div class="gset" id="gset"></div>
+    <div class="row"><button class="btn g" id="gsave" type="button">احفظ</button><p class="msg" id="gmsg"></p></div>
+  </section>
+</div>
+<datalist id="courses"></datalist>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/tus-js-client@4.3.1/dist/tus.min.js" integrity="sha384-UlHjK3F7TCQCEUpnoa1ohMbP2oaWB3Aypv4gMo511vaZ86uUZ0Zv7UzZ0J1zRUT1" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js" integrity="sha384-8FWZA6BGMXhsfO+BLtrJK0We6gg5o1JyO8xQm6peWDEUs17ACA5ziE/NIAkl9z2k" crossorigin="anonymous"></script>
+<script>
+(() => {
+const API = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) ? "http://localhost:8799" : "https://asc-videos.m7mdaltalab.workers.dev";
+const PART = 50 * 1024 * 1024; // Cloudflare يبي الأجزاء من مضاعفات 256 كيلو
+const $ = id => document.getElementById(id);
+const el = (tag, props = {}, ...kids) => { const e = document.createElement(tag); Object.assign(e, props); e.append(...kids.filter(k => k != null)); return e; };
+const ss = {get: k => { try { return sessionStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { v == null ? sessionStorage.removeItem(k) : sessionStorage.setItem(k, v); } catch {} }};
+let pass = ss.get("asc-admin");
+const day = 86400;
+const now = () => Math.floor(Date.now() / 1000);
+const toDate = s => new Date(s * 1000).toISOString().slice(0, 10);
+const fromDate = d => Math.floor(new Date(d + "T23:59:59+03:00").getTime() / 1000);
+const fmt = s => s ? new Date(s * 1000).toLocaleDateString("ar-KW", {day: "numeric", month: "short", year: "numeric", numberingSystem: "latn"}) : "—";
+const mb = n => (n / 1048576).toFixed(n > 1048576 * 100 ? 0 : 1) + " MB";
+
+async function call(path, data, method) {
+  const r = await fetch(API + "/api/admin/" + path, {
+    method: method || (data === undefined ? "GET" : "POST"),
+    headers: {Authorization: "Bearer " + pass, ...(data instanceof Blob ? {} : {"Content-Type": "application/json"})},
+    body: data === undefined ? undefined : data instanceof Blob ? data : JSON.stringify(data),
+  }).catch(() => null);
+  if (!r) throw {message: "ما قدرنا نوصل للسيرفر."};
+  const j = await r.json().catch(() => ({}));
+  if (r.status === 401) { pass = null; ss.set("asc-admin", null); gate(j.message); }
+  if (!r.ok) throw {message: j.message || "صار خطأ."};
+  return j;
+}
+
+
+function gate(msg = "") { $("gate").hidden = false; $("app").hidden = true; $("out").hidden = true; $("gate-msg").textContent = msg; }
+// الدخول: كلمة السر + رمز التحقق بخطوتين، والسيرفر يعطي جلسة 12 ساعة
+$("gate").onsubmit = async e => {
+  e.preventDefault();
+  const f = e.target, btn = f.querySelector("[type=submit]"); btn.disabled = true; $("gate-msg").textContent = "";
+  try {
+    const r = await fetch(API + "/api/admin/login", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({password: f.p.value, code: f.code.value, ...($("is-t").checked ? {username: f.u.value} : {})})}).catch(() => null);
+    if (!r) throw {message: "ما قدرنا نوصل للسيرفر."};
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) throw {message: j.message || "صار خطأ."};
+    if (j.setup) {
+      $("setup").hidden = false; $("code-l").hidden = false; $("secret").textContent = j.secret.replace(/(.{4})/g, "$1 ").trim();
+      if (window.qrcode) { const q = qrcode(0, "M"); q.addData(j.uri); q.make(); $("qr").replaceChildren(); $("qr").insertAdjacentHTML("beforeend", q.createSvgTag({cellSize: 5, margin: 2})); }
+      f.code.focus(); return;
+    }
+    if (j.need === "code") { $("code-l").hidden = false; f.code.focus(); if (f.code.value) $("gate-msg").textContent = "اكتب الرمز."; return; }
+    pass = j.token; ss.set("asc-admin", pass); f.reset(); $("setup").hidden = true; $("code-l").hidden = true; start();
+  } catch (err) { $("gate-msg").textContent = err.message; }
+  finally { btn.disabled = false; }
+};
+$("is-t").onchange = () => { const t = $("is-t").checked; $("u-l").hidden = !t; $("gate").u.required = t; $("p-l").textContent = t ? "كلمة السر" : "كلمة سر الإدارة"; };
+$("out").onclick = () => { call("logout", {}).catch(() => {}); pass = null; ss.set("asc-admin", null); gate(); };
+// الأستاذ يشوف بس التبويبات اللي تخصه
+const TEACHER_TABS = ["videos", "ratings", "chat", "news"];
+let role = "owner", myCourses = [];
+async function start() {
+  if (!pass) return gate();
+  let me;
+  try { me = await call("whoami"); } catch (err) { return; }
+  role = me.role; myCourses = me.courses || [];
+  $("gate").hidden = true; $("app").hidden = false; $("out").hidden = false;
+  document.querySelector("header b").textContent = role === "teacher" ? `لوحة ${me.name}` : "لوحة التحكم";
+  document.querySelectorAll(".owner-only").forEach(e => e.hidden = role !== "owner");
+  if (role === "teacher") {
+    document.querySelectorAll("[data-tab]").forEach(b => b.hidden = !TEACHER_TABS.includes(b.dataset.tab));
+    document.querySelector('[data-tab="videos"]').click();
+    $("courses").replaceChildren(...myCourses.map(c => el("option", {value: c})));
+    loadVideos().catch(() => {}); loadFiles().catch(() => {}); loadThreads().catch(() => {});
+    return;
+  }
+  loadUsers().catch(() => {});
+  loadVideos().catch(() => {});
+  loadFiles().catch(() => {});
+  loadStats().catch(() => {});
+  loadCatalog().catch(() => {});
+  loadThreads().catch(() => {});
+}
+
+// ===== الملخص =====
+const dayName = s => new Date(s * 1000).toLocaleDateString("ar-KW", {weekday: "short", day: "numeric", month: "numeric", numberingSystem: "latn", timeZone: "UTC"});
+const kpi = (label, value, small, warn) => el("div", {className: "kpi" + (warn ? " warn" : "")}, el("span", {textContent: label}), el("b", {textContent: value}), small ? el("small", {textContent: small}) : null);
+const rows = (box, list, cells, empty) => box.replaceChildren(...(list.length ? list.map(r => el("tr", {}, ...cells(r).map((c, i, a) => el("td", {className: i === a.length - 1 ? "n" : "", textContent: c})))) : [el("tr", {}, el("td", {className: "muted", textContent: empty}))]));
+async function loadStats() {
+  const s = await call("stats");
+  $("c-ratings").textContent = s.pendingRatings || ""; $("c-tickets").textContent = s.openTickets || "";
+  $("kpis").replaceChildren(
+    kpi("طلاب مفعّلين", s.users.active, `+${s.users.newWeek} تسجيل هالأسبوع`),
+    kpi("بانتظار التفعيل", s.users.pending, s.users.pending ? "روح تبويب الطلاب وفعّلهم" : "ما فيه أحد ينتظر", s.users.pending > 0),
+    kpi("اشتراكات تخلص قريب", s.expiring.length, "خلال أسبوعين", s.expiring.length > 0),
+    kpi("مشاهدات هالأسبوع", s.views.week, `${s.views.watchersWeek} طالب شافوا · ${s.views.month} بالشهر`),
+    kpi("المحاضرات", s.videos.count, `${s.videos.hours} ساعة` + (s.videos.processing ? ` · ${s.videos.processing} تتجهز` : "")),
+    kpi("موقوفين", s.users.blocked),
+    kpi("محاولات جهاز ثالث", s.sharing.length, "طلاب هالشهر", s.sharing.length > 0));
+  const days = []; const today = Math.floor((now() + 10800) / day);
+  for (let d = today - 13; d <= today; d++) days.push({day: d * day, n: (s.daily.find(x => x.day === d * day) || {}).n || 0});
+  const max = Math.max(1, ...days.map(d => d.n));
+  $("daily").replaceChildren(...days.map(d => { const b = el("div"); b.style.height = (d.n / max * 100) + "%"; b.dataset.t = `${dayName(d.day)}: ${d.n}`; return b; }));
+  rows($("expiring"), s.expiring, r => [r.name, r.course, fmt(r.until)], "ما فيه اشتراكات تخلص قريب.");
+  rows($("top"), s.top, r => [`${r.course} · ${r.title}`, r.n], "ما فيه مشاهدات للحين.");
+  rows($("bycourse"), s.byCourse, r => [r.course, r.n], "ما فيه مشتركين للحين.");
+  rows($("sharing"), s.sharing, r => [`${r.name} · ${r.phone}`, fmt(r.last), `${r.n} مرة`], "ما فيه محاولات.");
+}
+document.querySelectorAll("[data-tab]").forEach(b => b.onclick = () => {
+  document.querySelectorAll("[data-tab]").forEach(x => x.setAttribute("aria-selected", x === b));
+  ["dash", "users", "videos", "catalog", "promos", "groups", "growth", "ratings", "tickets", "chat", "news", "staff", "audit"].forEach(t => $("t-" + t).hidden = b.dataset.tab !== t);
+  if (b.dataset.tab === "dash") loadStats().catch(() => {});
+  if (b.dataset.tab === "groups") loadExpired().catch(() => {});
+  if (b.dataset.tab === "ratings") loadRatings().catch(() => {});
+  if (b.dataset.tab === "tickets") loadTickets().catch(() => {});
+  if (b.dataset.tab === "chat") loadThreads().catch(() => {});
+  if (b.dataset.tab === "news") loadNews().catch(() => {});
+  if (b.dataset.tab === "staff") loadStaff().catch(() => {});
+  if (b.dataset.tab === "audit") loadAudit().catch(() => {});
+});
+
+// ===== الطلاب =====
+let users = [];
+async function loadUsers() { users = (await call("users")).users; renderUsers(); }
+$("q").oninput = () => renderUsers(); $("f").onchange = () => renderUsers();
+const STATUS = {pending: "بانتظار التفعيل", active: "مفعّل", blocked: "موقوف"};
+
+function renderUsers() {
+  const c = {pending: 0, active: 0, blocked: 0}; users.forEach(u => c[u.status]++);
+  $("ustats").replaceChildren(
+    el("span", {}, "الكل ", el("b", {textContent: users.length})),
+    el("span", {}, "بانتظار التفعيل ", el("b", {textContent: c.pending})),
+    el("span", {}, "مفعّل ", el("b", {textContent: c.active})),
+    el("span", {}, "موقوف ", el("b", {textContent: c.blocked})));
+  const q = $("q").value.trim().toLowerCase(), f = $("f").value;
+  const list = users.filter(u => (!f || u.status === f) && (!q || [u.name, u.phone, u.email, u.note, ...u.access.map(a => a.course)].join(" ").toLowerCase().includes(q)));
+  $("ulist").replaceChildren(...list.map(userCard), ...(list.length ? [] : [el("p", {className: "muted", textContent: "ما فيه طلاب."})]));
+}
+
+function userCard(u) {
+  const card = el("div", {className: "card user"});
+  const msg = el("p", {className: "msg"});
+  const head = el("div", {className: "head"},
+    el("b", {textContent: u.name}),
+    el("span", {className: "badge " + u.status, textContent: STATUS[u.status]}),
+    el("a", {href: `https://wa.me/965${u.phone.length === 8 ? u.phone : u.phone.replace(/^965/, "")}`, target: "_blank", rel: "noopener", textContent: u.phone, dir: "ltr", style: "color:var(--accent-ink)"}),
+    u.email ? el("span", {className: "muted", textContent: u.email, dir: "ltr"}) : null);
+  const info = el("div", {className: "muted", style: "font-size:13px", textContent: `سجّل ${fmt(u.created)} · الأجهزة ${u.devices} من 2 · آخر دخول ${fmt(u.seen)} · المشاهدات ${u.views}`});
+  if (u.attempts) info.append(el("span", {style: "color:var(--warn);font-weight:700", textContent: ` · ⚠ حاول يدخل من جهاز ثالث ${u.attempts} مرة هالشهر`}));
+
+  // المواد وتاريخ الانتهاء
+  const acc = el("div", {className: "acc"});
+  const addLine = (course = "", until = now() + 120 * day) => {
+    const line = el("div", {className: "line"});
+    const ci = el("input", {value: course, placeholder: "رمز المادة", required: true}); ci.setAttribute("list", "courses");
+    const di = el("input", {type: "date", value: toDate(until)});
+    line.append(ci, el("span", {className: "muted", textContent: "لين"}), di, el("button", {type: "button", className: "btn r sm", textContent: "✕", onclick: () => line.remove()}));
+    if (until < now()) line.append(el("span", {className: "old", textContent: "منتهي"}));
+    acc.append(line);
+  };
+  u.access.forEach(a => addLine(a.course, a.until));
+  const readAccess = () => [...acc.querySelectorAll(".line")].map(l => { const [c, d] = l.querySelectorAll("input"); return {course: c.value.trim().toUpperCase(), until: d.value ? fromDate(d.value) : 0}; }).filter(a => a.course && a.until);
+
+  const note = el("input", {value: u.note || "", placeholder: "ملاحظة (مثلاً: دفع كاش)", style: "flex:1;min-width:180px"});
+  const act = async (data, okText, btn) => {
+    msg.className = "msg"; msg.textContent = "…"; if (btn) btn.disabled = true;
+    try { await call("user", {id: u.id, ...data}); msg.className = "msg ok"; msg.textContent = okText; await loadUsers(); }
+    catch (err) { msg.className = "msg bad"; msg.textContent = err.message; }
+    finally { if (btn) btn.disabled = false; }
+  };
+  const save = el("button", {type: "button", className: "btn g", textContent: u.status === "active" ? "حفظ" : "تفعيل وحفظ"});
+  save.onclick = () => {
+    const access = readAccess();
+    if (!access.length && !confirm("ما حددت أي مادة. تبي تحفظ بدون مواد؟")) return;
+    act({status: u.status === "blocked" ? "blocked" : "active", access, note: note.value}, "انحفظ ✓", save);
+  };
+  const block = el("button", {type: "button", className: "btn r sm", textContent: u.status === "blocked" ? "رجّع الحساب" : "إيقاف"});
+  block.onclick = () => act({status: u.status === "blocked" ? "active" : "blocked"}, "تم", block);
+  const reset = el("button", {type: "button", className: "btn o sm", textContent: "صفّر الأجهزة"});
+  reset.onclick = () => act({resetDevices: true}, "تصفّرت الأجهزة، يقدر يدخل من جديد", reset);
+  const pw = el("button", {type: "button", className: "btn o sm", textContent: "كلمة سر جديدة"});
+  pw.onclick = () => { const p = prompt("كلمة السر الجديدة (6 بالأقل)؛ أرسلها للطالب بالواتساب:"); if (p) act({password: p}, "تغيّرت كلمة السر: " + p, pw); };
+  const del = el("button", {type: "button", className: "btn r sm", textContent: "حذف"});
+  del.onclick = () => { if (confirm(`تبي تحذف حساب ${u.name} نهائياً؟`)) act({delete: true}, "انحذف", del); };
+
+  card.append(head, info,
+    el("div", {className: "muted", style: "font-size:13px;font-weight:600", textContent: "المواد المفعّلة:"}), acc,
+    el("div", {className: "row"}, el("button", {type: "button", className: "btn o sm", textContent: "+ مادة", onclick: () => addLine()}), note),
+    el("div", {className: "row"}, save, block, reset, pw, del), msg);
+  if (!u.access.length && u.status === "pending") addLine();
+  return card;
+}
+
+// ===== المحاضرات =====
+async function loadVideos() {
+  const {videos} = await call("videos");
+  const by = {}; videos.forEach(v => (by[v.course] ||= []).push(v));
+  const box = $("vlist");
+  if (!videos.length) return box.replaceChildren(el("p", {className: "muted", textContent: "ما فيه محاضرات مرفوعة للحين."}));
+  box.replaceChildren(...Object.keys(by).sort().map(code => {
+    const card = el("div", {className: "card", style: "display:grid;gap:10px"}, el("h2", {}, el("bdi", {dir: "ltr", textContent: code}), el("span", {className: "muted", style: "font-size:14px;font-weight:500", textContent: ` · ${by[code].length} محاضرة`})));
+    const list = el("div", {className: "vlist"});
+    by[code].forEach(v => {
+      const sort = el("input", {type: "number", value: v.sort}), title = el("input", {value: v.title});
+      const msg = el("span", {className: "muted", style: "font-size:12px", textContent: v.ready === 1 ? `${Math.round(v.duration / 60)} دقيقة` + (v.views != null ? ` · ${v.views} مشاهدة` : "") : v.ready === -1 ? "فشل التجهيز، احذفه وارفعه مرة ثانية" : "يتجهز… (أو الرفع ما كمل)"});
+      const save = el("button", {type: "button", className: "btn o sm", textContent: "حفظ"});
+      save.onclick = async () => { save.disabled = true; try { await call("video", {id: v.id, course: v.course, title: title.value, sort: sort.value}); msg.textContent = "انحفظ ✓"; loadVideos(); } catch (e) { msg.textContent = e.message; } save.disabled = false; };
+      const del = el("button", {type: "button", className: "btn r sm", textContent: "حذف"});
+      del.onclick = async () => { if (!confirm(`تبي تحذف "${v.title}" نهائياً؟`)) return; try { await call("video", {id: v.id, delete: true}); loadVideos(); } catch (e) { msg.textContent = e.message; } };
+      const qs = el("button", {type: "button", className: "btn o sm", textContent: `الأسئلة (${v.chapters.length})`});
+      const row = el("div", {className: "vrow"}, sort, title, el("div", {className: "row"}, msg, qs, save, del));
+      qs.onclick = () => { const open = row.querySelector(".chap"); if (open) return open.remove(); row.append(chapEditor(v, () => loadVideos())); };
+      list.append(row);
+    });
+    card.append(list); return card;
+  }));
+}
+
+// ===== الملفات =====
+async function loadFiles() {
+  const {files} = await call("files");
+  const box = $("flist");
+  if (!files.length) return box.replaceChildren(el("p", {className: "muted", textContent: "ما فيه ملفات مرفوعة للحين."}));
+  const by = {}; files.forEach(f => (by[f.course] ||= []).push(f));
+  box.replaceChildren(...Object.keys(by).sort().map(code => {
+    const card = el("div", {className: "card", style: "display:grid;gap:10px"}, el("h2", {}, el("bdi", {dir: "ltr", textContent: code}), el("span", {className: "muted", style: "font-size:14px;font-weight:500", textContent: ` · ${by[code].length} ملف`})));
+    const list = el("div", {className: "vlist"});
+    by[code].forEach(f => {
+      const sort = el("input", {type: "number", value: f.sort}), title = el("input", {value: f.title});
+      const msg = el("span", {className: "muted", style: "font-size:12px", textContent: `${f.pages} صفحة · ${mb(f.size)}`});
+      const save = el("button", {type: "button", className: "btn o sm", textContent: "حفظ"});
+      save.onclick = async () => { save.disabled = true; try { await call("file", {id: f.id, title: title.value, sort: sort.value}); msg.textContent = "انحفظ ✓"; loadFiles(); } catch (e) { msg.textContent = e.message; } save.disabled = false; };
+      const del = el("button", {type: "button", className: "btn r sm", textContent: "حذف"});
+      del.onclick = async () => { if (!confirm(`تبي تحذف "${f.title}" نهائياً؟`)) return; try { await call("file", {id: f.id, delete: true}); loadFiles(); } catch (e) { msg.textContent = e.message; } };
+      list.append(el("div", {className: "vrow frow"}, sort, title, el("div", {className: "row"}, msg, save, del)));
+    });
+    card.append(list); return card;
+  }));
+}
+$("fup").onsubmit = async e => {
+  e.preventDefault();
+  const f = e.target, file = f.file.files[0], msg = $("fup-msg"), btn = f.querySelector("[type=submit]");
+  if (!file) return;
+  msg.className = "msg";
+  if (file.size > 25 * 1048576) { msg.className = "msg bad"; msg.textContent = "الملف أكبر من 25 ميغا، صغّره وارفعه."; return; }
+  btn.disabled = true; msg.textContent = "يرفع…";
+  try {
+    const r = await call("fileup?" + new URLSearchParams({course: f.course.value.trim().toUpperCase(), title: f.title.value.trim(), sort: f.sort.value || 0}), file);
+    msg.className = "msg ok"; msg.textContent = `انرفع ✓ (${r.pages} صفحة)`;
+    f.title.value = ""; f.file.value = ""; f.sort.value = Number(f.sort.value) + 1;
+    loadFiles();
+  } catch (err) { msg.className = "msg bad"; msg.textContent = err.message; }
+  btn.disabled = false;
+};
+
+// الرفع: يروح على طول من جهازك لـ Cloudflare على أجزاء، ويكمل بروحه لو انقطع النت
+let upload = null;
+$("pause").onclick = () => {
+  if (!upload) return;
+  if ($("pause").dataset.paused) { delete $("pause").dataset.paused; $("pause").textContent = "إيقاف مؤقت"; upload.start(); }
+  else { $("pause").dataset.paused = 1; $("pause").textContent = "كمّل الرفع"; upload.abort(); $("up-msg").textContent = "الرفع واقف، اضغط كمّل الرفع."; }
+};
+$("up").onsubmit = async e => {
+  e.preventDefault();
+  const f = e.target, file = f.file.files[0], msg = $("up-msg"), prog = $("prog"), btn = f.querySelector("[type=submit]");
+  if (!file || !window.tus) { msg.className = "msg bad"; msg.textContent = file ? "ما تحمّلت أداة الرفع، حدّث الصفحة." : ""; return; }
+  const course = f.course.value.trim().toUpperCase(), title = f.title.value.trim();
+  if (!course || !title) return;
+  btn.disabled = true; prog.hidden = false; prog.value = 0; msg.className = "msg"; msg.textContent = "يبدأ الرفع…";
+  const warn = ev => { ev.preventDefault(); ev.returnValue = ""; };
+  addEventListener("beforeunload", warn);
+  const t0 = Date.now(); let b0 = null;
+  const finish = () => { btn.disabled = false; $("pause").hidden = true; delete $("pause").dataset.paused; $("pause").textContent = "إيقاف مؤقت"; removeEventListener("beforeunload", warn); upload = null; };
+  upload = new tus.Upload(file, {
+    endpoint: `${API}/api/admin/upload?${new URLSearchParams({course, title, sort: f.sort.value || 0})}`,
+    chunkSize: PART,
+    retryDelays: [0, 2000, 5000, 10000, 20000, 30000, 60000],
+    metadata: {filename: file.name, filetype: file.type || "video/mp4"},
+    // كلمة سر الإدارة تروح لخادمنا بس، مو لـ Cloudflare
+    onBeforeRequest: req => { if (req.getURL().startsWith(API)) req.setHeader("Authorization", "Bearer " + pass); },
+    onProgress: (done, total) => {
+      if (b0 === null) b0 = done;
+      prog.value = done / total;
+      const secs = (Date.now() - t0) / 1000, rate = (done - b0) / Math.max(secs, 1);
+      msg.className = "msg"; msg.textContent = `${Math.round(done / total * 100)}% · ${mb(done)} من ${mb(total)}` + (rate > 0 && done < total ? ` · باقي تقريباً ${Math.max(1, Math.ceil((total - done) / rate / 60))} دقيقة` : "");
+    },
+    onShouldRetry: (err, n) => { msg.textContent = `انقطع الاتصال، نعيد المحاولة (${n + 1})…`; const s = err.originalResponse?.getStatus?.(); return !s || s === 429 || s >= 500; },
+    onError: err => {
+      const s = err.originalResponse?.getStatus?.();
+      let m = "ما كمل الرفع. اضغط ارفع مرة ثانية بنفس الملف ويكمل من وين وقف.";
+      try { const j = JSON.parse(err.originalResponse.getBody()); if (j.message) m = j.message; } catch {}
+      if (s === 401) { pass = null; ss.set("asc-admin", null); gate(m); }
+      msg.className = "msg bad"; msg.textContent = m; finish();
+    },
+    onSuccess: () => {
+      prog.value = 1; msg.className = "msg ok"; msg.textContent = "انرفعت ✓ Cloudflare يجهّزها الحين بكل الجودات (عادةً دقايق)، وبعدها تطلع للمشتركين بروحها.";
+      f.title.value = ""; f.file.value = ""; f.sort.value = Number(f.sort.value) + 1;
+      finish(); loadVideos(); setTimeout(() => loadVideos().catch(() => {}), 60000);
+    },
+  });
+  // لو نفس الملف انرفع جزء منه قبل، نكمل من هناك
+  const prev = await upload.findPreviousUploads().catch(() => []);
+  if (prev.length) { upload.resumeFromPreviousUpload(prev[0]); msg.textContent = "لقينا رفع قديم لنفس الملف، نكمل من وين وقف…"; }
+  $("pause").hidden = false;
+  upload.start();
+};
+
+// ===== المواد والأسعار، الدكاترة، أكواد الخصم، القروبات =====
+let cat = null;
+const kwd = f => (f / 1000).toLocaleString("en", {maximumFractionDigits: 3}) + " د.ك";
+async function loadCatalog() {
+  cat = await call("catalog");
+  // قائمة المواد لخانات الرفع وتفعيل الطلاب
+  $("courses").replaceChildren(...cat.courses.map(c => el("option", {value: c.id, label: c.title})));
+  const uniOpts = () => cat.universities.map(u => [u.id, u.name]);
+  const uniName = id => cat.universities.find(u => u.id === id)?.name || id;
+  const majorOpts = () => cat.majors.map(m => [m.id, `${m.name} (${m.uni})`]);
+  const courseOpts = () => cat.courses.map(c => [c.id, `${c.code} · ${c.title}`]);
+  editor({box: $("ed-universities"), title: "الجامعات", table: "universities", key: "id", rows: cat.universities, add: "+ جامعة",
+    fields: [{k: "id", label: "الرمز بالإنجليزي (مثل AOU)", type: "ltr", lock: true}, {k: "name", label: "اسم الجامعة"}, {k: "sort", label: "الترتيب", type: "num"}, {k: "visible", label: "تطلع للطلاب", type: "bool", def: true}],
+    line: u => [u.name, `${u.id} · ${cat.courses.filter(c => c.uni === u.id).length} مادة`], off: u => !u.visible});
+  editor({box: $("ed-majors"), title: "التخصصات", table: "majors", key: "id", rows: cat.majors, add: "+ تخصص",
+    fields: [{k: "uni", label: "الجامعة", type: "select", opts: uniOpts}, {k: "name", label: "اسم التخصص"}, {k: "sort", label: "الترتيب", type: "num"}],
+    line: m => [m.name, uniName(m.uni)]});
+  editor({box: $("ed-doctors"), title: "الدكاترة", table: "doctors", key: "id", rows: cat.doctors, add: "+ دكتور",
+    fields: [{k: "name", label: "الاسم (مثل د. أحمد)"}, {k: "photo", label: "رابط الصورة (https)", type: "ltr"}, {k: "sample", label: "المحاضرة التجريبية (رقم الفيديو)", type: "ltr"}, {k: "sort", label: "الترتيب", type: "num"}, {k: "visible", label: "يطلع للطلاب", type: "bool", def: true}, {k: "bio", label: "نبذة (التخصص والخبرة)", type: "long"}],
+    line: d => [d.name, `${cat.courses.filter(c => c.doctor === d.id).length} مادة`], off: d => !d.visible});
+  editor({box: $("ed-courses"), title: "المواد والأسعار", table: "courses", key: "id", rows: cat.courses, add: "+ مادة",
+    fields: [{k: "uni", label: "الجامعة", type: "select", opts: uniOpts, lock: true}, {k: "code", label: "رمز المادة (مثل B326)", type: "ltr", lock: true}, {k: "title", label: "اسم المادة"},
+      {k: "doctor", label: "الدكتور", type: "select", opts: () => [["", "—"], ...cat.doctors.map(d => [d.id, d.name])]},
+      {k: "price_mid", label: "سعر الميدتيرم (د.ك)", type: "kwd"}, {k: "price_final", label: "سعر الفاينل (د.ك)", type: "kwd"}, {k: "price_full", label: "سعر الفصل كامل (د.ك)", type: "kwd"},
+      {k: "mid_until", label: "آخر يوم للميدتيرم", type: "date"}, {k: "final_until", label: "آخر يوم للفاينل والكامل", type: "date"}, {k: "sort", label: "الترتيب", type: "num"},
+      {k: "installments", label: "الفصل كامل يندفع قسطين", type: "bool"}, {k: "visible", label: "تطلع للطلاب", type: "bool"},
+      {k: "majors", label: "التخصصات اللي فيها هالمادة", type: "multi", opts: majorOpts}],
+    line: c => [`${c.code} · ${c.title}`, `${uniName(c.uni)} · ميدتيرم ${kwd(c.price_mid)} · فاينل ${kwd(c.price_final)} · كامل ${kwd(c.price_full)}${c.installments ? " (قسطين)" : ""} · ${c.lectures} محاضرة · ${c.subscribers} مشترك`], off: c => !c.visible});
+  editor({box: $("ed-promos"), title: "أكواد الخصم", table: "promos", key: "code", rows: cat.promos, add: "+ كود",
+    fields: [{k: "code", label: "الكود (بالإنجليزي)", type: "ltr", lock: true}, {k: "kind", label: "النوع", type: "select", opts: () => [["pct", "نسبة %"], ["amt", "مبلغ ثابت د.ك"]]},
+      {k: "value", label: "القيمة", type: "promo"}, {k: "course", label: "على", type: "select", opts: () => [["", "كل المواد"], ...courseOpts()]},
+      {k: "max_uses", label: "عدد مرات الاستخدام (فاضي = بدون حد)", type: "num", empty: true}, {k: "until", label: "آخر يوم (فاضي = بدون)", type: "date"}, {k: "active", label: "شغّال", type: "bool", def: true}],
+    line: p => [p.code, `${p.kind === "pct" ? p.value + "%" : kwd(p.value)} · ${p.course || "كل المواد"} · انستخدم ${p.used}${p.max_uses ? " من " + p.max_uses : ""}${p.until ? " · لين " + fmt(p.until) : ""}`],
+    off: p => !p.active || (p.until && p.until < now()) || (p.max_uses && p.used >= p.max_uses)});
+  editor({box: $("ed-groups"), title: "قروبات الواتساب", table: "wa_groups", key: "id", rows: cat.groups, add: "+ قروب",
+    fields: [{k: "uni", label: "الجامعة", type: "select", opts: uniOpts}, {k: "scope", label: "القروب حق", type: "select", opts: () => [["uni", "الجامعة كلها"], ["major", "تخصص"], ["course", "مادة"]]},
+      {k: "ref", label: "التخصص أو المادة", type: "select", opts: () => [["", "—"], ...majorOpts(), ...courseOpts()]}, {k: "title", label: "اسم القروب"}, {k: "url", label: "رابط القروب", type: "ltr"},
+      {k: "sort", label: "الترتيب", type: "num"}, {k: "private", label: "خاص للمشتركين بالمادة", type: "bool"}],
+    line: g => [g.title + (g.private ? " 🔒" : ""), `${uniName(g.uni)} · ${g.scope === "uni" ? "الجامعة" : g.scope === "major" ? "تخصص " + (cat.majors.find(m => String(m.id) === String(g.ref))?.name || g.ref) : g.ref}`]});
+  renderGrowth();
+}
+
+function editor({box, title, table, key, rows, fields, line, off, add}) {
+  const list = el("div");
+  const head = el("div", {className: "top"}, el("h2", {textContent: `${title} (${rows.length})`}), el("button", {type: "button", className: "btn sm", textContent: add, onclick: () => { list.querySelector("form")?.remove(); list.prepend(form(null)); }}));
+  function form(row) {
+    const f = el("form"), grid = el("div", {className: "grid"}), checks = el("div", {className: "row"}), extra = el("div"), msg = el("p", {className: "msg"});
+    const inputs = {};
+    for (const fd of fields) {
+      const v = row ? row[fd.k] : fd.def;
+      let inp;
+      if (fd.type === "bool") { inp = el("input", {type: "checkbox", checked: !!v}); checks.append(el("label", {className: "chk"}, inp, fd.label)); inputs[fd.k] = inp; continue; }
+      if (fd.type === "select") { inp = el("select"); fd.opts().forEach(([val, t]) => inp.append(el("option", {value: val, textContent: t}))); if (v != null) inp.value = v; }
+      else if (fd.type === "multi") {
+        const box = el("div", {className: "multi"}); inputs[fd.k] = box;
+        fd.opts().forEach(([val, t]) => box.append(el("label", {className: "chk"}, el("input", {type: "checkbox", value: val, checked: (v || []).includes(val)}), t)));
+        extra.append(el("div", {style: "display:grid;gap:4px"}, el("span", {style: "font-weight:600;font-size:13px", textContent: fd.label}), box)); continue;
+      }
+      else if (fd.type === "long") { inp = el("textarea", {value: v || ""}); }
+      else if (fd.type === "date") inp = el("input", {type: "date", value: v ? toDate(v) : ""});
+      else if (fd.type === "kwd") inp = el("input", {type: "number", min: 0, step: "0.001", value: v != null ? v / 1000 : ""});
+      else if (fd.type === "promo") inp = el("input", {type: "number", min: 0, step: "0.001", value: v != null ? (row?.kind === "amt" ? v / 1000 : v) : ""});
+      else if (fd.type === "num") inp = el("input", {type: "number", value: v ?? (fd.empty ? "" : 0)});
+      else inp = el("input", {value: v ?? "", dir: fd.type === "ltr" ? "ltr" : "auto"});
+      if (fd.lock && row) inp.disabled = true;
+      inputs[fd.k] = inp;
+      grid.append(el("label", {style: fd.type === "long" ? "grid-column:1/-1" : ""}, fd.label, inp));
+    }
+    const read = () => Object.fromEntries(fields.map(fd => {
+      const i = inputs[fd.k];
+      if (fd.type === "bool") return [fd.k, i.checked];
+      if (fd.type === "multi") return [fd.k, [...i.querySelectorAll("input:checked")].map(x => Number(x.value))];
+      if (fd.type === "date") return [fd.k, i.value ? fromDate(i.value) : null];
+      return [fd.k, i.value];
+    }));
+    const save = el("button", {type: "submit", className: "btn g", textContent: "حفظ"});
+    const cancel = el("button", {type: "button", className: "btn o sm", textContent: "إلغاء", onclick: () => f.remove()});
+    const del = row ? el("button", {type: "button", className: "btn r sm", textContent: "حذف"}) : null;
+    const run = async (data, b) => {
+      b.disabled = true; msg.className = "msg"; msg.textContent = "…";
+      try { await call("save", {table, key: row ? row[key] : undefined, ...data}); await loadCatalog(); }
+      catch (err) { msg.className = "msg bad"; msg.textContent = err.message; b.disabled = false; }
+    };
+    f.onsubmit = e => { e.preventDefault(); run({row: read()}, save); };
+    if (del) del.onclick = () => { if (confirm("متأكد تبي تحذفه؟")) run({delete: true}, del); };
+    f.append(grid, checks, extra, el("div", {className: "row"}, save, cancel, del), msg);
+    return f;
+  }
+  list.append(...(rows.length ? rows.map(r => {
+    const [a, b] = line(r);
+    const item = el("div", {className: "item" + (off && off(r) ? " off" : "")}, el("div", {className: "t"}, el("b", {textContent: a}), el("span", {textContent: b})));
+    item.append(el("button", {type: "button", className: "btn o sm", textContent: "تعديل", onclick: () => { list.querySelector("form")?.remove(); item.after(form(r)); }}));
+    return item;
+  }) : [el("p", {className: "muted", style: "margin:0", textContent: "ما فيه شي للحين."})]));
+  box.replaceChildren(head, list);
+}
+
+async function loadExpired() {
+  const {users: us} = await call("users");
+  const t = now(), list = [];
+  us.forEach(u => u.access.forEach(a => { if (a.until < t && a.until > t - 30 * day && !u.access.some(b => b.course === a.course && b.until > t)) list.push({...u, course: a.course, until: a.until}); }));
+  rows($("expired"), list.sort((a, b) => b.until - a.until), r => [`${r.name} · ${r.phone}`, r.course, fmt(r.until)], "ما فيه أحد خلص اشتراكه.");
+}
+
+// ===== إعدادات التسويق =====
+const GL = {
+  referral: ["كود الإحالة", "كل طالب ياخذ كود. ربعه ياخذ خصم، وهو ياخذ رصيد بعد ما ربعه يدفع.", {friend: "خصم ربعه (د.ك)", reward: "رصيده (د.ك)"}],
+  bundle: ["خصم باقة المواد", "إذا اشترك بأكثر من مادة بنفس الطلب، ينخصم تلقائي.", {two: "مادتين (%)", three: "3 مواد وأكثر (%)"}],
+  examReminder: ["تذكير قبل الامتحان", "إيميل للي ما خلصوا محاضراتهم قبل الامتحان.", {days: "قبل (أيام)"}],
+  installmentReminder: ["تذكير القسط الثاني", "إيميل قبل موعد القسط الثاني.", {days: "قبل (أيام)"}],
+  review: ["المراجعة السريعة", "أهم النقاط من الفيديوات تطلع قبل الامتحان.", {days: "قبل (أيام)"}],
+  freeFirst: ["أول محاضرة مجانية", "أول محاضرة من كل مادة مفتوحة للكل.", {}],
+  privateGroups: ["قروبات المشتركين", "رابط القروب الخاص يطلع للمشترك بالمادة.", {}],
+};
+const money = k => k === "friend" || k === "reward";
+const ds = (e, k, f) => { e.dataset.k = k; e.dataset.f = f; return e; };
+function renderGrowth() {
+  const g = cat.growth;
+  $("gset").replaceChildren(...Object.entries(GL).map(([k, [t, d, nums]]) => el("div", {className: "card"},
+    el("div", {className: "h"}, el("b", {textContent: t}), el("label", {className: "chk", style: "display:flex;gap:6px;align-items:center"}, ds(el("input", {type: "checkbox", checked: g[k].on}), k, "on"), "شغّال")),
+    el("span", {className: "muted", style: "font-size:13px", textContent: d}),
+    ...Object.entries(nums).map(([f, l]) => el("label", {style: "display:flex;gap:8px;align-items:center;font-weight:500"}, l, ds(el("input", {type: "number", min: 0, step: money(f) ? "0.001" : "1", value: money(f) ? g[k][f] / 1000 : g[k][f]}), k, f))))));
+}
+$("gsave").onclick = async () => {
+  const out = {};
+  $("gset").querySelectorAll("input").forEach(i => { const {k, f} = i.dataset; (out[k] ||= {})[f] = f === "on" ? i.checked : money(f) ? Math.round(Number(i.value) * 1000) : Number(i.value); });
+  $("gsave").disabled = true; $("gmsg").className = "msg";
+  try { const r = await call("growth", out); cat.growth = r.growth; renderGrowth(); $("gmsg").className = "msg ok"; $("gmsg").textContent = "انحفظ ✓"; }
+  catch (e) { $("gmsg").className = "msg bad"; $("gmsg").textContent = e.message; }
+  $("gsave").disabled = false;
+};
+
+// ===== فهرس الأسئلة: كل سطر "الوقت العنوان"، مثل 2:10 سؤال 1 =====
+const mmss = t => `${Math.floor(t / 3600) ? Math.floor(t / 3600) + ":" + String(Math.floor(t / 60) % 60).padStart(2, "0") : Math.floor(t / 60)}:${String(t % 60).padStart(2, "0")}`;
+function parseChapters(text) {
+  const out = [], bad = [];
+  text.split("\n").map(l => l.trim()).filter(Boolean).forEach(l => {
+    const m = l.replace(/[٠-٩]/g, c => "٠١٢٣٤٥٦٧٨٩".indexOf(c)).match(/^(\d{1,2}(?::\d{1,2}){1,2})\s*[-–·:]?\s*(.+)$/);
+    if (!m) return bad.push(l);
+    const t = m[1].split(":").map(Number).reduce((a, n) => a * 60 + n, 0);
+    out.push({t, title: m[2].trim()});
+  });
+  return {items: out.sort((a, b) => a.t - b.t), bad};
+}
+function chapEditor(v, done) {
+  const ta = el("textarea", {value: v.chapters.map(c => `${mmss(c.t)} ${c.title}`).join("\n"), placeholder: "2:10 سؤال 1: Goodwill\n7:45 سؤال 2: NCI"});
+  const msg = el("p", {className: "msg"});
+  const save = el("button", {type: "button", className: "btn g sm", textContent: "احفظ الأسئلة"});
+  save.onclick = async () => {
+    const {items, bad} = parseChapters(ta.value);
+    if (bad.length) { msg.className = "msg bad"; msg.textContent = "هالسطر مو واضح: " + bad[0]; return; }
+    save.disabled = true;
+    try { await call("chapters", {video: v.id, items}); msg.className = "msg ok"; msg.textContent = "انحفظت ✓"; done(); }
+    catch (e) { msg.className = "msg bad"; msg.textContent = e.message; save.disabled = false; }
+  };
+  return el("div", {className: "chap"}, el("span", {className: "muted", style: "font-size:13px", textContent: "كل سؤال بسطر: الوقت وبعده العنوان. الطالب يضغط عليه وينقله للدقيقة."}), ta, el("div", {className: "row"}, save, msg));
+}
+
+// ===== التقييمات =====
+let ratingsList = [];
+async function loadRatings() { ratingsList = (await call("ratings")).ratings; if (role === "teacher") $("rf").value = ""; $("rf").hidden = role === "teacher"; renderRatings(); }
+$("rf").onchange = () => renderRatings();
+function renderRatings() {
+  const f = $("rf").value, list = ratingsList.filter(r => !f || r.status === f);
+  $("rlist").replaceChildren(...(list.length ? list.map(r => {
+    const reply = el("input", {value: r.reply || "", placeholder: "ردّك (اختياري، يطلع تحت التقييم)", style: "flex:1;min-width:200px"});
+    const msg = el("span", {className: "msg"});
+    const act = (status, b) => async () => { b.disabled = true; try { await call("rating", {id: r.id, status, reply: reply.value}); await loadRatings(); loadStats().catch(() => {}); } catch (e) { msg.className = "msg bad"; msg.textContent = e.message; b.disabled = false; } };
+    const pub = el("button", {type: "button", className: "btn g sm", textContent: r.status === "published" || role === "teacher" ? "حفظ الرد" : "انشره"}); pub.onclick = act(role === "teacher" ? r.status : "published", pub);
+    const hide = el("button", {type: "button", className: "btn r sm", textContent: "اخفيه"}); hide.onclick = act("hidden", hide);
+    const wa = el("a", {className: "btn o sm", href: `https://wa.me/965${r.phone}`, target: "_blank", rel: "noopener", textContent: "كلّمه واتساب"});
+    return el("div", {className: "card", style: "display:grid;gap:8px"},
+      el("div", {className: "row"}, el("b", {textContent: r.name}), el("bdi", {dir: "ltr", className: "muted", textContent: r.course}), el("span", {className: "stars", textContent: "★".repeat(r.stars) + "☆".repeat(5 - r.stars)}), el("span", {className: "badge " + (r.status === "pending" ? "pending" : r.status === "published" ? "active" : "blocked"), textContent: {pending: "تنتظر", published: "منشورة", hidden: "مخفية"}[r.status]}), el("span", {className: "muted", style: "font-size:12px", textContent: fmt(r.created)})),
+      r.tags.length ? el("div", {className: "muted", style: "font-size:13px", textContent: r.tags.join(" · ")}) : null,
+      r.comment ? el("p", {style: "margin:0", textContent: r.comment}) : el("p", {className: "muted", style: "margin:0", textContent: "بدون تعليق"}),
+      el("div", {className: "row"}, reply), el("div", {className: "row"}, pub, r.status !== "hidden" && role === "owner" ? hide : null, r.phone ? wa : null, msg));
+  }) : [el("p", {className: "muted", textContent: "ما فيه تقييمات هني."})]));
+}
+
+// ===== الشكاوي والاقتراحات =====
+const KIND = {suggestion: "اقتراح", complaint: "شكوى", tech: "مشكلة تقنية", payment: "مشكلة دفع"};
+const TST = {open: "جديدة", working: "قاعدين نشتغل عليها", solved: "انحلت"};
+let ticketsList = [];
+async function loadTickets() { ticketsList = (await call("tickets")).tickets; renderTickets(); }
+$("tf").onchange = () => renderTickets();
+function renderTickets() {
+  const f = $("tf").value, list = ticketsList.filter(t => !f || t.status === f);
+  $("tlist").replaceChildren(...(list.length ? list.map(t => {
+    const reply = el("textarea", {value: t.reply || "", placeholder: "ردّك على الطالب (يطلع له بصفحة طلباتي)", style: "font:inherit;font-size:14px;color:var(--fg);background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;min-height:60px"});
+    const st = el("select"); Object.entries(TST).forEach(([k, l]) => st.append(el("option", {value: k, textContent: l}))); st.value = t.status;
+    const msg = el("span", {className: "msg"});
+    const save = el("button", {type: "button", className: "btn g sm", textContent: "حفظ"});
+    save.onclick = async () => { save.disabled = true; try { await call("ticket", {id: t.id, status: st.value, reply: reply.value}); await loadTickets(); loadStats().catch(() => {}); } catch (e) { msg.className = "msg bad"; msg.textContent = e.message; save.disabled = false; } };
+    return el("div", {className: "card", style: "display:grid;gap:8px"},
+      el("div", {className: "row"}, el("b", {textContent: KIND[t.kind]}), t.course ? el("bdi", {dir: "ltr", className: "muted", textContent: t.course}) : null, el("span", {className: "badge " + (t.status === "solved" ? "active" : "pending"), textContent: TST[t.status]}), el("span", {className: "muted", style: "font-size:12px", textContent: fmt(t.created)})),
+      el("div", {className: "muted", style: "font-size:13px"}, `${t.name} · `, el("a", {href: `https://wa.me/965${t.phone}`, target: "_blank", rel: "noopener", dir: "ltr", textContent: t.phone, style: "color:var(--accent-ink)"}), ` · ${t.email || ""}`),
+      el("p", {style: "margin:0;white-space:pre-wrap", textContent: t.message}),
+      reply, el("div", {className: "row"}, st, save, msg));
+  }) : [el("p", {className: "muted", textContent: "ما فيه رسائل هني."})]));
+}
+
+// ===== الشات مع الطلاب =====
+let threadsList = [], openThread = null;
+async function loadThreads() {
+  threadsList = (await call("chats")).threads;
+  const unread = threadsList.reduce((a, t) => a + (t.unread || 0), 0);
+  $("c-chat").textContent = unread || "";
+  $("threads").replaceChildren(...(threadsList.length ? threadsList.map(t => el("button", {type: "button", className: "btn o", style: "justify-content:space-between;text-align:start;white-space:normal" + (openThread && openThread.course === t.course && openThread.student === t.student ? ";border-color:var(--navy)" : ""), onclick: () => showThread(t)},
+    el("span", {style: "display:grid"}, el("b", {textContent: t.name}), el("span", {className: "muted", style: "font-size:12px;font-weight:500", textContent: `${t.course} · ${t.preview.slice(0, 40)}`})),
+    t.unread ? el("span", {className: "cnt", textContent: t.unread}) : null)) : [el("p", {className: "muted", style: "margin:0", textContent: "ما فيه رسائل للحين."})]));
+}
+// الصور تنقرا بصلاحية الدخول، فنجيبها ونعرضها من الذاكرة
+const imgCache = {};
+function authImg(id) {
+  const img = el("img", {alt: "صورة", style: "display:block;max-width:100%;max-height:320px;border-radius:8px;background:#fff;cursor:zoom-in"});
+  const show = u => { img.src = u; img.onclick = () => window.open(u, "_blank", "noopener"); };
+  if (imgCache[id]) show(imgCache[id]);
+  else fetch(`${API}/api/admin/chatimg?id=${id}`, {headers: {Authorization: "Bearer " + pass}}).then(r => r.ok ? r.blob() : null).then(b => { if (b) show(imgCache[id] = URL.createObjectURL(b)); }).catch(() => {});
+  return img;
+}
+// نصغّر الصورة لـ 1600 بكسل JPEG قبل الرفع: أسرع، وتنشال منها بيانات الموقع (GPS)
+async function shrink(file) {
+  const bmp = await createImageBitmap(file).catch(() => null);
+  if (!bmp) throw {message: "الصورة مو مدعومة، جرّب صورة JPG أو PNG."};
+  const k = Math.min(1, 1600 / Math.max(bmp.width, bmp.height));
+  const c = document.createElement("canvas"); c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+  const g = c.getContext("2d"); g.fillStyle = "#fff"; g.fillRect(0, 0, c.width, c.height); g.drawImage(bmp, 0, 0, c.width, c.height);
+  return new Promise(ok => c.toBlob(ok, "image/jpeg", 0.85));
+}
+async function showThread(t) {
+  openThread = t;
+  const {messages} = await call(`chat?course=${encodeURIComponent(t.course)}&student=${t.student}`);
+  const box = el("div", {style: "display:grid;gap:8px;max-height:420px;overflow:auto"});
+  messages.forEach(m => box.append(el("div", {style: `justify-self:${m.from_staff ? "end" : "start"};max-width:85%;background:${m.from_staff ? "var(--navy)" : "var(--bg)"};color:${m.from_staff ? "#fff" : "var(--fg)"};border-radius:12px;padding:8px 12px`},
+    el("div", {style: "font-size:12px;opacity:.75", textContent: `${m.author} · ${fmt(m.created)}`}), m.image ? authImg(m.id) : null, m.body ? el("div", {style: "white-space:pre-wrap", textContent: m.body}) : null)));
+  const input = el("textarea", {placeholder: "ردّك…", rows: 2, style: "font:inherit;font-size:15px;color:var(--fg);background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:8px 10px"});
+  const msg = el("span", {className: "msg"});
+  const send = el("button", {type: "button", className: "btn g", textContent: "أرسل"});
+  send.onclick = async () => { if (!input.value.trim()) return; send.disabled = true; try { await call("chat", {course: t.course, student: t.student, body: input.value}); await showThread(t); } catch (e) { msg.className = "msg bad"; msg.textContent = e.message; send.disabled = false; } };
+  const pick = el("input", {type: "file", accept: "image/*", hidden: true});
+  const attach = el("button", {type: "button", className: "btn o", textContent: "📎 صورة", onclick: () => pick.click()});
+  pick.onchange = async () => {
+    const file = pick.files[0]; pick.value = ""; if (!file) return;
+    attach.disabled = true; msg.className = "msg"; msg.textContent = "ترفع الصورة…";
+    try { await call(`chatimg?course=${encodeURIComponent(t.course)}&student=${t.student}`, await shrink(file)); await showThread(t); }
+    catch (e) { msg.className = "msg bad"; msg.textContent = e.message; attach.disabled = false; }
+  };
+  $("thread").replaceChildren(el("h2", {}, t.name, el("span", {className: "muted", style: "font-size:14px;font-weight:500", textContent: " · " + t.course})), box, input, el("div", {className: "row"}, send, attach, pick, msg));
+  box.scrollTop = box.scrollHeight;
+  loadThreads().catch(() => {});
+}
+
+// ===== الأخبار =====
+const SCOPE = {all: "كل الطلاب", uni: "جامعة", course: "مادة"};
+function fillNewsRef() {
+  const f = $("nform"), sc = f.scope.value;
+  const opts = sc === "uni" ? (cat?.universities || []).map(u => [u.id, u.name]) : sc === "course" ? (role === "teacher" ? myCourses.map(c => [c, c]) : (cat?.courses || []).map(c => [c.id, `${c.code} · ${c.title}`])) : [];
+  f.ref.replaceChildren(...opts.map(([v, t]) => el("option", {value: v, textContent: t})));
+  f.ref.disabled = sc === "all";
+}
+$("nform").scope.onchange = fillNewsRef;
+async function loadNews() {
+  if (role === "teacher") { const f = $("nform"); [...f.scope.options].forEach(o => o.hidden = o.value !== "course"); f.scope.value = "course"; }
+  fillNewsRef();
+  const {news} = await call("news");
+  $("nlist").replaceChildren(...(news.length ? news.map(n => {
+    const del = el("button", {type: "button", className: "btn r sm", textContent: "احذفه"});
+    del.onclick = async () => { if (!confirm("تبي تحذف هالخبر؟")) return; await call("news", {id: n.id, delete: true}).catch(e => alert(e.message)); loadNews(); };
+    return el("div", {className: "card", style: "display:grid;gap:6px" + (n.until && n.until < now() ? ";opacity:.55" : "")},
+      el("div", {className: "row"}, n.pinned ? el("span", {textContent: "📌"}) : null, el("b", {textContent: n.title}), el("span", {className: "muted", style: "font-size:13px", textContent: `${SCOPE[n.scope]}${n.ref ? " · " + n.ref : ""} · ${n.author} · ${fmt(n.created)}${n.until ? " · لين " + fmt(n.until) : ""}`})),
+      n.body ? el("p", {style: "margin:0;white-space:pre-wrap", textContent: n.body}) : null, el("div", {className: "row"}, del));
+  }) : [el("p", {className: "muted", textContent: "ما فيه أخبار."})]));
+}
+$("nform").onsubmit = async e => {
+  e.preventDefault();
+  const f = e.target, b = f.querySelector("[type=submit]"); b.disabled = true; $("nmsg").className = "msg";
+  try {
+    await call("news", {scope: f.scope.value, ref: f.ref.value, title: f.title.value, body: f.body.value, pinned: f.pinned.checked, until: f.until.value ? fromDate(f.until.value) : null});
+    f.title.value = ""; f.body.value = ""; f.pinned.checked = false; f.until.value = "";
+    $("nmsg").className = "msg ok"; $("nmsg").textContent = "انتشر ✓"; loadNews();
+  } catch (err) { $("nmsg").className = "msg bad"; $("nmsg").textContent = err.message; }
+  b.disabled = false;
+};
+
+// ===== حسابات الأساتذة =====
+async function loadStaff() {
+  const {staff} = await call("staff");
+  $("sform").doctor.replaceChildren(...(cat?.doctors || []).filter(d => !staff.some(s => s.doctor === d.id)).map(d => el("option", {value: d.id, textContent: d.name})));
+  $("slist").replaceChildren(...(staff.length ? staff.map(s => {
+    const msg = el("span", {className: "msg"});
+    const act = (data, okText) => async () => { try { await call("staff", {id: s.id, ...data}); msg.className = "msg ok"; msg.textContent = okText; loadStaff(); } catch (e) { msg.className = "msg bad"; msg.textContent = e.message; } };
+    const pw = el("button", {type: "button", className: "btn o sm", textContent: "كلمة سر جديدة", onclick: () => { const p = prompt("كلمة السر الجديدة (10 بالأقل):"); if (p) act({password: p}, "تغيّرت")(); }});
+    return el("div", {className: "card", style: "display:grid;gap:8px" + (s.active ? "" : ";opacity:.6")},
+      el("div", {className: "row"}, el("b", {textContent: s.name}), el("bdi", {dir: "ltr", className: "muted", textContent: s.username}), el("span", {className: "badge " + (s.active ? "active" : "blocked"), textContent: s.active ? "شغّال" : "موقوف"}), el("span", {className: "muted", style: "font-size:13px", textContent: s.has2fa ? "التحقق بخطوتين مفعّل" : "ما فعّل التحقق للحين"})),
+      el("div", {className: "row"},
+        el("button", {type: "button", className: s.active ? "btn r sm" : "btn g sm", textContent: s.active ? "أوقفه" : "رجّعه", onclick: act({active: !s.active}, "تم")}),
+        el("button", {type: "button", className: "btn o sm", textContent: "صفّر رمز الجوال", onclick: act({reset2fa: true}, "تصفّر، أول دخول يطلع له QR جديد")}),
+        pw, el("button", {type: "button", className: "btn r sm", textContent: "احذف", onclick: () => { if (confirm(`تحذف حساب ${s.name}؟`)) act({delete: true}, "انحذف")(); }}), msg));
+  }) : [el("p", {className: "muted", textContent: "ما فيه حسابات أساتذة للحين."})]));
+}
+$("sform").onsubmit = async e => {
+  e.preventDefault();
+  const f = e.target; $("smsg").className = "msg";
+  try { await call("staff", {doctor: f.doctor.value, username: f.username.value, password: f.password.value}); f.reset(); $("smsg").className = "msg ok"; $("smsg").textContent = "انسوى ✓ أرسل له الرقم وكلمة السر، وأول دخول يربط جواله."; loadStaff(); }
+  catch (err) { $("smsg").className = "msg bad"; $("smsg").textContent = err.message; }
+};
+
+// ===== سجل التعديلات =====
+const ACTION = {save: "تعديل بالمواد/الأسعار", growth: "إعدادات التسويق", user: "تعديل طالب", video: "تعديل محاضرة", chapters: "فهرس أسئلة", rating: "تقييم", ticket: "شكوى", news: "خبر", chat: "رسالة شات", staff: "حساب أستاذ", upload: "رفع محاضرة"};
+async function loadAudit() {
+  const {audit} = await call("audit");
+  rows($("alist"), audit, a => [a.who, ACTION[a.action] || a.action, (a.detail || "").slice(0, 80), new Date(a.at * 1000).toLocaleString("ar-KW", {numberingSystem: "latn", dateStyle: "short", timeStyle: "short"})], "ما فيه تعديلات.");
+}
+
+start();
+})();
+</script>
+</body></html>

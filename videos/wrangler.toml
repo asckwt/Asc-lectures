@@ -1,0 +1,37 @@
+# خادم المحاضرات المحمية: تسجيل الطلاب ودخولهم، وتشغيل الفيديوهات للمشتركين بس.
+# الفيديوهات نفسها على Cloudflare Stream، وهذا الخادم يتحكم مين يشوف شنو.
+# ينرفع تلقائياً من .github/workflows/deploy-videos.yml، واللي ينشئ قاعدة البيانات ومفتاح Stream أول مرة بنفسه.
+name = "asc-videos"
+main = "worker.js"
+compatibility_date = "2026-10-01"
+workers_dev = true
+
+# قاعدة بيانات الطلاب والاشتراكات (Cloudflare D1)
+# database_id يتعبّى تلقائياً وقت الرفع من GitHub
+[[d1_databases]]
+binding = "DB"
+database_name = "asc-videos"
+database_id = "00000000-0000-0000-0000-000000000000"
+
+# حماية من تخمين كلمات السر: 10 محاولات دخول أو تسجيل بالدقيقة لكل IP
+[[ratelimits]]
+name = "LIMITER"
+namespace_id = "1002"
+simple = { limit = 10, period = 60 }
+
+# لوحة الإدارة: حد أعلى عشان الشغل العادي ما يوقف، بس يمنع تخمين كلمة السر
+[[ratelimits]]
+name = "ADMIN_LIMITER"
+namespace_id = "1003"
+simple = { limit = 60, period = 60 }
+
+# ملفات المواد (PDF) وصور الشات، على Cloudflare R2. الرفع ينشئه إذا مو موجود
+[[r2_buckets]]
+binding = "FILES"
+bucket_name = "asc-files"
+
+# الخط العربي اللي ينكتب فيه اسم الطالب ورقمه على الملفات
+[[rules]]
+type = "Data"
+globs = ["**/*.ttf"]
+fallthrough = true

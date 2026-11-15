@@ -1,0 +1,84 @@
+# يرفع خادم المحاضرات المحمية (videos/worker.js) على Cloudflare كل ما تغيّر.
+# أول مرة ينشئ بنفسه: قاعدة البيانات (D1) ومفتاح توقيع روابط المشاهدة في Cloudflare Stream.
+# قبلها لازم يكون Stream مفعّل في حساب Cloudflare (dash.cloudflare.com > Stream).
+# يحتاج في إعدادات المستودع (Settings > Secrets and variables > Actions):
+#   CLOUDFLARE_API_TOKEN    نفس توكن المساعد، بس لازم يكون فيه صلاحية D1: Edit و Stream: Edit
+#   CLOUDFLARE_ACCOUNT_ID   رقم حساب Cloudflare
+#   VIDEOS_ADMIN_PASSWORD   كلمة سر لوحة الإدارة (asckwt.com/watch/admin)
+#   VIDEOS_OPS_KEY          (اختياري) مفتاح Claude لإدارة المحتوى، 32 حرف بالأقل. كل تعديل فيه ينسجّل باسم Claude
+# ملفات المواد على R2: لازم يكون R2 مفعّل والتوكن فيه صلاحية R2: Edit، وإلا ينرفع الخادم بدون الملفات.
+name: Deploy lecture videos server
+on:
+  push:
+    branches: [main]
+    paths: [videos/**, .github/workflows/deploy-videos.yml]
+  workflow_dispatch:
+    inputs:
+      reset_2fa:
+        description: "صفّر التحقق بخطوتين للإدارة (لو ضاع جوالك). أول دخول بعدها يطلع لك رمز QR جديد."
+        type: boolean
+        default: false
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      READY: ${{ secrets.CLOUDFLARE_API_TOKEN != '' && secrets.VIDEOS_ADMIN_PASSWORD != '' }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      ADMIN_PASSWORD: ${{ secrets.VIDEOS_ADMIN_PASSWORD }}
+      OPS_KEY: ${{ secrets.VIDEOS_OPS_KEY }}
+      WRANGLER: npx --yes wrangler@4.153.0
+    defaults:
+      run:
+        working-directory: videos
+    steps:
+      - if: env.READY != 'true'
+        working-directory: .
+        run: echo "::notice::أسرار Cloudflare وكلمة سر الإدارة مو محطوطة للحين، فما انرفع خادم المحاضرات."
+      - if: env.READY == 'true'
+        uses: actions/checkout@v4
+      - if: env.READY == 'true'
+        uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - name: الحزم (pdf-lib للعلامة المائية)
+        if: env.READY == 'true'
+        run: npm ci --no-audit --no-fund
+      - name: تخزين الملفات (R2)
+        if: env.READY == 'true'
+        run: |
+          if ! $WRANGLER r2 bucket list 2>/dev/null | grep -q "asc-files"; then
+            if ! $WRANGLER r2 bucket create asc-files; then
+              echo "::warning::ما قدرنا ننشئ تخزين R2. تأكد إن R2 مفعّل وإن التوكن فيه صلاحية R2: Edit. الخادم بينرفع بدون الملفات."
+              sed -i '/^\[\[r2_buckets\]\]/,/^bucket_name/d' wrangler.toml
+            fi
+          fi
+      - name: قاعدة البيانات (D1)
+        if: env.READY == 'true'
+        run: |
+          id=$($WRANGLER d1 list --json | node -e 'const l=JSON.parse(require("fs").readFileSync(0));const d=l.find(x=>x.name==="asc-videos");process.stdout.write(d?d.uuid:"")')
+          if [ -z "$id" ]; then
+            $WRANGLER d1 create asc-videos
+            id=$($WRANGLER d1 list --json | node -e 'const l=JSON.parse(require("fs").readFileSync(0));process.stdout.write(l.find(x=>x.name==="asc-videos").uuid)')
+          fi
+          sed -i "s/^database_id = .*/database_id = \"$id\"/" wrangler.toml
+          $WRANGLER d1 execute asc-videos --remote --file schema.sql --yes
+      - name: تصفير التحقق بخطوتين
+        if: env.READY == 'true' && inputs.reset_2fa
+        run: $WRANGLER d1 execute asc-videos --remote --yes --command "DELETE FROM settings WHERE k IN ('totp','totp_pending'); DELETE FROM admin_sessions;"
+      - name: رفع الخادم
+        if: env.READY == 'true'
+        run: $WRANGLER deploy --var CF_ACCOUNT_ID:$CLOUDFLARE_ACCOUNT_ID
+      - name: الأسرار ومفتاح Stream
+        if: env.READY == 'true'
+        run: |
+          printf '%s' "$ADMIN_PASSWORD" | $WRANGLER secret put ADMIN_PASSWORD
+          printf '%s' "$CLOUDFLARE_API_TOKEN" | $WRANGLER secret put CF_API_TOKEN
+          if [ ${#OPS_KEY} -ge 32 ]; then printf '%s' "$OPS_KEY" | $WRANGLER secret put OPS_KEY; fi
+          if ! $WRANGLER secret list --format json | grep -q '"STREAM_KEY_ID"'; then
+            r=$(curl -sS -X POST -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/stream/keys")
+            if [ "$(echo "$r" | jq -r .success)" != "true" ]; then
+              echo "::error::ما قدرنا ننشئ مفتاح Stream. تأكد إن Stream مفعّل وإن التوكن فيه صلاحية Stream: Edit"; echo "$r" | jq -c .errors; exit 1
+            fi
+            echo "$r" | jq -r .result.id | tr -d '\n' | $WRANGLER secret put STREAM_KEY_ID
+            echo "$r" | jq -r .result.jwk | tr -d '\n' | $WRANGLER secret put STREAM_KEY_JWK
+          fi
