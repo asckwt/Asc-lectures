@@ -69,10 +69,10 @@ function page(c) {
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
 <style>
-:root{--navy:#07005E;--yellow:#F7DC6B;--turq:#7DE6D5;--pink:#E980C2;--bg:#F6F5FB;--surface:#fff;--fg:#151238;--muted:#5B5878;--line:#E2E0EE;--accent-ink:#07005E;
+:root{--navy:#07005E;--yellow:#F2C94C;--turq:#4FD1C0;--pink:#D9579F;--bg:#F6F5FB;--surface:#fff;--fg:#151238;--muted:#5B5878;--line:#E2E0EE;--accent-ink:#07005E;
  --display:"Alexandria","IBM Plex Sans Arabic",Tahoma,sans-serif;--body:"IBM Plex Sans Arabic",Tahoma,"Segoe UI",sans-serif}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0B0930;--surface:#141142;--fg:#F1F0FA;--muted:#B4B1D3;--line:#2A2663;--accent-ink:#F7DC6B;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#0B0930;--surface:#141142;--fg:#F1F0FA;--muted:#B4B1D3;--line:#2A2663;--accent-ink:#F7DC6B;color-scheme:dark}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0B0930;--surface:#141142;--fg:#F1F0FA;--muted:#B4B1D3;--line:#2A2663;--accent-ink:#F2C94C;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0B0930;--surface:#141142;--fg:#F1F0FA;--muted:#B4B1D3;--line:#2A2663;--accent-ink:#F2C94C;color-scheme:dark}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.7}
 .wrap{max-width:860px;margin:0 auto;padding-inline:16px}

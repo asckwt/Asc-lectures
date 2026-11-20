@@ -5,7 +5,7 @@
      الشكل: شجرة من التمهيدي ونازل، كل خط من المادة للمادة اللي تفتحها -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
 <style>
-:root{--navy:#07005E;--deep:#050044;--yellow:#F7DC6B;--turq:#7DE6D5;--pink:#E980C2;--lav:#B9B5D6;--purple:#8C86C9;--gold:#F2D98A;
+:root{--navy:#07005E;--deep:#050044;--yellow:#F2C94C;--turq:#4FD1C0;--pink:#D9579F;--lav:#B9B5D6;--purple:#8C86C9;--gold:#F2D98A;
   --display:"Alexandria","IBM Plex Sans Arabic",sans-serif;--body:"IBM Plex Sans Arabic",sans-serif}
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--navy)}
@@ -158,7 +158,7 @@ tree.insertAdjacentHTML("beforeend", Object.values(items).filter(x => x.real).ma
 }).join(""));
 // الخطوط: كل مادة لها لون، ينزل من تحتها لخط أفقي خاص فيها، ثم لكل مادة تفتحها.
 // كل سهم داخل للمادة له مكانه فوقها عشان ما تركب الخطوط على بعض.
-const PAL = ["#7DE6D5","#F7DC6B","#FF9BD2","#9DB7FF","#FFB27A","#B9F27C","#D9B3FF","#FF8F8F","#7FD8FF","#F2F2F2"];
+const PAL = ["#4FD1C0","#F2C94C","#FF9BD2","#9DB7FF","#FFB27A","#B9F27C","#D9B3FF","#FF8F8F","#7FD8FF","#F2F2F2"];
 const color = {};
 Object.values(items).filter(x => x.real && x.downs.length).sort((a, b) => a.row - b.row || b.x - a.x).forEach((it, i) => color[it.id] = PAL[i % PAL.length]);
 const busY = it => it.y + H + 22 + it.bus * BUS;
