@@ -26,7 +26,7 @@ document.head.insertAdjacentHTML("beforeend", `<style>
 .ai-hd b{flex:1;min-width:0;display:flex;align-items:center;gap:10px}
 .ai-hd b>span:last-child{min-width:0;display:flex;flex-direction:column;gap:1px}
 .ai-hd b i{font-style:normal;font-family:var(--display);font-size:16px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ai-hd b small{font-family:var(--body);font-weight:400;font-size:12px;line-height:1.2;color:#9FE8DC;white-space:nowrap}
+.ai-hd b small{font-family:var(--body);font-weight:400;font-size:12px;line-height:1.2;color:#4FD1C0;white-space:nowrap}
 .ai-av{flex:none;width:36px;height:36px;border-radius:50%;background:var(--yellow);display:grid;place-items:center;font-size:19px}
 .ai-hd nav{flex:none;display:flex;gap:6px}
 .ai-box .ai-hd button{width:36px;height:36px;padding:0;border:0;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.1);color:#fff;cursor:pointer}
@@ -87,8 +87,8 @@ document.head.insertAdjacentHTML("beforeend", `<style>
 .ai-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .ai-chips button{margin:0;width:auto;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.08);color:inherit;border-radius:999px;padding:5px 12px;font:inherit;font-size:13px;cursor:pointer;transition:background .15s}
 .ai-chips button:hover{background:rgba(255,255,255,.18)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .ai-m.a a{color:#9FE8DC}:root:not([data-theme="light"]) .ai-m code{background:rgba(255,255,255,.1)}}
-:root[data-theme="dark"] .ai-m.a a{color:#9FE8DC}:root[data-theme="dark"] .ai-m code{background:rgba(255,255,255,.1)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .ai-m.a a{color:#4FD1C0}:root:not([data-theme="light"]) .ai-m code{background:rgba(255,255,255,.1)}}
+:root[data-theme="dark"] .ai-m.a a{color:#4FD1C0}:root[data-theme="dark"] .ai-m code{background:rgba(255,255,255,.1)}
 .ai-ft{font-size:11px;color:var(--muted);text-align:center;padding:2px 10px 8px;background:var(--surface)}
 </style>`);
 

@@ -7,6 +7,7 @@ const MODEL = "claude-haiku-5-5";
 const ORIGINS = ["https://www.asckwt.com", "https://asckwt.com"];
 const MAX_TURNS = 11, MAX_CHARS = 1500, DAY_CAP = 150;
 const FILE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif", "application/pdf"], MAX_FILE = 5600000; // ~4 ميغا بعد base64
+const MAX_BODY = MAX_FILE + 400000; // الملف + الرسائل والحقول الثانية
 
 const RULES = `أنت "مساعد الطالب الأكاديمي" في موقع asckwt.com، مساعد دراسي لطلاب الجامعة العربية المفتوحة فرع الكويت (AOU Kuwait).
 تحت تعليماتك معلومات رسمية من الموقع عن الجامعة: المواد، الخطط الدراسية والمتطلبات، تقويم الفصل، مواعيد الاختبارات، النماذج السابقة، المحاضرات والقروبات.
@@ -43,6 +44,27 @@ async function pdf(env, code, file) {
   return btoa(s);
 }
 
+// ينظّف نص جاي من المستخدم قبل لا ينحط بتعليمات النموذج (يشيل الأسطر الجديدة والمسافات الزايدة)
+const clean = (v, n) => String(v || "").replace(/\s+/g, " ").trim().slice(0, n);
+
+// يقرا جسم الطلب بحد أقصى حقيقي: الـ Content-Length ممكن ينحذف أو يتزوّر، فنعدّ البايتات اللي توصل فعلاً
+async function readJson(req, max) {
+  if (+req.headers.get("Content-Length") > max) return {tooBig: true};
+  const rd = req.body?.getReader();
+  if (!rd) return {};
+  const parts = []; let n = 0;
+  for (;;) {
+    const {done, value} = await rd.read();
+    if (done) break;
+    n += value.length;
+    if (n > max) { rd.cancel().catch(() => {}); return {tooBig: true}; }
+    parts.push(value);
+  }
+  const buf = new Uint8Array(n); let o = 0;
+  for (const p of parts) { buf.set(p, o); o += p.length; }
+  try { return {body: JSON.parse(new TextDecoder().decode(buf))}; } catch { return {}; }
+}
+
 const cors = origin => ({
   "Access-Control-Allow-Origin": origin,
   "Access-Control-Allow-Methods": "POST, OPTIONS",
@@ -70,12 +92,13 @@ export default {
     const capKey = new Request(`https://cap.asc-ai/${encodeURIComponent(ip)}/${new Date().toISOString().slice(0, 10)}`);
     const used = +(await (await caches.default.match(capKey))?.text() || 0);
     if (used >= DAY_CAP) return fail("وصلت الحد اليومي للأسئلة، ترجع لك الأسئلة باجر 🙏", 429);
-    if (+req.headers.get("Content-Length") > MAX_FILE * 1.3) return fail("الطلب كبير", 413);
 
-    let body;
-    try { body = await req.json(); } catch { return fail("bad json"); }
+    const parsed = await readJson(req, MAX_BODY);
+    if (parsed.tooBig) return fail("الطلب كبير", 413);
+    const body = parsed.body;
+    if (!body || typeof body !== "object" || Array.isArray(body)) return fail("bad json");
     const code = String(body.course || "").toUpperCase();
-    const name = String(body.name || "").slice(0, 80);
+    const name = clean(body.name, 80);
     const msgs = Array.isArray(body.messages) ? body.messages.slice(-MAX_TURNS) : [];
     if (code && !/^[A-Z0-9-]{2,12}$/.test(code)) return fail("bad course");
     const exam = String(body.exam || "");
@@ -89,7 +112,6 @@ export default {
       return fail("الملف لازم يكون صورة أو PDF وحجمه أقل من 4 ميغا.");
     // معلومات الطالب اللي كتبها عن نفسه (اسمه، تخصصه، مواده)
     const st = body.student && typeof body.student === "object" ? body.student : {};
-    const clean = (v, n) => String(v || "").replace(/\s+/g, " ").trim().slice(0, n);
     const who = [["الاسم", clean(st.name, 40)], ["التخصص", clean(st.major, 60)], ["مواده هالفصل", clean(st.courses, 200)]].filter(x => x[1]).map(x => x.join(": ")).join("، ");
 
     const [general, course, doc] = await Promise.all([kb(env, "general.md"), code ? kb(env, code + ".md") : "", exam ? pdf(env, code, exam) : null]);
@@ -103,7 +125,8 @@ export default {
     if (doc) messages[0].content.unshift({type: "document", source: {type: "base64", media_type: "application/pdf", data: doc}, title: exam, cache_control: {type: "ephemeral"}});
 
     // المسائل والحلول والملفات تاخذ تفكير أعمق عشان الجواب يطلع دقيق، والأسئلة العادية تبقى سريعة ورخيصة
-    const solve = !!(file || exam) || /حل|احسب|قيد|اشرح|سؤال|كويز|واجب|tma|quiz|solve|calculat|answer|question|explain|journal|\d+[.,]?\d*\s*[-+*/×÷=]\s*\d/i.test(msgs.at(-1).content);
+    // (كلمات عامة مثل "اشرح" و"سؤال" و"explain" تمت إزالتها لأنها تطابق أغلب الرسائل، والتواريخ مثل 19/11 ما تحسب عملية حسابية)
+    const solve = !!(file || exam) || /احسب|قيد|كويز|واجب|\btma\b|quiz|solve|calculat|journal entr|(^|\s)حلّ?(\s|ها|$)|\d\s*[+*×÷=]\s*\d|\d\s+[-/]\s+\d/i.test(msgs.at(-1).content);
 
     await caches.default.put(capKey, new Response(String(used + 1), {headers: {"Cache-Control": "max-age=86400"}}));
 
@@ -120,6 +143,9 @@ export default {
       messages,
     });
 
+    // لو الطالب سكّر الصفحة أو قطع الاتصال، نوقف الطلب لـ Claude عشان ما ندفع على جواب ما أحد بيقراه
+    req.signal?.addEventListener("abort", () => stream.abort());
+
     // نرجّع الجواب نص عادي أول بأول عشان الطالب يشوفه وهو ينكتب
     const {readable, writable} = new TransformStream();
     const w = writable.getWriter(), enc = new TextEncoder();
@@ -131,9 +157,13 @@ export default {
         if (final.stop_reason === "refusal") await w.write(enc.encode("\n\nما أقدر أساعد في هذا السؤال، جرّب تسأل عن شي ثاني في المادة."));
         else if (final.stop_reason === "max_tokens") await w.write(enc.encode("\n\n(الجواب طويل وانقطع، اطلب مني أكمل.)"));
       } catch (e) {
-        if (e instanceof Anthropic.RateLimitError) await w.write(enc.encode("المساعد عليه ضغط الحين، جرّب بعد شوي."));
-        else { console.error(e); await w.write(enc.encode("المساعد واقف مؤقتاً، جرّب بعدين.")); }
-      } finally { await w.close(); }
+        // الكتابة بعد ما يقطع الطالب تفشل، فنلفّها بـ try عشان ما يطلع خطأ بدون معالجة
+        try {
+          if (e instanceof Anthropic.APIUserAbortError) return;
+          if (e instanceof Anthropic.RateLimitError) await w.write(enc.encode("المساعد عليه ضغط الحين، جرّب بعد شوي."));
+          else { console.error(e); await w.write(enc.encode("المساعد واقف مؤقتاً، جرّب بعدين.")); }
+        } catch {}
+      } finally { try { await w.close(); } catch {} }
     })();
     return new Response(readable, {headers: {...h, "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store"}});
   },
