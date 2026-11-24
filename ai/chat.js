@@ -115,18 +115,22 @@ const esc = t => t.replace(/[&<>]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt
 // ماركداون بسيط: عناوين، خط عريض، نقاط وأرقام، وروابط تنفتح
 const inl = t => t.replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/`([^`]+)`/g, "<code>$1</code>")
   .replace(/https?:\/\/[^\s<)\]،"]+/g, u => { const s = u.replace(/[.,:;!?]+$/, ""); return `<a href="${s}" target="_blank" rel="noopener" dir="ltr">${s.replace(/^https?:\/\/(www\.)?/, "").slice(0, 40)}${s.length > 48 ? "…" : ""}</a>${u.slice(s.length)}`; });
+// اتجاه الفقرة: إذا الحروف اللاتينية أكثر من العربية تنكتب من اليسار (إنجليزي)، غير كذا من اليمين (عربي)
+const dirOf = t => { const s = t.replace(/<[^>]*>|https?:\/\/\S+|&\w+;/g, ""), a = (s.match(/[\u0600-\u06FF]/g) || []).length, l = (s.match(/[A-Za-z]/g) || []).length; return l > a ? "ltr" : "rtl"; };
+// اتجاه القائمة كلها حسب أغلب بنودها المتتالية
+const runDir = (L, i, re) => { let a = 0, e = 0; for (let j = i; j < L.length && re.test(L[j]); j++) dirOf(L[j]) === "ltr" ? e++ : a++; return e > a ? "ltr" : "rtl"; };
 const fmt = t => { let h = "", list = "";
   const close = () => { if (list) { h += list === "table" ? "</table></div>" : `</${list}>`; list = ""; } };
-  esc(t).split("\n").forEach(l => {
+  const L = esc(t).split("\n"); L.forEach((l, i) => {
     let m;
     // جداول (القيود المحاسبية وجداول الإهلاك): الصف الأول عنوان، وسطر --- يتخطاه
     if (/^\s*\|.*\|\s*$/.test(l)) { const cells = l.trim().slice(1, -1).split("|").map(c => c.trim());
       if (cells.every(c => /^:?-{2,}:?$/.test(c))) return;
-      if (list !== "table") { close(); h += '<div class="ai-tb"><table>'; list = "table"; h += `<tr>${cells.map(c => `<th>${inl(c)}</th>`).join("")}</tr>`; }
-      else h += `<tr>${cells.map(c => `<td>${inl(c)}</td>`).join("")}</tr>`; }
-    else if ((m = l.match(/^\s*[-•*] (.+)/))) { if (list !== "ul") { close(); h += "<ul>"; list = "ul"; } h += `<li>${inl(m[1])}</li>`; }
-    else if ((m = l.match(/^\s*\d+[.)] (.+)/))) { if (list !== "ol") { close(); h += "<ol>"; list = "ol"; } h += `<li>${inl(m[1])}</li>`; }
-    else { close(); if ((m = l.match(/^#{1,4} (.+)/))) h += `<h4>${inl(m[1])}</h4>`; else if (/^-{3,}$/.test(l.trim())) h += "<hr>"; else if (l.trim()) h += `<p>${inl(l)}</p>`; }
+      if (list !== "table") { close(); h += '<div class="ai-tb"><table>'; list = "table"; h += `<tr>${cells.map(c => `<th dir="${dirOf(c)}">${inl(c)}</th>`).join("")}</tr>`; }
+      else h += `<tr>${cells.map(c => `<td dir="${dirOf(c)}">${inl(c)}</td>`).join("")}</tr>`; }
+    else if ((m = l.match(/^\s*[-•*] (.+)/))) { if (list !== "ul") { close(); h += `<ul dir="${runDir(L, i, /^\s*[-•*] /)}">`; list = "ul"; } h += `<li dir="${dirOf(m[1])}">${inl(m[1])}</li>`; }
+    else if ((m = l.match(/^\s*\d+[.)] (.+)/))) { if (list !== "ol") { close(); h += `<ol dir="${runDir(L, i, /^\s*\d+[.)] /)}">`; list = "ol"; } h += `<li dir="${dirOf(m[1])}">${inl(m[1])}</li>`; }
+    else { close(); if ((m = l.match(/^#{1,4} (.+)/))) h += `<h4 dir="${dirOf(m[1])}">${inl(m[1])}</h4>`; else if (/^-{3,}$/.test(l.trim())) h += "<hr>"; else if (l.trim()) h += `<p dir="${dirOf(l)}">${inl(l)}</p>`; }
   });
   close(); return h; };
 const bubble = (role, text, f) => { const d = document.createElement("div"); d.className = "ai-m " + (role === "user" ? "u" : "a");
