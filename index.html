@@ -132,6 +132,8 @@ footer .wrap{padding-block:18px;display:flex;flex-wrap:wrap;gap:8px 20px;justify
 .nb-steps{list-style:none;margin:0;padding:0;display:grid;gap:10px;counter-reset:nb}.nb-steps li{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px 14px;counter-increment:nb}.nb-steps li.done{opacity:.65}.nb-steps li.done b{text-decoration:line-through}
 .nb-steps input{width:24px;height:24px;flex:none;accent-color:var(--turq);cursor:pointer}.nb-steps .nb-t{flex:1;min-width:0}.nb-steps b{display:block;font-family:var(--display);font-size:16px}.nb-steps b::before{content:counter(nb) ". "}.nb-steps small{color:var(--muted);font-size:13px}.nb-steps a.go{flex:none;text-decoration:none;color:var(--ink);background:var(--yellow);border-radius:99px;padding:6px 14px;font-weight:700;font-size:13px}
 .nb-svc{list-style:none;margin:0 0 14px;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}.nb-svc li{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 16px}.nb-svc b{display:block;font-family:var(--display);font-size:16px;margin-bottom:4px}.nb-svc p{margin:0;color:var(--muted);font-size:14px}.nb-svc .pr{display:inline-block;margin-top:8px;font-weight:800;color:var(--ink);background:var(--yellow);border-radius:99px;padding:2px 12px;font-size:13px}
+.faq-g{margin:22px 0 0}.faq-g h3{font-family:var(--display);font-weight:700;font-size:18px;margin:0 0 10px}.faq-g details{background:var(--surface);border:1px solid var(--line);border-radius:14px;margin:0 0 8px;overflow:hidden}.faq-g summary{cursor:pointer;list-style:none;padding:13px 16px;font-family:var(--display);font-weight:700;font-size:15px;display:flex;justify-content:space-between;gap:10px;align-items:center}.faq-g summary::-webkit-details-marker{display:none}.faq-g summary::after{content:"+";font-size:20px;line-height:1;color:var(--muted);flex:none}.faq-g details[open] summary::after{content:"−"}.faq-a{padding:0 16px 14px;color:var(--ink);font-size:15px;line-height:1.8}.faq-a p{margin:0 0 10px}.faq-acts{display:flex;flex-wrap:wrap;gap:8px}.faq-acts a,.faq-acts button{font:inherit;font-size:13px;font-weight:700;border-radius:99px;padding:6px 14px;text-decoration:none;cursor:pointer;border:1px solid var(--line);background:var(--surface);color:var(--ink)}.faq-acts .ai{background:var(--yellow);border-color:var(--yellow);color:#07005E}.faq-none{color:var(--muted);margin-top:18px}.faq-note{color:var(--muted);font-size:13px;margin:18px 0 0}
+.gd{list-style:none;margin:0;padding:0;display:grid;gap:10px;counter-reset:gd}.gd li{position:relative;display:grid;gap:2px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:13px 16px;padding-inline-start:58px;counter-increment:gd}.gd li::before{content:counter(gd);position:absolute;inset-inline-start:14px;top:12px;width:32px;height:32px;border-radius:50%;background:var(--turq);color:#07005E;font-family:var(--display);font-weight:800;display:flex;align-items:center;justify-content:center}.gd b{font-family:var(--display);font-size:16px}.gd span{color:var(--muted);font-size:14px;line-height:1.7}.gd a.go{justify-self:start;margin-top:6px;text-decoration:none;color:#07005E;background:var(--yellow);border-radius:99px;padding:5px 14px;font-weight:700;font-size:13px}.gd-p{margin:0;padding:0 18px 0 0;display:grid;gap:8px;line-height:1.8;font-size:15px}
 .cc-h{font-family:var(--display);font-weight:700;font-size:18px;margin:26px 0 12px}.cclist{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}.cclist a{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;text-decoration:none;color:inherit;font-family:var(--display);font-weight:700;font-size:14px;direction:ltr;justify-content:flex-end}.cclist a svg{width:20px;height:20px;flex:none;color:#25D366}
 .tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}@media (min-width:720px){.tiles{grid-template-columns:repeat(3,1fr);gap:16px}}
 .tile{position:relative;display:flex;flex-direction:column;gap:4px;min-height:150px;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px;text-decoration:none;color:inherit;overflow:hidden;transition:transform .15s,border-color .15s}
@@ -271,6 +273,7 @@ main .wrap{display:grid;grid-template-columns:1fr;gap:40px;padding-block:36px 56
       <h2>الأقسام</h2>
       <p class="sub">اختار القسم اللي تبيه.</p>
       <div class="tiles">
+        <a class="tile" href="#faq" style="--c:var(--turq)"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.6 2.2c-.7.4-1.1 1-1.1 1.8"/><path d="M12 17h.01"/></svg></span><b>الأسئلة الشائعة</b><small>جواب أكثر أسئلة المستجدين</small></a>
         <a class="tile" href="#newbies" style="--c:var(--pink)"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-4 9 4-9 4z"/><path d="M7 11.2V16c0 1.2 2.2 2.5 5 2.5s5-1.3 5-2.5v-4.8"/><path d="M21 9v6"/></svg></span><b>للمستجدين</b><small>ابدأ من هنا: خطواتك الأولى في الجامعة</small></a>
         <a class="tile" href="#lectures/acc" style="--c:var(--yellow)"><span class="ic">ACC</span><b>المحاسبة</b><small>محاضرات مجانية مسجلة</small></a>
         <a class="tile" href="#lectures/mgt" style="--c:var(--turq)"><span class="ic">MGT</span><b>الإدارة</b><small>محاضرات مجانية مسجلة</small></a>
@@ -283,6 +286,55 @@ main .wrap{display:grid;grid-template-columns:1fr;gap:40px;padding-block:36px 56
         <a class="tile" href="#gpa" style="--c:var(--turq)"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 11h.01M12 11h.01M16 11h.01M8 15h.01M12 15h.01M16 15h.01M8 18h.01M12 18h4"/></svg></span><b>حاسبة المعدل</b><small>معدلك الفصلي والتراكمي وشكثر تحتاج</small></a>
       </div>
       <div class="install" id="install"><p><b>ثبّت الموقع على جوالك</b><br><span id="install-t">يفتح مثل التطبيق، والنماذج اللي فتحتها تشتغل بدون نت.</span></p><button type="button" id="install-b">ثبّت</button></div>
+    </section>
+
+    <section id="faq" class="view" hidden>
+      <a class="back" href="#home">→ الرئيسية</a>
+      <h2>الأسئلة الشائعة</h2>
+      <p class="sub">أكثر الأسئلة اللي يسألها المستجدين بقروبات الجامعة. الأرقام تقريبية، والمعتمد دايماً بوابة SIS وموقع الجامعة.</p>
+      <div class="search"><label for="faq-q" class="sr">ابحث بالأسئلة</label><input id="faq-q" type="search" dir="auto" placeholder="🔍 دوّر: رسوم، تأجيل، غياب…" autocomplete="off"></div>
+      <div id="faq-list"></div>
+      <p class="faq-none" id="faq-none" hidden>ما لقينا سؤالك، اسأل المساعد أو كلمنا على الواتساب.</p>
+    </section>
+
+    <section id="register" class="view" hidden>
+      <a class="back" href="#home">→ الرئيسية</a>
+      <h2>دليل تسجيل المواد</h2>
+      <p class="sub">من التقديم لين ما يتأكد جدولك، خطوة بخطوة.</p>
+      <ol class="gd">
+        <li><b>قدّم طلب الالتحاق</b><span>أونلاين من بوابة التقديم. تحتاج صورة شهادة الثانوية، البطاقة المدنية، الجواز وصورة شخصية، ورسوم التقديم 25 د.ك عن طريق K-Net. نسبة القبول من 60% وفوق.</span><a class="go" href="https://sis.aou.edu.kw/OnlineApplication/NewApp.aspx" target="_blank" rel="noopener">قدّم</a></li>
+        <li><b>اختبار القدرات</b><span>بعد الدفع يوصلك إيميل بموعد الاختبار (محوسب بالجامعة، وغالباً ثاني يوم). يحدد مستواك بالإنجليزي.</span></li>
+        <li><b>استلم رقمك الجامعي</b><span>يوصلك الرقم الجامعي والرقم السري، وإيميلك الجامعي يكون رقمك@tsm.aou.edu.kw.</span></li>
+        <li><b>شوف المواد المطروحة</b><span>من SIS ← التسجيل ← قائمة الإرشاد الأكاديمي، تشوف المواد وأوقاتها بدون ما تدش التسجيل.</span><a class="go" href="https://sis.aou.edu.kw/OnlineServices" target="_blank" rel="noopener">SIS</a></li>
+        <li><b>سجّل المادة</b><span>SIS ← Registration ← اختار المادة ← View sections ← Enroll ← Confirm.</span></li>
+        <li><b>ادفع خلال 3 أيام</b><span>من Financial. رسوم التسجيل ممكن تنحسب بمجرد ما تدش التسجيل، واللي ما يدفع القسط الأول خلال تقريباً 3 أيام ينحذف جدوله.</span></li>
+        <li><b>أسبوع السحب والإضافة</b><span>أول أسبوع من الدوام تقدر تغيّر الشعبة أو تسحب بدون خسارة. الغياب ما ينحسب فيه.</span></li>
+        <li><b>فعّل LMS والإيميل والكتب</b><span>LMS للمحاضرات والواجبات، وTeams بإيميلك الجامعي، والكتب كود من مخزن الكتب بالجامعة وتفتحه على Garnet E-books.</span></li>
+      </ol>
+      <h3 class="cc-h">مواد التمهيدي (الإنجليزي)</h3>
+      <ul class="gd-p">
+        <li>الترتيب: EL096، EL097، EL098، EL099، وبعدها EL111 وEL112.</li>
+        <li>كل مادة من 096 لين 099 تقريباً شهر ونص، ودوامها يومي ماعدا الجمعة. EL111 وEL112 يومين بالأسبوع.</li>
+        <li>تقدر تسجل مادتين مع بعض (مثلاً 097 و098). أول ما تخلص الأولى وتنجح، يفتح السستم تقريباً أسبوع تختار فيه الشعبة والوقت للثانية.</li>
+        <li>EL099 ما عليها وحدات، وEL111 عليها 3 وحدات. تقدر تنزل مواد تخصص مع EL111.</li>
+        <li>النجاح بالتمهيدي 50 من 100، والغياب المسموح لين 7 غيابات.</li>
+      </ul>
+      <p class="faq-note">المعلومات من إعلانات الجامعة وخبرة فريق الطالب الأكاديمي، والمعتمد دايماً SIS وموقع الجامعة. <a href="#faq">أسئلة شائعة ←</a></p>
+    </section>
+
+    <section id="choose" class="view" hidden>
+      <a class="back" href="#home">→ الرئيسية</a>
+      <h2>اختار شعبتك ودكتورك</h2>
+      <p class="sub">كيف تختار الشعبة اللي تناسبك. ما نقيّم الدكاترة بالاسم، لأن التجربة تختلف من طالب لطالب.</p>
+      <ol class="gd">
+        <li><b>اختار الوقت اللي يناسبك</b><span>المحاضرات من 9 الصبح لين 9 بالليل. الشعب اللي يومين تكون: سبت وثلاثاء، أو أحد وأربعاء، أو اثنين وخميس.</span></li>
+        <li><b>شوف معلومات الدكتور</b><span>من LMS ← Academics ← Academic Staff تعرف الدكاترة وتخصصاتهم.</span></li>
+        <li><b>اسأل الطلبة اللي أخذوا عنده</b><span>بقروب المادة. اسأل عن الشرح والتنظيم وطريقة الحضور بدل ما تسأل "منو أحسن دكتور".</span><a class="go" href="#chats">القروبات</a></li>
+        <li><b>اقرا Course calendar</b><span>بـ LMS تعرف توزيع الدرجات ومواعيد الاختبارات قبل ما تقرر.</span></li>
+        <li><b>لا تستعجل</b><span>أسماء الدكاترة على الشعب تنزل بالتدريج وممكن تتغير لين بداية الدوام. تقدر تحوّل شعبتك بأسبوع السحب والإضافة.</span></li>
+        <li><b>حضّر أول محاضرة</b><span>تعرف الدكتور وأسلوبه، وقروب الشعبة يتسوى عادة بعدها.</span></li>
+      </ol>
+      <p class="faq-note">الشعبة فل؟ تابع السستم بأسبوع السحب والإضافة، لأن اللي ما يدفعون القسط الأول ينحذف جدولهم وتفتح أماكنهم. <a href="#register">دليل التسجيل ←</a></p>
     </section>
 
     <section id="newbies" class="view" hidden>
@@ -452,14 +504,187 @@ const CONFIG = {
   newbies: { // دليل المستجد (#newbies): خطوات بسيطة يمشي عليها المستجد، وخدمات تطلع تحتها لو عبّيت services
     steps: [ // t العنوان، d شرح قصير، href رابط داخل الموقع أو خارجي
       {t:"اعرف خطتك الدراسية", d:"شوف صورة خطة تخصصك وسوّ خطتك حسب اللي خلصته.", href:"#plans"},
+      {t:"سجّل موادك خطوة بخطوة", d:"من التقديم لين الدفع، ومعاها ترتيب مواد التمهيدي.", href:"#register"},
+      {t:"اختار شعبتك ودكتورك", d:"نصايح تساعدك تختار الوقت والشعبة المناسبة لك.", href:"#choose"},
       {t:"انضم لقروب المستجدين", d:"تسأل وتعرف الأخبار أول بأول من الطلاب.", href:"#chats"},
       {t:"رتّب جدولك", d:"اختار موادك وشوف مواعيد المحاضرات والاختبارات في مكان واحد.", href:"#calendar"},
       {t:"ابدأ المحاضرات المجانية", d:"محاضرات مسجلة لمواد الفصل الأول.", href:"#lectures"},
       {t:"جرّب نماذج الاختبارات", d:"نماذج سابقة مرتبة حسب المادة والفصل.", href:"#exams"},
       {t:"احسب معدلك", d:"حاسبة المعدل الفصلي والتراكمي وكم تحتاج عشان توصل لهدفك.", href:"#gpa"},
+      {t:"جاوب أسئلتك", d:"أكثر الأسئلة اللي يسألها المستجدين، وجوابها.", href:"#faq"},
       {t:"كلمنا لو احتجت مساعدة", d:"اسألنا على الواتساب أو اسأل مساعد الموقع.", href:"#subscribe"}
     ],
     services: [ // خدمات المستجدين، تطلع تحت الخطوات لو فيه شي. كل خدمة: {title, text, price (اختياري)}
+    ]
+  },
+  faq: { // الأسئلة الشائعة (#faq): groups من أسئلة قروب المستجدين. الأرقام تقريبية والمعتمد SIS وموقع الجامعة. المساعد يقراها كمان
+    groups: [
+      {
+        "title": "التسجيل والمواد",
+        "items": [
+          {
+            "q": "كم مادة أسجل؟",
+            "a": "الطالب المستمر يسجل 8 وحدات على الأقل و21 وحدة كحد أقصى. وما تقدر تحذف مادة إذا بتنزل وحداتك عن 8، فسجل مادة بدالها أول وبعدين احذف. ما فيه عدد وحدات لازم تخلصه بالسنة، بس لازم تكمل وحدات خطتك عشان تتخرج."
+          },
+          {
+            "q": "أسجل مادتين تمهيدي مع بعض؟",
+            "a": "اي، تقدر تسجل مادتين تمهيدي مع بعض (مثلاً EL097 وEL098). أول ما تخلص الأولى وتنجح، يفتح السستم تقريباً أسبوع تختار فيه الشعبة والوقت للمادة الثانية.",
+            "link": {
+              "t": "دليل تسجيل المواد",
+              "href": "#register"
+            }
+          },
+          {
+            "q": "شنو ترتيب مواد التمهيدي؟",
+            "a": "EL096 ثم EL097 ثم EL098 ثم EL099، وبعدها EL111 وEL112. كل مادة من 096 لين 099 تقريباً شهر ونص، ودوامها يومي ماعدا الجمعة. EL099 ما عليها وحدات، وEL111 عليها 3 وحدات. وتقدر تنزل مواد تخصص مع EL111.",
+            "link": {
+              "t": "دليل تسجيل المواد",
+              "href": "#register"
+            }
+          },
+          {
+            "q": "شنو اختبار القدرات؟",
+            "a": "اختبار محوسب بالجامعة يحدد مستواك بالإنجليزي (EL096 أو EL097 أو أعلى). المستوى يوصلك بالإيميل، وإذا تبي مستوى أعلى تقدر تطلب موعد ثاني وتعيد الاختبار."
+          },
+          {
+            "q": "عندي IELTS أو TOEFL، يفيدني؟",
+            "a": "اي، قدمها وتنعادل لك مواد الإنجليزي. صلاحية الـ IELTS سنتين من تاريخ النتيجة."
+          },
+          {
+            "q": "شلون أعرف المواد والشعب المطروحة؟",
+            "a": "من SIS ← التسجيل ← قائمة الإرشاد الأكاديمي، تشوف المواد وأوقاتها والدكاترة بدون ما تدش صفحة التسجيل نفسها.",
+            "link": {
+              "t": "اختار شعبتك",
+              "href": "#choose"
+            }
+          },
+          {
+            "q": "الشعبة فل، شنو أسوي؟",
+            "a": "تابع السستم بأسبوع السحب والإضافة. اللي ما يدفعون القسط الأول خلال 3 أيام ينحذف جدولهم وتفتح أماكنهم."
+          },
+          {
+            "q": "أقدر أغير الشعبة؟",
+            "a": "اي، من SIS ← التسجيل ← تغيير الشعبة بدون ما تسحب المادة. أول أسبوع من الدوام سحب وإضافة وتغيير شعب بدون خسارة."
+          },
+          {
+            "q": "شلون أسحب مادة؟",
+            "a": "أول أسبوع من الدوام بدون خسارة. بعده إسقاط المادة يخصم نسبة من رسومها حسب التقويم (30% ثم 50% ثم 100%). الطريقة: SIS ← خدمات أخرى ← الخدمات الإلكترونية ← طلب خدمة ← Drop course، وشرطها تكون دافع كل الرسوم.",
+            "link": {
+              "t": "التقويم",
+              "href": "#calendar"
+            }
+          }
+        ]
+      },
+      {
+        "title": "الرسوم والدفع",
+        "items": [
+          {
+            "q": "كم رسوم الفصل؟",
+            "a": "سعر المادة (آخر إعلان): إدارة الأعمال وتقنية المعلومات 4 وحدات 100 د.ك و8 وحدات 200 د.ك، واللغة الإنجليزية 4 وحدات 92 د.ك و8 وحدات 184 د.ك. وفوقها رسوم فصلية ورسوم كتب. إجمالي الفصل تقريباً من 400 لين 600 د.ك حسب عدد المواد، وبالصيفي سعر المادة يزيد 50%."
+          },
+          {
+            "q": "ليش نزلت علي رسوم وأنا توني أدش التسجيل؟",
+            "a": "رسوم التسجيل الفصلية (تقريباً 55 إلى 58 د.ك) ممكن تنحسب عليك بمجرد ما تدش التسجيل حتى لو ما كملت. وإذا ما دفعت القسط الأول خلال تقريباً 3 أيام، الجدول ينحذف."
+          },
+          {
+            "q": "أقدر أقسط؟",
+            "a": "المستجد بأول فصل يدفع المبلغ كامل وما يقدر يقسط. من ثاني فصل تقدر تقسط دفعتين أو ثلاث (أول دفعة تقريباً 150 د.ك). تختار التقسيط بصفحة الدفع، وإذا ما طلع لك الخيار قدّم طلب تقسيط من الخدمات الإلكترونية، وينفعّل خلال تقريباً 24 ساعة عمل. ولازم تسدد الأقساط المستحقة قبل ما يفتح لك تسجيل الفصل اللي بعده."
+          },
+          {
+            "q": "شنو صندوق الطالب؟",
+            "a": "دعم للمتعسرين مادياً تتحمل فيه الجامعة جزء من الرسوم. يتعلن بحساب الجامعة بإنستغرام تقريباً بنص الفصل الأول والثاني، والتقديم من SIS ← Aid Request مع المستندات PDF. من شروطه معدل 2.00 فأعلى واجتياز 16 وحدة على الأقل."
+          }
+        ]
+      },
+      {
+        "title": "الدراسة والحضور",
+        "items": [
+          {
+            "q": "المحاضرات والاختبارات حضوري ولا أونلاين؟",
+            "a": "تختلف حسب إعلان الجامعة كل فصل، وتنعرف من قناة أخبار الجامعة وقروب أخبار الجامعة. المحاضرات الأونلاين تكون على Teams بإيميلك الجامعي، والاختبار الأونلاين بـ LMS مع Teams والكاميرا مفتوحة.",
+            "link": {
+              "t": "قروبات الطلاب",
+              "href": "#chats"
+            }
+          },
+          {
+            "q": "شلون الغياب؟",
+            "a": "الغياب يبدأ ينحسب من الأسبوع الثاني (أسبوع السحب والإضافة ما ينحسب). بالتمهيدي (EL096 لين EL099) مسموح لين 7 غيابات، والغياب الثامن حرمان من الفاينل وإعادة المادة. تشوف نسبة حضورك من LMS ← صفحة المادة ← Participants."
+          },
+          {
+            "q": "كيف تتوزع درجات المادة؟",
+            "a": "المادة من 100. عادة: TMA أو الأنشطة الصفية تقريباً 20%، الميد (MTA) تقريباً 30%، والفاينل تقريباً 50%. التقسيمة تختلف شوي من مادة لمادة وتنذكر بـ Course calendar بـ LMS. النجاح من 50 من 100، ولازم تجيب بالفاينل 20 من 50 على الأقل."
+          },
+          {
+            "q": "شنو الـ TMA؟",
+            "a": "واجب بدرجة ينسلم على LMS قبل موعده وينفحص بـ Turnitin لكشف النسخ. اكتب بأسلوبك والتزم بعدد الكلمات ووثق المصادر بطريقة Harvard. النسخ (حتى من الذكاء الاصطناعي أو من طالب ثاني) ممكن توصل لصفر بالواجب وإجراءات تأديبية."
+          },
+          {
+            "q": "شلون أتواصل مع الدكتور؟",
+            "a": "من LMS: الأيقونة فوق بالصفحة ← Private message ← اختار الدكتور. أو من صفحة المادة تحت اسم الدكتور، وهناك يكون رابط Teams."
+          }
+        ]
+      },
+      {
+        "title": "الاختبارات والنتائج",
+        "items": [
+          {
+            "q": "وين أشوف مكان وموعد اختباري؟",
+            "a": "من SIS ← الجدول الدراسي ← تاريخ الاختبار، أو من رابط الجلوس حسب رقمك الجامعي. ما فيه شي اسمه حجز كرسي، والمعتمد جدول الاختبارات الرسمي.",
+            "link": {
+              "t": "مواعيد الاختبارات",
+              "href": "#calendar"
+            }
+          },
+          {
+            "q": "شلون أأجل اختباري؟",
+            "a": "من SIS: تكتب رمز المادة ← Personal ← ظروف خاصة ← ترسل. رسومه 10 د.ك، وطلب التأجيل ما ينلغي بعد ما ينرسل. الميد يتأجل مهما كانت درجتك، أما الفاينل فلازم مجموع درجاتك 20 فأكثر. مؤجل فاينل الفصل الأول تختبره بالفصل الثاني (إجباري)، ومؤجل الميد تقريباً بعد أسبوع من نهاية اختبارات الميد."
+          },
+          {
+            "q": "متى تطلع الدرجات؟",
+            "a": "النتايج تاخذ تقريباً أسبوع وتطلع بـ SIS ← Grade ← View My Grades. والمعدل من View My Transcript (آخر صفحة)."
+          },
+          {
+            "q": "شلون أتظلم على درجتي؟",
+            "a": "SIS ← خدمات أخرى ← الخدمات الإلكترونية ← رسوم تظلم (10 د.ك) ← بعدها خدمات أخرى ← التظلمات ← اختار المادة ← إضافة تظلم جديد وتكتب السبب. النتيجة الأولى بعد تقريباً أسبوع."
+          }
+        ]
+      },
+      {
+        "title": "الأنظمة والكتب",
+        "items": [
+          {
+            "q": "شنو الفرق بين SIS وLMS؟",
+            "a": "SIS بوابة الطالب: التسجيل والدرجات والرسوم والطلبات. LMS نظام التعلم: المحاضرات والواجبات والكويزات ورسائل الدكاترة، وله تطبيق Moodle.",
+            "link": {
+              "t": "بوابة SIS",
+              "href": "https://sis.aou.edu.kw/OnlineServices"
+            }
+          },
+          {
+            "q": "شنو إيميلي الجامعي وشلون أدخل Teams؟",
+            "a": "الإيميل: رقمك الجامعي@tsm.aou.edu.kw، والمحاضرات الأونلاين على Teams بنفس الإيميل. إذا نسيت الباسورد أو ما اشتغل، راجع قسم IT بالجامعة وقت الدوام."
+          },
+          {
+            "q": "وين أحصل الكتب؟",
+            "a": "الكتب إلكترونية: تاخذ كود الكتاب من مخزن الكتب بالجامعة (الأحد للخميس 8 لين 3) وتفتحه على تطبيق Garnet E-books، ما يحتاج طباعة. بعض المواد عليها منصة Pearson MyLab."
+          }
+        ]
+      },
+      {
+        "title": "المعدل",
+        "items": [
+          {
+            "q": "شنو الإنذار الأكاديمي؟",
+            "a": "المعدل تحت 2.00 ينطيك إنذار أكاديمي، وإذا ارتفع فوق 2.00 تروح الإنذارات. المنذر يسجل وحدات أقل، وتحديث الوضع الأكاديمي يكون بعد رصد الدرجات.",
+            "link": {
+              "t": "حاسبة المعدل",
+              "href": "#gpa"
+            }
+          }
+        ]
+      }
     ]
   },
   analytics: "", // رقم Google Analytics 4 مثل G-XXXXXXXXXX، وفاضي = بدون إحصائيات
@@ -1977,6 +2202,21 @@ $("revs").innerHTML = CONFIG.reviews.length
      <div class="who"><span class="av">${esc((r.name || "ط").trim()[0])}</span><span><b>${esc(r.name || "طالب من الجامعة")}</b>${r.major ? `<small>${esc(r.major)}</small>` : ""}</span></div></li>`).join("")
   : [0, 1, 2].map(() => `<li class="rev ph" aria-hidden="true"><span class="ph-tag">مكان رأي طالب</span><div class="bar"></div><div class="bar" style="width:80%"></div><div class="bar" style="width:55%"></div>
      <div class="who"><span class="av">؟</span><span><b>آراء الطلاب تنضاف قريب</b></span></div></li>`).join("");
+// الأسئلة الشائعة: بحث + سؤال المساعد
+{
+  const G = (CONFIG.faq && CONFIG.faq.groups) || [];
+  $("faq-list").innerHTML = G.map(g => `<div class="faq-g"><h3>${esc(g.title)}</h3>${g.items.map(x => {
+    const ext = x.link && /^https?:/.test(x.link.href);
+    return `<details data-t="${esc((x.q + " " + x.a).toLowerCase())}"><summary>${esc(x.q)}</summary><div class="faq-a"><p>${esc(x.a)}</p><div class="faq-acts">${x.link ? `<a href="${esc(x.link.href)}"${ext ? ' target="_blank" rel="noopener"' : ""}>${esc(x.link.t)} ←</a>` : ""}<button type="button" class="ai" data-q="${esc(x.q)}">اسأل المساعد</button></div></div></details>`;
+  }).join("")}</div>`).join("");
+  $("faq-list").addEventListener("click", e => { const b = e.target.closest("button.ai"); if (b && window.ascAI) window.ascAI.ask(b.dataset.q, true); else if (b) location.hash = "#subscribe"; });
+  $("faq-q").addEventListener("input", () => {
+    const q = $("faq-q").value.trim().toLowerCase(); let n = 0;
+    document.querySelectorAll("#faq-list details").forEach(d => { const ok = !q || d.dataset.t.includes(q); d.hidden = !ok; if (ok) n++; });
+    document.querySelectorAll("#faq-list .faq-g").forEach(g => g.hidden = ![...g.querySelectorAll("details")].some(d => !d.hidden));
+    $("faq-none").hidden = n > 0;
+  });
+}
 // دليل المستجد: الخطوات تنحفظ على جوال الطالب بس
 {
   const N = CONFIG.newbies || {}, steps = N.steps || [], KEY = "asc-nb";
@@ -1989,7 +2229,7 @@ $("revs").innerHTML = CONFIG.reviews.length
     $("nb-steps").querySelectorAll("li").forEach((li, i) => li.classList.toggle("done", done.includes(i)));
   };
   $("nb-steps").innerHTML = steps.map((s, i) => {
-    const href = i === 1 && mj && mj.url ? mj.url : s.href, ext = /^https?:/.test(href || "");
+    const href = /قروب المستجدين/.test(s.t) && mj && mj.url ? mj.url : s.href, ext = /^https?:/.test(href || "");
     return `<li><input type="checkbox" id="nb${i}" data-i="${i}" aria-label="خلصت: ${esc(s.t)}"${done.includes(i) ? " checked" : ""}><div class="nb-t"><b>${esc(s.t)}</b><small>${esc(s.d || "")}</small></div>${href ? `<a class="go" href="${esc(href)}"${ext ? ' target="_blank" rel="noopener"' : ""}>افتح</a>` : ""}</li>`;
   }).join("");
   $("nb-steps").onchange = e => {

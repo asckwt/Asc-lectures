@@ -99,6 +99,11 @@ g.push("\n## المواد اللي لها محاضرات مجانية مسجلة
 g.push(Object.keys(lectures).join("، "));
 
 // معلومات مكتوبة باليد عن الجامعة (رسوم، أنظمة، أرقام تواصل...) في ai/facts.md
+// الأسئلة الشائعة من CONFIG.faq (نفس اللي تطلع بصفحة #faq)
+if (CONFIG.faq && CONFIG.faq.groups) {
+  g.push("\n## أسئلة شائعة للمستجدين (صفحة الأسئلة الشائعة بالموقع https://www.asckwt.com/#faq)");
+  CONFIG.faq.groups.forEach(x => x.items.forEach(i => g.push(`- س: ${i.q} ج: ${i.a}`)));
+}
 const facts = path.join(root, "ai", "facts.md");
 if (fs.existsSync(facts)) g.push("\n" + fs.readFileSync(facts, "utf8").trim());
 
