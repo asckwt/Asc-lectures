@@ -248,6 +248,7 @@ main .wrap{display:grid;grid-template-columns:1fr;gap:40px;padding-block:36px 56
 .mine-cal .btn{background:var(--yellow);color:#07005E;font-size:15px;padding:9px 16px}
 .mine-acts .w{background:#25D366;color:#06301A}
 .wafab{position:fixed;inset-inline-start:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:5;box-shadow:0 10px 24px -10px rgba(0,0,0,.4)}
+.exrow.exnew{background:linear-gradient(90deg,rgba(242,201,76,.22),transparent);border-inline-start:4px solid var(--yellow)}.exbadge{display:inline-block;margin-inline-start:6px;padding:1px 8px;border-radius:99px;background:var(--yellow);color:#07005E;font-size:11px;font-weight:800;vertical-align:middle}
 </style></head><body>
 
 <div class="annc" id="annc" hidden></div>
@@ -866,6 +867,38 @@ const CONFIG = {
     {name:"طالب", major:"B326", text:"الحمدلله يا رب، تعبتوا معانا وما قصرتوا بشي."},
     {name:"طالبة", major:"MGT112", text:"يعطيكي ألف ألف عافية أستاذة أنفال ❤️❤️"},
     {name:"طالبة", major:"MGT112", text:"أستاذة أنفال، يعطيج ألف عافية وما قصرتي ❤️ الامتحان فعلاً ياي من ملف التدريب، وحلّينا عدل ولله الحمد، وهذا إن دلّ على شيء يدل على تعبج وحرصج على إن الطالب يكون مستعد ومتمكن من المادة. شكراً من القلب على مجهودج واهتمامج، شهادتنا فيج مجروحة، ودائماً متميزة بشرحج وملفاتج وترتيبج. الله يعطيج العافية ويبارك لج بجهدج، تستاهلين كل خير 🤍"}
+  ],
+  exams27: [ // قسم خاص: نماذج الميد (MTA) للفصل الأول 2026/2027، ملفاتها في exams/رمز المادة/
+    {code:"ACC204", name:"Intermediate Financial Accounting", ver:"C", pages:3, file:"ACC204-MTA-First-2026-2027"},
+    {code:"ACC300", name:"Accounting Information Systems", ver:"C", pages:2, file:"ACC300-MTA-First-2026-2027"},
+    {code:"ACC302", name:"Auditing Theory and Practice", ver:"C", pages:2, file:"ACC302-MTA-First-2026-2027"},
+    {code:"ACT111", name:"Financial Accounting", ver:"C", pages:4, file:"ACT111-MTA-First-2026-2027"},
+    {code:"ACT112", name:"Managerial Accounting", ver:"C", pages:3, file:"ACT112-MTA-First-2026-2027"},
+    {code:"B206", name:"Understanding Customers", ver:"C", pages:2, file:"B206-MTA-First-2026-2027"},
+    {code:"B294", name:"Financial Analysis and Decision Making", ver:"C", pages:4, file:"B294-MTA-First-2026-2027"},
+    {code:"B326", name:"Advanced Financial Accounting", ver:"C", pages:3, file:"B326-MTA-First-2026-2027"},
+    {code:"B328", name:"Marketing in Action", ver:"C", pages:2, file:"B328-MTA-First-2026-2027"},
+    {code:"B391", name:"Management Accounting and Finance", ver:"C", pages:3, file:"B391-MTA-First-2026-2027"},
+    {code:"B205A", name:"Exploring Innovation and Entrepreneurship A", ver:"C", pages:2, file:"B205A-MTA-First-2026-2027"},
+    {code:"B207A", name:"Shaping Business Opportunities I", ver:"C", pages:6, file:"B207A-MTA-First-2026-2027"},
+    {code:"B205B", name:"Exploring Innovation and Entrepreneurship B", ver:"C", pages:2, file:"B205B-MTA-First-2026-2027"},
+    {code:"B207B", name:"Shaping Business Opportunities II", ver:"C", pages:6, file:"B207B-MTA-First-2026-2027"},
+    {code:"BUC111", name:"Business Communication 1", ver:"C", pages:5, file:"BUC111-MTA-First-2026-2027"},
+    {code:"BUC112", name:"Business Communication 2", ver:"C", pages:5, file:"BUC112-MTA-First-2026-2027"},
+    {code:"BUS102", name:"Introduction to Statistics", ver:"C", pages:6, file:"BUS102-MTA-First-2026-2027"},
+    {code:"BUS115", name:"Small Business Management", ver:"C", pages:4, file:"BUS115-MTA-First-2026-2027"},
+    {code:"BUS310", name:"Strategic Management", ver:"C", pages:2, file:"BUS310-MTA-First-2026-2027"},
+    {code:"ECO102", name:"Principles of Macroeconomics", ver:"C", pages:6, file:"ECO102-MTA-First-2026-2027"},
+    {code:"MGT111", name:"Principles of Management I", ver:"C", pages:4, file:"MGT111-MTA-First-2026-2027"},
+    {code:"MGT112", name:"Principles of Management II", ver:"C", pages:4, file:"MGT112-MTA-First-2026-2027"},
+    {code:"MIS201", name:"Programming for Business Studies", ver:"C", pages:3, file:"MIS201-MTA-First-2026-2027"},
+    {code:"MIS330", name:"Business Data Management", ver:"C", pages:2, file:"MIS330-MTA-First-2026-2027"},
+    {code:"MIS332", name:"Systems Analysis and Design", ver:"C", pages:3, file:"MIS332-MTA-First-2026-2027"},
+    {code:"MKT111", name:"Principles of Marketing I", ver:"C", pages:6, file:"MKT111-MTA-First-2026-2027"},
+    {code:"MKT112", name:"Principles of Marketing II", ver:"C", pages:6, file:"MKT112-MTA-First-2026-2027"},
+    {code:"MKT331", name:"Services Marketing", ver:"C", pages:2, file:"MKT331-MTA-First-2026-2027"},
+    {code:"MKT332", name:"Digital Marketing", ver:"C", pages:2, file:"MKT332-MTA-First-2026-2027"},
+    {code:"SYS111", name:"Principles of Technology Ventures", ver:"C", pages:5, file:"SYS111-MTA-First-2026-2027"}
   ],
   exams: [ // نماذج الاختبارات: ملفاتها في exams/رمز المادة/، type = final أو mta أو makeup، sem = 1 أو 2 أو summer، fac = bus (بزنس) أو it (آي تي) أو art (آداب)
     {code:"ACC204", name:"Intermediate Financial Accounting", fac:"bus", items:[
@@ -2016,10 +2049,19 @@ const exCrumbs = parts => `<nav class="excrumb">${parts.map(([t, h]) => h ? `<a 
 const exCourseRow = c => `<li><a class="exrow" href="#exams/${c.code}"><span class="exic">${exFolder}</span><span class="ext"><b dir="ltr">${c.code}</b><small>${exAr(c.code) || `<bdi>${c.name}</bdi>`}</small></span><span class="exn">${c.items.length} نموذج</span></a></li>`;
 const exFileRow = (c, e) => `<li><a class="exrow" href="exams/${c.code}/${e.file}.pdf" target="_blank" rel="noopener"><span class="exic pdf">${exPdf}</span><span class="ext"><b>${EXT[e.type][1]}${e.ver ? ` · نسخة <bdi>${e.ver}</bdi>` : ""}</b><small>${SEM[e.sem]} ${e.year} · ${e.pages} صفحات</small></span><span class="exn go">افتح</span></a></li>`;
 const SO = {"2": 2, summer: 3, "1": 1};
+const N27 = "نماذج كورس الاول 2026/2027 MTA";
+const ex27Row = e => `<li><a class="exrow" href="exams/${e.code}/${e.file}.pdf" target="_blank" rel="noopener"><span class="exic pdf">${exPdf}</span><span class="ext"><b dir="ltr">${e.code}</b><small>${exAr(e.code) || `<bdi>${e.name}</bdi>`} · ميد · نسخة <bdi>${e.ver}</bdi> · ${e.pages} صفحات</small></span><span class="exn go">افتح</span></a></li>`;
 function drawExams(sub) {
   const q = exNorm($("exq").value);
   const box = $("examlist");
   $("exsearch").hidden = !!(sub && exByCode[sub.toUpperCase()]);
+  if (sub && sub.toLowerCase() === "mta2627") {
+    const raw = $("exq").value.trim();
+    const list = CONFIG.exams27.filter(e => !q || e.code.includes(q) || exNorm(e.name).includes(q) || exAr(e.code).includes(raw)).sort(exSort);
+    box.innerHTML = exCrumbs([["النماذج", "#exams"], [N27]]) + `<h3 class="exh">${N27}</h3><p class="sub">${CONFIG.exams27.length} مادة · نماذج الميد الجديدة للفصل الأول 2026/2027</p>` +
+      (list.length ? `<ul class="exlist">${list.map(ex27Row).join("")}</ul>` : `<p class="sub">ما لقينا مادة بهالاسم. جرب رمز المادة مثل ACC204.</p>`);
+    return;
+  }
   if (q) {
     const hits = CONFIG.exams.filter(c => c.code.includes(q) || exNorm(c.name).includes(q) || exAr(c.code).includes($("exq").value.trim())).sort(exSort);
     box.innerHTML = exCrumbs([["النماذج", "#exams"], ["نتائج البحث"]]) + (hits.length ? `<ul class="exlist">${hits.map(exCourseRow).join("")}</ul>` : `<p class="sub">ما لقينا مادة بهالاسم. جرب رمز المادة مثل ACC204.</p>`);
@@ -2040,7 +2082,7 @@ function drawExams(sub) {
     return;
   }
   const mine = (() => { try { return JSON.parse(localStorage.getItem("my-courses") || "[]"); } catch { return []; } })().filter(x => exByCode[x]);
-  box.innerHTML = `<ul class="exlist exfacs">${Object.entries(FACS).map(([k, [t, d]]) => {
+  box.innerHTML = `<ul class="exlist"><li><a class="exrow exnew" href="#exams/mta2627"><span class="exic">${exFolder}</span><span class="ext"><b>${N27}<span class="exbadge">جديد</span></b><small>نماذج الميد الأخيرة لكل المواد، الفصل الأول 2026/2027</small></span><span class="exn">${CONFIG.exams27.length} مادة</span></a></li></ul><ul class="exlist exfacs">${Object.entries(FACS).map(([k, [t, d]]) => {
     const cs = CONFIG.exams.filter(x => x.fac === k);
     return `<li><a class="exrow" href="#exams/${k}"><span class="exic">${exFolder}</span><span class="ext"><b>${t}</b><small>${d}</small></span><span class="exn">${cs.length} مادة · ${cs.reduce((n, x) => n + x.items.length, 0)} نموذج</span></a></li>`;
   }).join("")}</ul>` + (mine.length ? `<h4 class="exg">موادي</h4><ul class="exlist">${mine.map(x => exCourseRow(exByCode[x])).join("")}</ul>` : "");
